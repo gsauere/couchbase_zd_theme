@@ -15,9 +15,6 @@
 
     <h1>
       {{t 'submit_a_request'}}
-      <span class="follow-up-hint">
-        {{follow_up}}
-      </span>
     </h1>
   {{#unless signed_in}}
      <h2>Before you start, <span style="color: red;">please read</span>:</h2>
@@ -28,7 +25,7 @@
    </ul>
    {{/unless}}
    <div id="main-content" class="form">
-      {{request_form wysiwyg=true}}
+      <div id="new-request-form"></div>
    </div>
    {{else}}
    <nav class="sub-nav">
@@ -38,9 +35,6 @@
       <div id="form-not-logged-in-message" style="display: block;">
          <h1>
             {{t 'submit_a_request'}}
-            <span class="follow-up-hint">
-            {{follow_up}}
-            </span>
          </h1>
          {{!--
          <h1>Submit a request</h1>
@@ -49,7 +43,7 @@
             <p>To submit a case and see available support channels, you will need to
                {{#link "sign_in" class="sign-in"}}
                {{t 'sign_in'}}
-               {{/link}}
+              {{/link}}
             </p>
             {{!--
             <p>If you are unable to sign in, click <a href="/hc/en-us/requests/new?ticket_form_id=1260811052249">here</a>.</p>
@@ -58,16 +52,15 @@
          </div>
       </div>
       <div id="notSignedForm" style="display: none">
-         <h2>Before you start, <span style="color: red;">please read</span>:</h2>
-         <ul class="sso-form-notes" style="margin-top:-10px">
+          <h2>Before you start, <span style="color: red;">please read</span>:</h2>
+          <ul class="sso-form-notes" style="margin-top:-10px">
             <li>You are submitting this request without having logged into the Couchbase Support Site.</li>
             <li>As a result, your support case may see a longer delay before an agent is assigned.</li>
             <li>If you are able, please first {{#link "sign_in" class="sign-in"}} {{t 'sign_in'}} {{/link}}</li>
-         </ul>
-         <div id="main-content" class="form">
-            <!--div id="new-request-form"></div-->
-            {{request_form wysiwyg=true}}
-         </div>
+          </ul>
+          <div id="main-content" class="form">
+            <div id="new-request-form"></div>
+          </div>
       </div>
     </div>
   {{/if}}
