@@ -2,10 +2,81 @@
   <div class="request-breadcrumbs">{{breadcrumbs}}</div>
 
   <h1 class="request-title">{{request.subject}}</h1>
+  {{#if 1}}
+  {{else}}
+    {{!- Add Link to Add Comments at the Bottom--}}
+    <a class="collapsible-nav" href="#comment_section">{{t 'add_to_conversation'}}</a>
+  {{/if}}
 
   <div id="main-content" class="request-container">
     <section class="request-main">
       {{satisfaction}}
+
+      {{!- Add Comments at the Top (ENABLED)--}}
+      {{#if 1}}
+        {{!-- This will add the Add to Conversation at the top --}}
+        <div id="comment_section" class="request-follow-up">
+          <div id="customer_action_section" style="display:none">
+            Here are additional actions you can take:<br>
+            <button id="escalation_action" type="button" class="tkt-action-collapsible">Escalate your ticket</button>
+            <div class="tkt-action-content">
+              <p>Please provide a reason for your escalation and Couchbase will prioritize it accordingly. The more details you provide the better it will help us.</p>
+              <form id="escalate_form">
+                <label for="fname">What is your reason for escalation? (min. 50 characters)</label><br>
+                <textarea id="escalate_reason" name="reason" cols="150" rows="2" minlength="50" maxlength="1000" required></textarea><br>
+                <b style="color:red">*Couchbase reserves the right to decide if a call or escalation is warrant based on your justification. Live troubleshooting sessions often delays resolution time, and if one warrants Couchbase Team will initiate a call once we have adequate logs.</b>
+                <input type="submit" value="Escalate"><br>
+                <!--button type="button" id="escalate_button">Escalate</button-->
+              </form>
+            </div>
+          </div>
+          {{comment_callout}}
+        </div>
+      
+      	{{#form 'comment' class='comment-form'}}
+          <div class="avatar comment-avatar">
+            {{user_avatar class='user-avatar'}}
+          </div>
+
+          <div class="comment-container">
+            <button type="button" class="comment-show-container {{#validate 'body'}}hidden{{/validate}}">
+              {{t 'add_to_conversation'}}
+            </button>
+
+            <div class="comment-fields {{#validate 'body'}}shown{{/validate}}">
+              {{#if help_center.request_ccs_enabled}}
+                <div class="comment-ccs form-field">
+                 {{token_field 'ccs' class='ccs-input'}}
+                </div>
+              {{/if}}
+
+              {{wysiwyg 'body' rows='7'}}
+              {{!--{{textarea 'body' rows='7'}}--}}
+
+              <div class="comment-attachments">
+                {{upload}}
+              </div>
+            </div>
+
+            <div class="comment-form-controls">
+              {{checkbox 'mark_as_solved'}}
+
+              {{#if request.can_be_marked_as_solved}}
+                <button type="button" class="button-large button-secondary mark-as-solved"
+                  data-solve-translation="{{t 'mark_as_solved'}}"
+                  data-solve-and-submit-translation="{{t 'mark_as_solved_and_submit'}}">
+                  {{t 'mark_as_solved'}}
+                </button>
+              {{/if}}
+
+              <span class="request-submit-comment {{#validate 'body'}}shown{{/validate}}">
+                {{input type='submit' class="button button-large"}}
+              </span>
+            </div>
+          </div>
+        {{/form}}
+      {{/if}}
+
       <ul class="comment-list">
         {{#each comments}}
           <li id="{{anchor}}" class="comment">
@@ -58,53 +129,60 @@
         {{/each}}
       </ul>
 
+      <a href="#top_section">{{t 'return_to_top'}}</a>
+
       {{pagination}}
 
-      <div class="request-follow-up">
-        {{comment_callout}}
-      </div>
-
-      {{#form 'comment' class='comment-form hbs-form'}}
-        <div class="avatar comment-avatar">
-          {{user_avatar class='user-avatar'}}
+      {{!- Add Comments at the Bottom (DISABLED) --}}
+      {{#if 1}}
+      {{else}}
+        {{!-- This will add the Add to Conversation at the bottom --}}
+        <div id="comment_section" class="request-follow-up">
+          {{comment_callout}}
         </div>
 
-        <div class="comment-container">
-          <button type="button" class="comment-show-container {{#validate 'body'}}hidden{{/validate}}">
-            {{t 'add_to_conversation'}}
-          </button>
+        {{#form 'comment' class='comment-form hbs-form'}}
+          <div class="avatar comment-avatar">
+            {{user_avatar class='user-avatar'}}
+          </div>
 
-          <div class="comment-fields {{#validate 'body'}}shown{{/validate}}">
-            {{#if help_center.request_ccs_enabled}}
-              <div class="comment-ccs form-field">
-               {{token_field 'ccs' class='ccs-input'}}
+          <div class="comment-container">
+            <button type="button" class="comment-show-container {{#validate 'body'}}hidden{{/validate}}">
+              {{t 'add_to_conversation'}}
+            </button>
+
+            <div class="comment-fields {{#validate 'body'}}shown{{/validate}}">
+              {{#if help_center.request_ccs_enabled}}
+                <div class="comment-ccs form-field">
+                {{token_field 'ccs' class='ccs-input'}}
+                </div>
+              {{/if}}
+
+              {{wysiwyg 'body' rows='7'}}
+
+              <div class="comment-attachments">
+                {{upload}}
               </div>
-            {{/if}}
+            </div>
 
-            {{wysiwyg 'body' rows='7'}}
+            <div class="comment-form-controls">
+              {{checkbox 'mark_as_solved'}}
 
-            <div class="comment-attachments">
-              {{upload}}
+              {{#if request.can_be_marked_as_solved}}
+                <button type="button" class="button-large button-secondary mark-as-solved"
+                  data-solve-translation="{{t 'mark_as_solved'}}"
+                  data-solve-and-submit-translation="{{t 'mark_as_solved_and_submit'}}">
+                  {{t 'mark_as_solved'}}
+                </button>
+              {{/if}}
+
+              <span class="request-submit-comment {{#validate 'body'}}shown{{/validate}}">
+                {{input type='submit' class="button button-large"}}
+              </span>
             </div>
           </div>
-
-          <div class="comment-form-controls">
-            {{checkbox 'mark_as_solved'}}
-
-            {{#if request.can_be_marked_as_solved}}
-              <button type="button" class="button-large button-secondary mark-as-solved"
-                data-solve-translation="{{t 'mark_as_solved'}}"
-                data-solve-and-submit-translation="{{t 'mark_as_solved_and_submit'}}">
-                {{t 'mark_as_solved'}}
-              </button>
-            {{/if}}
-
-            <span class="request-submit-comment {{#validate 'body'}}shown{{/validate}}">
-              {{input type='submit' class="button button-large"}}
-            </span>
-          </div>
-        </div>
-      {{/form}}
+        {{/form}}
+      {{/if}}
     </section>
 
     <section class="request-sidebar collapsible-sidebar">
@@ -265,3 +343,191 @@
     </section>
   </div>
 </div>
+
+
+<script type="text/javascript">
+    var editorInstance = null;    
+    var id = null;
+  
+    var coll = $(".tkt-action-collapsible")
+    var i;
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("tkt-action-active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
+      });
+    }
+  
+    $('#escalate_form').on('submit', function(e) {
+      e.preventDefault();                           
+      var business_impact = $('#escalate_reason')
+
+      if (id && business_impact) {
+        business_impact = business_impact.val().trim()
+        if (business_impact.length < 25) {
+          alert("The escalation reason doesn't meet the 50-character minimum.")                              
+        } else {
+           jQuery.ajax({url: "/api/v2/users/me.json",
+             type: "GET", 
+             contentType: 'application/json', 
+             success: function(json) {
+               console.log(json);
+               var csrftoken = json['user']['authenticity_token'];
+               //alert("Subdomain "+subdomain+" had "+json['total']+' incidents in the last 30 days'); 
+
+               jQuery.ajax({url: "/api/v2/requests/" + id + ".json",
+                 type: "PUT", 
+                 contentType: 'application/json', 
+                 headers: { "X-CSRF-Token": csrftoken },
+                 data: JSON.stringify({
+                      request: { comment: { html_body: "This is an automated message triggered by an escalation action (code:#escalate)<br><b>Reason for your escalation:</b> " + business_impact + "<br>---<br>Dear " + HelpCenter.user.name + ",<br>A Couchbase Support Engineer is being contacted and will be updating the ticket shortly.<br>" } }
+                 }),
+                 success: function(json) {
+                   $("#customer_action_section").html("<b style='color:green'>Your ticket has been escalated! The Support Team will be reaching out to you shortly.</b>");
+                   console.log(json)
+                 }
+               });
+             }
+           });
+
+           /*var data = editorInstance.getData();
+           if (data.indexOf('#escalate') < 0) {
+             editorInstance.setData( "#escalate, " + business_impact + data);
+           }*/
+        }
+      }
+    });
+
+    $( function() {
+      const ENABLE_ACTION_SECTION = true;
+      const EDITOR_TIMEOUT = 1000;
+      var COMMENT_ON_TOP = false;
+      // This will change the spacing inside the Description field
+      // $("#request_comment_body_ifr").contents().find(".mce-content-body").css({'line-height': '8px'});
+  
+      // This will add valid information to the Attachment field and description
+      // $('div#upload-dropzone').prev().text('Attachments (maximum attachment size 50MB)');
+      // $("<div class='extra-upload-info'><p>Review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>").insertAfter("#upload-dropzone");
+
+      $("<div class='form-field'><p>Maximum attachment size is 50MB. Please, review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>").insertAfter("#upload-dropzone");	
+  
+  			var status = "", ent = "", priority = "";
+        $(".request-details dt").filter(function() {
+  			    //console.log("item: " + $.trim($(this).text()))
+        	  return $.trim($(this).text()) === "Id";
+          } //have to trim whitespace!
+    	  ).each( function( ind, obj ) {
+          id = $.trim($( obj ).next().text()).substring(1);
+          //console.log("data: " + obj)
+    		});
+        $(".request-details dt").filter(function() {
+  			    //console.log("item: " + $.trim($(this).text()))
+        	  return $.trim($(this).text()) === "Escalated";
+          } //have to trim whitespace!
+    	  ).each( function( ind, obj ) {
+      		esc = $.trim($( obj ).next().text().toLowerCase());
+          //console.log("data: " + esc)
+          if (esc === "—") {
+            $( obj ).next().text("No");
+          } else {
+            $( obj ).next().text("Yes");
+          }
+    		});
+        $(".request-details dt").filter(function() {
+  			    //console.log("item: " + $.trim($(this).text()))
+        	  return $.trim($(this).text()) === "Last Escalated";
+          } //have to trim whitespace!
+    	  ).each( function( ind, obj ) {
+      		last_escalatedStr = $.trim($( obj ).next().text().toLowerCase());
+          try {
+            const last_escalated = new Date(Date.parse(last_escalatedStr)).toJSON().slice(0, 10)
+            const today = new Date().toJSON().slice(0, 10);
+            if (today === last_escalated) {
+              $("#customer_action_section").html("<b style='color:blue'>This ticket has already been escalated today! Support Team was notified and is engaged.<br>Please update the ticket if you have more details to share or call our <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#escalation\" target=\"_blank\" rel=\"noopener noreferrer\">Hotline</a> for anything else urgent.</b>");
+            }
+          } catch {
+  					//swallow
+          }
+    		});
+        $(".request-details dt").filter(function() {
+        	  return $.trim($(this).text()) === "Status";
+          } //have to trim whitespace!
+    	  ).each( function( ind, obj ) {
+      		status = $.trim($( obj ).next().text().toLowerCase());
+    		});
+        $(".request-details dt").filter(function() {
+        	  return $.trim($(this).text()) === "Entitlement";
+          }
+    	  ).each( function( ind, obj ) {
+      		ent = $.trim($( obj ).next().text().toLowerCase());
+          $( obj ).next().remove();
+      		  $( obj ).remove();
+    		});
+        $(".request-details dt").filter(function() {
+        	  return $.trim($(this).text()) === "Priority";
+          }
+    	  ).each( function( ind, obj ) {
+      		priority = $.trim($( obj ).next().text().toLowerCase());
+    		});
+        //console.log(ent + " - " + priority)
+  
+        //console.log(HelpCenter.user.role)
+        var role = HelpCenter.user.role;
+        $("#call_request_action").hide();
+        if (ENABLE_ACTION_SECTION && status !== "solved" && ((ent.indexOf("gold") >= 0 || ent.indexOf("platinum") >= 0) || role === "manager")) {
+        //if (ENABLE_ACTION_SECTION && (ent.indexOf("gold") >= 0 || ent.indexOf("platinum") >= 0 || role === "manager")) {
+    			$("#customer_action_section").show();
+          /*if (priority == "p1") { //|| priority == "p2"
+  					 //$("#call_request_action").show();
+  				} else {
+             $("#call_request_action").hide();
+          }*/
+  			} else {
+    		  $("#customer_action_section").hide();
+        }
+  
+      setTimeout(
+        function() 
+        {
+          // A reference to the editor editable element in the DOM.
+          const domEditableElement = document.querySelector('.ck-editor__editable');
+
+          // Get the editor instance from the editable element.
+          const editorInstance = domEditableElement.ckeditorInstance;
+          /* editorInstance.theme.container.views.dropzone.remove();
+          editorInstance.settings.paste_data_images = false; */
+
+          // Use the editor instance API.
+          //editorInstance.setData( '<p>Hello world!<p>' );
+          // Append canned response to existing textarea value
+          //$('#wpas_reply').val(function (i, val) {
+          //	return val + cannedResponse;
+          //});
+
+          var descriptionField = $(".ck .ck-content");  
+  				//console.log(editor)
+          //console.log(editor.buttons)
+          //console.log(editor.theme);
+          
+          //editor.theme.container.views.dropzone.remove();
+          //editor.settings.paste_data_images = false;
+         
+          //console.log(descriptionField);
+          //descriptionField.on("keyup", function(e) {
+            //var string = (((descriptionField.getContent()).replace(/(&nbsp;)*/g, "")).replace(/(<p>)*/g, "")).replace(/<(\/)?p[^>]*>/g, ""); //({format : 'raw'});
+            //var string = (descriptionField.getContent({ format: "text" })).replace(/\r?\n|\r/g, "");
+          //  var string = this.textContent.replace(/\r?\n|\r/g, "");
+                
+            //if (string == '')
+            //  $("#" + EDITOR_FIELD_ID.COMMENT_EDITOR_BODY).contents().find(".mce-content-body").find("p").css({'margin-block': '0'})
+          //});
+  
+        }, EDITOR_TIMEOUT);
+    } 
+  );
+</script>

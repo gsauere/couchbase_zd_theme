@@ -1,23 +1,76 @@
 <div class="container-divider"></div>
 <div class="container">
-  <div class="sub-nav">
-    {{breadcrumbs}}
-    <div class="search-container">
-      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" focusable="false" viewBox="0 0 12 12" class="search-icon" aria-hidden="true">
-        <circle cx="4.5" cy="4.5" r="4" fill="none" stroke="currentColor"/>
-        <path stroke="currentColor" stroke-linecap="round" d="M11 11L7.5 7.5"/>
-      </svg>
-      {{search submit=false}}
+  {{#if signed_in}}
+   {{!--{{#if true}}--}}
+    <div class="sub-nav">
+      {{breadcrumbs}}
+      <div class="search-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" focusable="false" viewBox="0 0 12 12" class="search-icon" aria-hidden="true">
+          <circle cx="4.5" cy="4.5" r="4" fill="none" stroke="currentColor"/>
+          <path stroke="currentColor" stroke-linecap="round" d="M11 11L7.5 7.5"/>
+        </svg>
+        {{search submit=false}}
+      </div>
     </div>
-  </div>
 
-  <h1>
-    {{t 'submit_a_request'}}
-  </h1>
-
-  <div id="main-content" class="form">
-    <div id="new-request-form"></div>
-  </div>
+    <h1>
+      {{t 'submit_a_request'}}
+      <span class="follow-up-hint">
+        {{follow_up}}
+      </span>
+    </h1>
+  {{#unless signed_in}}
+     <h2>Before you start, <span style="color: red;">please read</span>:</h2>
+   <ul class="sso-form-notes" style="margin-top:-10px">
+      <li>You are submitting this request without having logged into the Couchbase Support Site.</li>
+      <li>As a result, your support case may see a longer delay before an agent is assigned.</li>
+      <li>If you are able, please first {{#link "sign_in" class="sign-in"}} {{t 'sign_in'}} {{/link}}</li>
+   </ul>
+   {{/unless}}
+   <div id="main-content" class="form">
+      {{request_form wysiwyg=true}}
+   </div>
+   {{else}}
+   <nav class="sub-nav">
+      {{breadcrumbs}}
+   </nav>
+   <div id="vue-form" v-cloak="">
+      <div id="form-not-logged-in-message" style="display: block;">
+         <h1>
+            {{t 'submit_a_request'}}
+            <span class="follow-up-hint">
+            {{follow_up}}
+            </span>
+         </h1>
+         {{!--
+         <h1>Submit a request</h1>
+         --}}
+         <div id="notSignedMsg" style="display: block">
+            <p>To submit a case and see available support channels, you will need to
+               {{#link "sign_in" class="sign-in"}}
+               {{t 'sign_in'}}
+               {{/link}}
+            </p>
+            {{!--
+            <p>If you are unable to sign in, click <a href="/hc/en-us/requests/new?ticket_form_id=1260811052249">here</a>.</p>
+            --}}
+            <p>If you are unable to sign in, click <a href="javascript:void(0);" onclick="show();">here</a>.</p>
+         </div>
+      </div>
+      <div id="notSignedForm" style="display: none">
+         <h2>Before you start, <span style="color: red;">please read</span>:</h2>
+         <ul class="sso-form-notes" style="margin-top:-10px">
+            <li>You are submitting this request without having logged into the Couchbase Support Site.</li>
+            <li>As a result, your support case may see a longer delay before an agent is assigned.</li>
+            <li>If you are able, please first {{#link "sign_in" class="sign-in"}} {{t 'sign_in'}} {{/link}}</li>
+         </ul>
+         <div id="main-content" class="form">
+            <!--div id="new-request-form"></div-->
+            {{request_form wysiwyg=true}}
+         </div>
+      </div>
+    </div>
+  {{/if}}
 </div>
 
 <script type="module">
@@ -51,4 +104,596 @@
   };
 
   renderNewRequestForm(settings, props, container);
+</script>
+
+<script type = "text/javascript">
+  /*$(document).submit(function() {
+      window.open("https://support.couchbase.com/hc/en-us/articles/218320083#support_server_logs", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=768,height=768");
+  });*/
+
+  function show() {
+    document.getElementById("notSignedForm").style.display = "block";
+    document.getElementById("notSignedMsg").style.display = "none";
+
+    hide_fields();
+  }
+
+function hide_fields() {
+  const FORM_ID = {
+    SERVER: "360000545232",
+    //CLIENT: "1260811054369",
+    MOBILE: "1900000174384",
+    EDGE: "34692946527003",
+    OPERATOR: "1260811054329",
+    CONNECTOR: "1260811116990",
+    QUESTION: "1260811052249",
+    SUGGESTION: "1900000171804"
+  }
+
+  $('#request_issue_type_select option[value="' + FORM_ID.SERVER + '"]').remove();
+  //$('#request_issue_type_select option[value="' + FORM_ID.CLIENT + '"]').remove();
+  $('#request_issue_type_select option[value="' + FORM_ID.MOBILE + '"]').remove();
+  $('#request_issue_type_select option[value="' + FORM_ID.EDGE + '"]').remove();
+  $('#request_issue_type_select option[value="' + FORM_ID.OPERATOR + '"]').remove();
+  $('#request_issue_type_select option[value="' + FORM_ID.CONNECTOR + '"]').remove();
+  $('#request_issue_type_select option[value="' + FORM_ID.SUGGESTION + '"]').remove();
+
+  $('.nesty-panel').on('DOMNodeInserted', function(e) {
+    $(this).children('ul').children().remove('#' + FORM_ID.SERVER); //Couchbase Server Issue
+    //$(this).children('ul').children().remove('#' + FORM_ID.CLIENT); //Couchbase Cliend SDK Issue
+    $(this).children('ul').children().remove('#' + FORM_ID.MOBILE); //Couchbase Mobile Issue
+    $(this).children('ul').children().remove('#' + FORM_ID.EDGE); //Couchbase Edge Server Issue
+    $(this).children('ul').children().remove('#' + FORM_ID.OPERATOR); //Couchbase Autonomous Operator Issue
+    $(this).children('ul').children().remove('#' + FORM_ID.CONNECTOR); //Couchbase Server Connector Issue
+    $(this).children('ul').children().remove('#' + FORM_ID.SUGGESTION); //Product Suggestion Issue
+  });
+}
+
+$(function() {
+  var editorInstance = null;
+
+  const FORM = {
+    SERVER: "Couchbase (Server, SDK or Connector) Issue",
+    MOBILE: "Couchbase (SyncGateway or CBLite) Issue",
+    EDGE: "Couchbase Edge Server Issue",
+    OPERATOR: "Couchbase Autonomous Operator Issue",
+    CONNECTOR: "Couchbase Connector Issue",
+    QUESTION: "General Question",
+    SUGGESTION: "Product Suggestion"
+  }
+
+  const FORM_ID = {
+    SERVER: "360000545232",
+    //CLIENT: "1260811054369",
+    MOBILE: "1900000174384",
+    EDGE: "34692946527003",
+    OPERATOR: "1260811054329",
+    CONNECTOR: "1260811116990",
+    QUESTION: "1260811052249",
+    SUGGESTION: "1900000171804"
+  }
+
+  const CUSTOM_FIELD = {
+    IMPACT: "request_custom_fields_21227650",
+    CRITICAL: "request_custom_fields_360045140512",
+    // ENVIRONMENT:"request_custom_fields_24258156",
+    SERVER: "request_custom_fields_20518787",
+    SYNC_GATEWAY: "request_custom_fields_21076534",
+    HAS_SDK: "request_custom_fields_31156791679259",
+    CLIENT: "request_custom_fields_21076524",
+    LITE: "request_custom_fields_21115995",
+    EDGE: "request_custom_fields_34620727056155",
+    OPERATOR: "request_custom_fields_360030664772",
+    CONNECTOR: "request_custom_fields_360045166331",
+    MARKET_PLACE: "request_custom_fields_12734656072219",
+    LOGS_AGREEMENT: "request_custom_fields_1900002551744"
+  }
+
+  const CUSTOM_FIELD_ID = {
+    DESCRIPTION: "pr_description",
+    RECREATE: "pr_recreate",
+    OS: "pr_operating_system",
+    BROWSER: "pr_web_browser",
+    SERVER: "pr_cb_server",
+    CLIENT: "pr_cb_client",
+    SYNC_GATEWAY: "pr_cb_sync_gateway",
+    LITE: "pr_cb_lite",
+    OPERATOR: "pr_cb_ao",
+    PLATFORM: "pr_platform",
+    CONNECTOR: "pr_cb_connector",
+    EOL: "description_eol_life",
+    SERVER_MSG: "server_msg",
+    CLIENT_MSG: "client_msg",
+    SYNC_GATEWAY_MSG: "sync_gateway_msg",
+    LITE_MSG: "lite_msg",
+    EDGE_MSG: "edge_msg",
+    OPERATOR_MSG: "operator_msg",
+    CONNECTOR_MSG: "connector_msg",
+    IMPACT_MSG: "impact_msg",
+    MARKET_PLACE_MSG: "market_place_msg",
+    LOGS_CHECK_MSG: "logs_understanding_msg"
+  }
+
+  const END_OF_LIFE = {
+    SERVER: ["serverver__end_of_life"],
+    OPERATOR: ["operatorver__end_of_life"],
+    CONNECTOR: ["connectorver__elastic__end_of_life", "connectorver__kafka__end_of_life", "connectorver__spark__end_of_life", "connectorver__tableau__end_of_life"],
+    SYNC_GATEWAY: ["syncgwver__end_of_life"],
+    LITE: ["litever__android__end_of_life", "litever__java__end_of_life", "litever__net__end_of_life", "litever__ios__end_of_life", "litever__c__end_of_life"],
+    EDGE: ["edgeserverver__end_of_life"],
+    CLIENT: ["clientver__scala__end_of_life",
+      "clientver__ruby__end_of_life", "clientver__kotlin__end_of_life", "clientver__python__end_of_life", "clientver__php__end_of_life", "clientver__node_js__end_of_life", "clientver__java__end_of_life",
+      "clientver__go__end_of_life", "clientver__c__end_of_life", "clientver__net__end_of_life"
+    ]
+  }
+
+  const SERVER_END_OF_FULL_MAINTENANCE = ["(7.1.\\d+)", "(7.0.\\d+)"]
+  const SERVER_END_OF_LIFE = ["(5.5.\\d+)", "(5.1.\\d+)", "(5.0.\\d+)"]
+
+  const CLIENT_END_OF_FULL_MAINTENANCE = ["(Java 3.4.X)", "(.NET 3.4.X)", "(Go 2.6.X)", "(Node.js 4.2.X)", "(Ruby 3.4.X)", "(C 3.2.X)", "(Python 4.1.X)", "(PHP 4.1.X)", "(Scala 1.4.X)", "(Kotlin 1.1.X)"]
+  const CLIENT_END_OF_LIFE = ["(Java 2.\\d+)", "(.NET 2.\\d+)", "(Ruby 1.3.\\d+)", "(Go 2.0.\\d+)", "(Node.js 2.6.\\d+)", "(C 2.\\d+)", "(Python 2.5.\\d+)", "(PHP 2.6.\\d+)", "(Scala 1.0.\\d+)"]
+
+  const SYNC_GATEWAY_END_OF_FULL_MAINTENANCE = ["(3.0.\\d+)"]
+  const SYNC_GATEWAY_END_OF_LIFE = ["(1.5.\\d+)", "(2.0.\\d+)", "(2.1.\\d+)", "(2.5.\\d+)", "(2.6.\\d+)", "(2.7.\\d+)"]
+
+  const LITE_END_OF_FULL_MAINTENANCE = ["(3.0.X)"]
+  const LITE_END_OF_LIFE = ["(1.5.\\d+)", "(2.0.\\d+)", "(2.1.\\d+)", "(2.5.\\d+)", "(2.6.\\d+)", "(2.7.\\d+)"]
+
+  const EDGE_END_OF_FULL_MAINTENANCE = ["(0.0.X)"]
+  const EDGE_END_OF_LIFE = ["(0.0.X)"]
+  
+  const OPERATOR_END_OF_FULL_MAINTENANCE = ["(2.4.\\d+)"]
+  const OPERATOR_END_OF_LIFE = ["(1.2.\\d+)"]
+  
+  const CONNECTOR_END_OF_FULL_MAINTENANCE = ["(Elasticsearch Connector 4.3.X)", "(Spark Connector 3.0.X)", "(Spark Connector 3.1.X)", "(Spark Connector 3.2.X)", "(Tableau Connector 1.0.X)"]
+  const CONNECTOR_END_OF_LIFE = ["(X 0.0.\\d+)"]
+
+  // This list contain all the tags that are NOT applicable
+  const IMPACT_TO_HIDE = ["current_impact__none", "current_impact__production__urgent_blocker", "current_impact__standby_dr__urgent_blocker",
+    "current_impact__testing__urgent_blocker", "current_impact__development__urgent_blocker"
+  ]
+
+  /* const IMPACT = {NON_PROD:["prod_impact_urgent_blocker", "prod_impact_severe_outage", "prod_impact_partial_outage", "prod_impact_none"],
+                  DR:["prod_impact_urgent_blocker", "prod_impact_severe_outage", "prod_impact_dev_blocked", "prod_impact_none"],
+                  PRODUCTION:["prod_impact_urgent_blocker", "prod_impact_dev_blocked", "prod_impact_none"],
+                  RCA:["prod_impact_urgent_blocker", "non_prod_impact_rca_p4","dr_impact_rca_p4","prod_impact_rca_p3"]
+                  } */
+
+  /*
+    $('#request_description_ifr').change(function() {
+      $('#JQResult').html('');
+      $('option:selected', $(this)).each(function() {
+        $('#JQResult').append(
+          $('<li/>').html($(this).val())
+        );
+      });
+    });
+    */
+
+  function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintenanceValues, value) {
+    const END_OF_LIFE = "End of Life";
+    $(id).html("");
+    //$('#' + CUSTOM_FIELD_ID.EOL).hide();
+    var end_of_life = false;
+
+    // End of Life selection
+    var pattern = new RegExp(END_OF_LIFE);
+    if (pattern.test(value)) {
+      $(id).html("<div class='end_of_life'>You have selected an <b>End of Life</b> version. We strongly advise you to migrate to a supported version at your earliest convenience. You will receive Support if you have purchased Extended Support for this version. Please contact your Account Manager if you have an inquire about this offering.</div>")
+      //$('#' + CUSTOM_FIELD_ID.EOL).show();
+      /*if (editorInstance) {
+           var data = editorInstance.getData();
+           var msg = "";
+           if (~id.indexOf(CUSTOM_FIELD_ID.SERVER_MSG) && data.indexOf("Couchbase Server") < 0) { msg += "Couchbase Server vX.Y.Z"; }
+           if (~id.indexOf(CUSTOM_FIELD_ID.CLIENT_MSG) && data.indexOf("Couchbase SDK") < 0) { msg += "Couchbase SDK vX.Y.Z"; }
+           if (~id.indexOf(CUSTOM_FIELD_ID.SYNC_GATEWAY_MSG) && data.indexOf("Couchbase Sync Gateway") < 0) { msg += "Couchbase Sync Gateway vX.Y.Z"; }
+           if (~id.indexOf(CUSTOM_FIELD_ID.LITE_MSG) && data.indexOf("Couchbase Lite") < 0) { msg += "Couchbase Lite vX.Y.Z"; }
+           if (~id.indexOf(CUSTOM_FIELD_ID.EDGE_MSG) && data.indexOf("Couchbase Edge Serve") < 0) { msg += "Couchbase Edge Server vX.Y.Z"; }
+           if (~id.indexOf(CUSTOM_FIELD_ID.OPERATOR_MSG) && data.indexOf("Couchbase Operator") < 0) { msg += "Couchbase Operator vX.Y.Z"; }
+           if (~id.indexOf(CUSTOM_FIELD_ID.CONNECTOR_MSG) && data.indexOf("Couchbase Connector") < 0) { msg += "Couchbase Connector vX.Y.Z"; }
+           editorInstance.setData( msg + data);
+      }*/
+      end_of_life = true;
+      return false; // breaks
+    };
+    if (!end_of_life) {
+      /*$.each(endOfLifeValues, function(i, val) {
+        var pattern = new RegExp(val);
+        if (pattern.test(value)) {
+          $(id).html("<div class='end_of_life'>You have selected a version that is reaching <b>End of Life</b>. We strongly advise you to migrate to a supported version at your earliest convenience. Please contact your Account Manager to discuss options for Extended Support.</div>")
+          end_of_life = true;
+          return false; // breaks
+        }
+      });*/
+      //if (!end_of_life) {
+        $.each(endOfFullMaintenanceValues, function(i, val) {
+          var pattern = new RegExp(val);
+          if (pattern.test(value)) {
+            $(id).html("<div class='end_of_full_maintanence'>You have selected an <b>End of Full Maintenance</b> version. We strongly advise you to migrate to a maintained version to benefit from fixes. Please contact your Account Manager if you have an inquire about Extended Maintenance which is available for Couchbase Server. </div>")
+            return false; // breaks
+          }
+        });
+      //}
+    }
+    return;
+  }
+
+  /*
+   * Returns the intersection of ES6 Set objects. i.e., returns a new set with only elements contained in all the given sets.
+   * 
+   * @param {Set|Array} set1 First set
+   * @param {Array<Array|Set>} sets Other sets
+   * @returns {Set|Array} Intersection
+   */
+  function intersection(set1, ...sets) {
+    if (!sets.length) {
+      return set1;
+    }
+    const tmp = [...set1].filter(x => sets.every(y => Array.isArray(y) ? y.includes(x) : y.has(x)));
+    return Array.isArray(set1) ? tmp : new Set(tmp);
+  }
+
+  function create(t) {
+    // create an observer instance
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        /* var foo = t.getAttribute("aaa")
+           if (foo == "vvv")
+              t.style.backgroundColor = "red"; */
+        var nodes = Array.prototype.slice.call(mutation.addedNodes);
+        nodes.forEach(function(node) {
+          if (node.parentElement.className == "nesty-panel") {
+            /* var a = $(node).children('li').eq(0);
+               var a = $(this).find('ul').children('li').eq(0);
+               var a = $(this).find('ul').children('li')[0] */
+            var a = $(node).children('li');
+            /* console.log(a)
+               var len = $(node).siblings();
+               console.log(len) */
+            a.siblings().each(function() {
+              // This removes the Obsolete entry for impact
+              //console.log(this)
+              if (this.firstChild.data.indexOf("Obsolete") != -1)
+                this.remove()
+            });
+
+            // Remove current impacts that we don't want to expose to users
+            $.each(IMPACT_TO_HIDE, function(i, val) {
+              //console.log("#" + val) 
+              $("#" + val).remove()
+            });
+
+            // Remove all simblings after the End of Life element
+            $.each(END_OF_LIFE, function(i, val) {
+              $.each(val, function(i2, val2) {
+                // console.log("#" + val2)
+                $("#" + val2).nextAll().remove()
+              })
+            })
+
+            //This will remove legacy environment items without actually removing from Zendesk customm fields dropbox items directly
+            /*$.each( LEGACY_ENVIRONMENT, function( i, val ) {
+                 //console.log("#" + val) 
+                  $( "#" + val ).remove()
+            });*/
+          }
+        });
+      });
+    });
+
+    // configuration of the observer
+    var config = {
+      childList: true,
+      subtree: true,
+      attributes: false,
+      characterData: false,
+    };
+
+    // pass in the target node, as well as the observer options
+    observer.observe(t, config);
+  }
+
+  $(document).ready(function() {
+    //Store the ticket form ID text
+    const ticketForm = $(".request_ticket_form_id a").text(); //location.search.split("ticket_form_id=")[1];
+    /*if (ticketForm == null) {
+         ticketForm = location.search.split("ticket_form_id=")[1];
+    } */
+  
+    // This will add valid information to the Attachment field and description
+    $('div#upload-dropzone').prev().text('Attachments (maximum attachment size 50MB)');
+    $("<div class='extra-upload-info'><p>Review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>").insertAfter("#upload-dropzone");
+
+    // This will add a placeholder for Email/CC, and the Description fields
+    $("#request_collaborators_").attr("placeholder", "Add contributor emails (if any)");
+    $("#request_anonymous_requester_email").attr("placeholder", "Please enter your company email address");
+    $("#request_subject").attr("placeholder", "Please enter a brief description of your issue");
+    //$("#request_description_hint").replaceWith("<div class='form-field' style='margin-top:5px'><p>Please enter the details of your request. We will respond accordingly to our <a href=\"https://www.couchbase.com/support-policy/enterprise-software\" target=\"_blank\" rel=\"noopener noreferrer\">SLA Policy</a>.</p></div>");
+    //$("#request_description_hint").replaceWith("<div class='form-field' style='margin-top:5px'><p>*Please use the Attachments field at the bottom of this form to include any image files you would like to share</p>");
+    $("#request_description_hint").replaceWith("");
+
+    // This will add a description to the Couchbase Server field
+    $("." + CUSTOM_FIELD.SERVER).append("<div id='" + CUSTOM_FIELD_ID.SERVER_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our <a href=\"https://www.couchbase.com/support-policy/EOL\" target=\"_blank\" rel=\"noopener noreferrer\">End Of Life (EOL) Policy</a></p></div>");
+
+    // This will add a description to the Couchbase Client field
+    $("." + CUSTOM_FIELD.CLIENT).append("<div id='" + CUSTOM_FIELD_ID.CLIENT_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Provide the complete version (major.minor.maintenance) in the details section and send us the <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#client_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and server SDK logs</a>.</p></div>");
+
+    // This will add a description to the Couchbase Mobile field
+    $("." + CUSTOM_FIELD.SYNC_GATEWAY).append("<div id='" + CUSTOM_FIELD_ID.SYNC_GATEWAY_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review how to send us <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and mobile logs</a>.</p></div>");
+
+    // This will add a description to the Couchbase Mobile field
+    $("." + CUSTOM_FIELD.LITE).append("<div id='" + CUSTOM_FIELD_ID.LITE_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review how to send us <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and mobile logs</a>.</p></div>");
+
+    // This will add a description to the Couchbase Server field //NEW
+    $("." + CUSTOM_FIELD.EDGE).append("<div id='" + CUSTOM_FIELD_ID.EDGE_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our <a href=\"https://www.couchbase.com/support-policy/EOL\" target=\"_blank\" rel=\"noopener noreferrer\">End Of Life (EOL) Policy</a></p></div>");
+
+    // This will add a description to the Couchbase Autonomous Operator field
+    $("." + CUSTOM_FIELD.OPERATOR).append("<div id='" + CUSTOM_FIELD_ID.OPERATOR_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review how to send us <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#server_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and operator logs</a>.</p></div>");
+
+    // This will add a description to the Couchbase Server Connector field
+    $("." + CUSTOM_FIELD.CONNECTOR).append("<div id='" + CUSTOM_FIELD_ID.CONNECTOR_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Provide the complete version (major.minor.maintenance) in the details section and send us the <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#server_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and connector logs</a>.</p></div>");
+
+    // This will add a description to the Current Impact field
+    $("#" + CUSTOM_FIELD.IMPACT + "_label").remove()
+    $("#" + CUSTOM_FIELD.IMPACT).before("<label id='" + CUSTOM_FIELD.IMPACT + "_label' for='" + CUSTOM_FIELD.IMPACT + "'>Please select your Environment followed by Current Impact</label>");
+    $("." + CUSTOM_FIELD.IMPACT).append("<div id='" + CUSTOM_FIELD_ID.IMPACT_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our KB article for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">priority definitions</a>.</p></div>");
+  
+    // This will add a description to the Has SDK field
+    if (ticketForm == FORM.SERVER) {
+      $("#" + CUSTOM_FIELD.HAS_SDK + "_label").remove()
+    	$("#" + CUSTOM_FIELD.HAS_SDK).before("<label id='request_custom_fields_" + CUSTOM_FIELD.HAS_SDK + "' for='request_custom_fields_" + CUSTOM_FIELD.HAS_SDK +"'>Is this SDK or Connector related?</label>");
+    } else if (ticketForm == FORM.MOBILE || ticketForm == FORM.EDGE) {
+      $("#" + CUSTOM_FIELD.HAS_SDK + "_label").remove()
+      $("#" + CUSTOM_FIELD.HAS_SDK).before("<label id='request_custom_fields_" + CUSTOM_FIELD.HAS_SDK + "' for='request_custom_fields_" + CUSTOM_FIELD.HAS_SDK +"'>Is this Couchbase Lite related?</label>");
+    }
+
+  // This will add a description to the Business Impact field
+    $("#" + CUSTOM_FIELD.CRITICAL + "_label").remove()
+    $("#" + CUSTOM_FIELD.CRITICAL).before("<label id='request_custom_fields_" + CUSTOM_FIELD.CRITICAL + "' for='request_custom_fields_" + CUSTOM_FIELD.CRITICAL +"'>Briefly describe your business impact (max 2 lines)</label>");
+
+    // This will add and hide an EOL version request under the description to customers who selected EOL version
+    //$("#request_description_label").append("<div id='" + CUSTOM_FIELD_ID.EOL + "' style='display:none' class='end_of_life'>Please, share with us in the description below the complete End of Life version (major.minor.maintenance). This will help Support expedite assessment on the next steps.</div>");
+  
+    // This will add a description to the market place field
+    $("#" + CUSTOM_FIELD.MARKET_PLACE + "_label").remove()
+    $("#" + CUSTOM_FIELD.MARKET_PLACE).after("<label id='" + CUSTOM_FIELD_ID.MARKET_PLACE_MSG + "' class='form-field' style='padding-left: 0px; display: inline-block;'>Is this ticket for a Private Marketplace account?<span class='optional'>(optional)</span></label>");
+
+    // This will add a description to the Logs Understanding field
+    $("#" + CUSTOM_FIELD.LOGS_AGREEMENT+ "_label").remove()
+    //$("#" + "CUSTOM_FIELD.LOGS_AGREEMENT").before("<label id='" + CUSTOM_FIELD.LOGS_AGREEMENT + "_label' for='" + CUSTOM_FIELD.LOGS_AGREEMENT + "'>Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.</label>");
+    $("#" + CUSTOM_FIELD.LOGS_AGREEMENT).after("<div id='" + CUSTOM_FIELD_ID.LOGS_CHECK_MSG + "' class='form-field' style='padding-left: 10px;display: inline-block;'><p style='color: black; font-weight: bold;'>I understand and will <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#server_logs\" target=\"_blank\" rel=\"noopener noreferrer\">collect and share the logs with Support</a> shortly after ticket is created.</p></div>");
+  
+    var value = "";
+    // Remove elements from dropbox fields not needed
+    var target = document.querySelectorAll(".nesty-panel");
+    for (var i = 0; i < target.length; i++) {
+      create(target[i]);
+    }
+
+    // FORM ACTIONS
+    // Set form subject based on dropdown
+    $("#" + CUSTOM_FIELD.SERVER).change(function() {
+      // server (works)
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.SERVER + " .nesty-input").text();
+
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.SERVER_MSG, SERVER_END_OF_LIFE, SERVER_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.SERVER) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.SERVER).show() : $('#' + CUSTOM_FIELD_ID.SERVER).hide());
+    });
+
+    $("#" + CUSTOM_FIELD.CLIENT).change(function() {
+      // client sdk
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.CLIENT + " .nesty-input").text();
+      //console.log(value);
+
+      // Check for Couchbase Server SDKs
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.CLIENT_MSG, CLIENT_END_OF_LIFE, CLIENT_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.CLIENT) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.CLIENT).show() : $('#' + CUSTOM_FIELD_ID.CLIENT).hide());
+  
+      // Check for Couchbase Server Connectors
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.CLIENT_MSG, CONNECTOR_END_OF_LIFE, CONNECTOR_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.CONNECTOR) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.CLIENT).show() : $('#' + CUSTOM_FIELD_ID.CLIENT).hide());
+    });
+
+    $("#" + CUSTOM_FIELD.SYNC_GATEWAY).change(function() {
+      // sync gateway
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.SYNC_GATEWAY + " .nesty-input").text();
+
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.SYNC_GATEWAY_MSG, SYNC_GATEWAY_END_OF_LIFE, SYNC_GATEWAY_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.SYNC_GATEWAY) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.SYNC_GATEWAY).show() : $('#' + CUSTOM_FIELD_ID.SYNC_GATEWAY).hide());
+    });
+
+    $("#" + CUSTOM_FIELD.LITE).change(function() {
+      // lite
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.LITE + " .nesty-input").text();
+
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.LITE_MSG, LITE_END_OF_LIFE, LITE_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.LITE) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.LITE).show() : $('#' + CUSTOM_FIELD_ID.LITE).hide());
+    });
+  
+    $("#" + CUSTOM_FIELD.EDGE).change(function() { //NEW
+      // edge server
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.EDGE + " .nesty-input").text();
+
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.EDGE_MSG, EDGE_END_OF_LIFE, EDGE_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.EDGE) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.EDGE).show() : $('#' + CUSTOM_FIELD_ID.EDGE).hide());
+    });
+
+    $("#" + CUSTOM_FIELD.OPERATOR).change(function() {
+      // autonomous operator
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.OPERATOR + " .nesty-input").text();
+
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.OPERATOR_MSG, OPERATOR_END_OF_LIFE, OPERATOR_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.OPERATOR) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.OPERATOR).show() : $('#' + CUSTOM_FIELD_ID.OPERATOR).hide());
+    });
+
+    $("#" + CUSTOM_FIELD.CONNECTOR).change(function() {
+      //connector
+      //console.log(this.value);
+      value = $("." + CUSTOM_FIELD.CONNECTOR + " .nesty-input").text();
+
+      checkSupportPolicyVersion("#" + CUSTOM_FIELD_ID.CONNECTOR_MSG, CONNECTOR_END_OF_LIFE, CONNECTOR_END_OF_FULL_MAINTENANCE, value);
+      (($.inArray(this.value, END_OF_LIFE.CONNECTORS) > -1) || this.value == "" ? $('#' + CUSTOM_FIELD_ID.CONNECTORS).show() : $('#' + CUSTOM_FIELD_ID.CONNECTORS).hide());
+    });
+
+    // TODO: Uncomment the line below once ready to production
+    $("#" + CUSTOM_FIELD.IMPACT).val($("#" + CUSTOM_FIELD.IMPACT + " option:first").val()); //Select first element
+
+    // This will change the spacing inside the Description field
+    //$("#request_description_ifr").contents().find(".mce-content-body").css({'line-height': '8px'});
+    //Adjust height for dropbox elements
+    $(".nesty-panel").css({
+      'max-height': '300px'
+    });
+
+    // This will change the label of the CC field
+    $('label[for=request_collaborators_]').html("Additional contacts you would like to include:");
+
+    $("#" + CUSTOM_FIELD.CRITICAL).css({
+      'max-height': '65px',
+      'min-height': '65px'
+    });
+    $("#" + CUSTOM_FIELD.CRITICAL).attr({
+      'rows': '2',
+      'wrap': 'hard',
+      maxlength: '256'
+    });
+
+    $("#" + CUSTOM_FIELD.CRITICAL).on('keypress', function(event) {
+      var textarea = $(this),
+        numberOfLines = (textarea.val().match(/\n/g) || []).length + 1,
+        maxRows = parseInt(textarea.attr('rows'));
+
+      if (event.which === 13 && numberOfLines === maxRows) {
+        return false;
+      }
+    });
+
+    const EDITOR_TIMEOUT = 4000;
+    setTimeout(
+      function() {
+        // A reference to the editor editable element in the DOM.
+        const domEditableElement = document.querySelector('.ck-editor__editable');
+
+        // Get the editor instance from the editable element.
+        editorInstance = domEditableElement.ckeditorInstance;
+        /* editorInstance.theme.container.views.dropzone.remove();
+        editorInstance.settings.paste_data_images = false; */
+
+        // Use the editor instance API.
+        //editorInstance.setData( '<p>Hello world!<p>' );
+
+        var descriptionField = $(".ck .ck-content");
+        // console.log(descriptionField);
+        descriptionField.on("keyup", function(e) {
+          //var string = (((descriptionField.getContent()).replace(/(&nbsp;)*/g, "")).replace(/(<p>)*/g, "")).replace(/<(\/)?p[^>]*>/g, ""); //({format : 'raw'});
+          //var string = (this.getContent({ format: "text" })).replace(/\r?\n|\r/g, "");
+          var string = this.textContent.replace(/\r?\n|\r/g, "");
+
+          const prereqsValidSet = new Set();
+          const prereqSet = new Set();
+          prereqSet.add("#" + CUSTOM_FIELD_ID.DESCRIPTION); 
+          prereqSet.add("#" + CUSTOM_FIELD_ID.RECREATE);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.OS);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.BROWSER);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.SERVER);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.CLIENT);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.SYNC_GATEWAY);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.LITE);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.OPERATOR);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.PLATFORM);
+          prereqSet.add("#" + CUSTOM_FIELD_ID.CONNECTOR);
+
+          var prereqArray = [
+            ["^.*(?:problem|problems|issue|issues|bug|description|error|errors)\\s*(?:occur when|with|occurs when|happen when|happens when|is|are):?\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.DESCRIPTION],
+            ["^.*(?:problem|problems|issue|issues|bug|error|errors|description)\\s*(?:we|I)?\\s*(?:am|are)?\\s*(?:see|notice|experience|having|experiencing|experiencing|seeing)\\s*(?:is|are):?\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.DESCRIPTION],
+            ["^.*(?:problem|problems|issue|issues|bug|error|errors|description)\\s*(?:we|I)?\\s*(?:have)?\\s*(?:seem|noticed|experienced)?\\s*(?:is|are):?\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.DESCRIPTION],
+            ["^.*(?:recreate|recreation|steps|step|scenario|scenarios)\\s*(?:is|are):?\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.RECREATE],
+            ["^.*(?:Operating System|OS)\\s*(?:is|are)\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.OS],
+            ["^.*(Amazon Linux|CentOS|Debian|Oracle Linux|Red Hat|SUSE|Ubuntu|Windows|macOS).*$", "#" + CUSTOM_FIELD_ID.OS],
+            ["^.*(?:browser)\\s*(?:is|are)\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.BROWSER],
+            ["^.*(Safari|Chrome|Edge|Firefox).*$", "#" + CUSTOM_FIELD_ID.BROWSER],
+            ["^.*(?:Couchbase)\\s*(?:server|servers)?\\s*(?:version|versions|v)?\\s*(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.SERVER],
+            ["^.*(?:Couchbase)\\s*(?:server|servers)?\\s*(?:updated)?\\s*(?:to)?\\s*(?:version|versions|v)?(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.SERVER],
+            ["^.*(?:client|sdk|clients|sdks)\\s*(?:version|versions|v)?\\s*(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.CLIENT],
+            ["^.*(?:sync gateway|mobile|sync gateways|mobiles)\\s*(?:version|versions|v)?\\s*(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.SYNC_GATEWAY],
+            ["^.*(?:cb lite|lite|mobile sdk)\\s*(?:version|versions|v)?\\s*(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.LITE],
+            ["^.*(?:autonomous operator|operator|ao|operators)\\s*(?:version|versions|v)?\\s*(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.OPERATOR],
+            ["^.*(?:platform|virtualization|container)\\s*(?:platform)?\\s*(?:is|are)\\s*(\\w).*$", "#" + CUSTOM_FIELD_ID.PLATFORM],
+            ["^.*(?:Docker|KVM|Kernel-based Virtual Machine|Virtual Machine|Kubernetes|OpenShift|VMware).*$", "#" + CUSTOM_FIELD_ID.PLATFORM],
+            ["^.*(?:elasticsearch|elastic search|kafka|spark)\\s*(?:connector|connectors)?\\s*(?:version|versions|v)?\\s*(?:is|are)?\\s*(\\d+\\.)?(\\d+\\.)?(\\*|\\d+).*$", "#" + CUSTOM_FIELD_ID.CONNECTOR]
+          ];
+
+          // loop the outer array
+          for (let i = 0; i < prereqArray.length; i++) {
+            var regExp = new RegExp(prereqArray[i][0], "i");
+            var result = string.match(regExp);
+            if (result && result.length > 0) {
+              prereqsValidSet.add(prereqArray[i][1]);
+            }
+            $(prereqArray[i][1]).removeClass('valid');
+            /* loop the inner array
+            for (let j = 0; j < innerArrayLength; j++) {
+              console.log('[' + i + ',' + j + '] = ' + activities[i][j]);
+            } */
+          }
+          for (let item of intersection(prereqSet, prereqsValidSet)) $(item).addClass('valid');
+        });
+      }, EDITOR_TIMEOUT);
+
+    // Create if statement for each of your forms
+    if (ticketForm != FORM.SUGGESTION && ticketForm != FORM.QUESTION) {
+      /* if (forms.indexOf(ticketForm) > -1) {
+         //Add extra upload field description
+         $('<p></p>').html('my name is xyz').css('margin-left', '768px').insertAfter($('#name'));*/
+
+      /* var prereqs;
+      if (cb_server_version == "serverver__end_of_life") {
+          prereqs += "<li id='pr_cb_server'>Couchbase Server and respective versions</li>";
+      }
+           if (cb_server_version == "serverver__end_of_life") {
+          prereqs += "<li id='pr_cb_server'>Couchbase Server and respective versions</li>";
+      }*/
+
+      $("#request_description_label").first().after(
+        "<div class='text request_description' id='desc-pre-reqs' style='margin-left:730px; position:absolute;background-color: #FFFFFF;'>" + //color: #5a6d7c; font-size: 13px;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;'>
+        "<label>Whenever applicable please include the following in the details section:</label>" +
+        "<ul id='pre-reqs-list'>" +
+        "<!--<li class='fa fa-check' id='pr_business_impact'>Busines Impact</li>-->" +
+        "<li id='" + CUSTOM_FIELD_ID.DESCRIPTION + "'>Description of your request</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.RECREATE + "'>Recreate steps</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.START_TIME + "'>Approximate start time of the issue (along with timezone)</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.NEW_CHANGES + "'>Are there any changes made to the cluster/application?</li>" +
+        /* //"<li id='" + CUSTOM_FIELD_ID.OS + "'>Operating System and version</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.BROWSER + "'>Web browser and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.SERVER + "'>Couchbase Server and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.CLIENT + "'>Couchbase Client SDKs and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.SYNC_GATEWAY + "'>Couchbase Sync Gateway and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.LITE + "'>Couchbase Lite SDKs and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.OPERATOR + "'>Couchbase Autonomous Operator and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.PLATFORM + "'>Virtualization and Container Platform and versions</li>" +
+        //"<li id='" + CUSTOM_FIELD_ID.CONNECTOR + "'>Couchbase Server Connector and versions</li>" + */
+        "</ul>" +
+        "<label style='margin-top: 20px'>If not yet specified, the following items can be helpful for the specific issue you are raising:</label>" +
+        "<ul id='pre-reqs-list'>" +
+        "<!--<li class='fa fa-check' id='pr_business_impact'>Busines Impact</li>-->" +
+        //"<li id='" + CUSTOM_FIELD_ID.BROWSER + "'>Web browser and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.SERVER + "'>Couchbase Server and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.CLIENT + "'>Couchbase Server SDKs and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.SYNC_GATEWAY + "'>Couchbase Sync Gateway and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.LITE + "'>Couchbase Lite SDKs and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.OPERATOR + "'>Couchbase Autonomous Operator and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.PLATFORM + "'>Virtualization and Container Platform and versions</li>" +
+        "<li id='" + CUSTOM_FIELD_ID.CONNECTOR + "'>Couchbase Connector and versions</li>" +
+        "</ul>" +
+        "</div>"
+      );
+    };
+  });
+}); 
 </script>
