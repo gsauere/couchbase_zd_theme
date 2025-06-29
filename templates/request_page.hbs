@@ -21,7 +21,7 @@
             <button id="escalation_action" type="button" class="tkt-action-collapsible">Escalate your ticket</button>
             <div class="tkt-action-content">
               <p>Please provide a reason for your escalation and Couchbase will prioritize it accordingly. The more details you provide the better it will help us.</p>
-              <form id="escalate_form">
+              <form id="escalate_form" class="hbs-form">
                 <label for="fname">What is your reason for escalation? (min. 50 characters)</label><br>
                 <textarea id="escalate_reason" name="reason" cols="150" rows="2" minlength="50" maxlength="1000" required></textarea><br>
                 <div class="escalation-disclaimer ">*Couchbase reserves the right to decide if a call or escalation is warrant based on your justification. Live troubleshooting sessions often delays resolution time, and if one warrants Couchbase Team will initiate a call once we have adequate logs.</div>
