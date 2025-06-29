@@ -1,5 +1,6 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<!--script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh" crossorigin="anonymous"></script-->
+
+<!-- NEW -->
 <script
   src="https://code.jquery.com/jquery-3.7.1.min.js"
   integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
@@ -10,13 +11,6 @@
   crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
-<!--script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.4.2/tinymce.min.js"></script-->
-<!--script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script-->
-
-
-<!-- Make the translated search clear button label available for use in JS -->
-<!-- See buildClearSearchButton() in script.js -->
-<script type="text/javascript">window.searchClearButtonLabelLocalized = "{{t 'search_clear'}}";</script>
 
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -32,6 +26,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 function OptanonWrapper() { }
 </script>
 <!-- OneTrust Cookies Consent Notice end for couchbase.com -->
+<!-- END NEW -->
+
+<!-- Make the translated search clear button label available for use in JS -->
+<!-- See buildClearSearchButton() in script.js -->
+<script type="text/javascript">window.searchClearButtonLabelLocalized = "{{t 'search_clear'}}";</script>
 
 <script type="text/javascript">
   // Load ES module polyfill only for browsers that don't support ES modules
@@ -58,13 +57,3 @@ function OptanonWrapper() { }
 
   renderFlashNotifications(settings, closeLabel);
 </script>
-
-<!--script>
-tinymce.init({
-  selector: "#request_description",
-  placeholder: "Ask a question or post an update...",
-  menubar: false,
-  skin: "outside",
-  toolbar_location: "bottom",
-});
-</script-->

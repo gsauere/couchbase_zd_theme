@@ -388,7 +388,8 @@ ul {
   cursor: default;
 }
 
-.button-large, .hbs-form input[type=submit] {
+/* UPDATED */
+.button-large, .hbs-form input[type=submit], #escalate_form input[type="submit"] {
   cursor: pointer;
   background-color: $brand_color;
   border: 0;
@@ -432,7 +433,7 @@ ul {
   background-color: darken($background_color, 3%);
 }
 /* NEW */
-.new_request, input[type="submit"] {
+#new-request-form, #new-request-form button  {
   width: 100%;
 }
 
@@ -4872,36 +4873,6 @@ zd-summary-block {
     color: #b36cdb;
 }
 
-#pre-reqs-list {
-  color: #000000;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  font-size: 13px;
-}
-
-/* Local styles for Couchbase page */
-#pre-reqs-list li::before {
-  /*content: "\02705";*/ /*GREEN WHITE HEAVY CHECK MARK*/
-  content: "\02714"; /*HEAVY CHECK MARK*/
-  /*content: "\274E";*/ /*NEGATIVE SQUARED GREEN CROSS MARK */ 
-  /*=>content: "\274C";*/ /* Cross mark*/ 
-  /*content: "\2718"; HEAVY BALLOT X (bold cross) */
-  /*content: "\2B55"; Heavy large red circle*/
-  /*=>color : red;*/
-  color : black;
-  margin: 0 10px; /*margin: 0 4px;*/
-}
-
-#pre-reqs-list li.valid::before {
-  /*content: "\02705";*/ /*GREEN WHITE HEAVY CHECK MARK*/
-  content: "\02714"; /*HEAVY CHECK MARK*/
-  /*content: "\274E";*/ /*NEGATIVE SQUARED GREEN CROSS MARK */ 
-  /*content: "\274C";*/ /* Cross mark*/ 
-  /*content: "\2718"; HEAVY BALLOT X (bold cross) */
-  /*content: "\2B55"; Heavy large red circle*/
-  color : green;
-  margin: 0 10px; /*margin: 0 4px;*/
-}
-
 .form-field a {
     color: #1F73B7;
     text-decoration: none;
@@ -4991,6 +4962,12 @@ font-style: normal;
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
+}
+
+.escalation-disclaimer {
+  font-weight: bold;
+  color: red;
+  padding: 5px 0;
 }
 
 $assets-all-css

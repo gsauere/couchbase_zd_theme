@@ -656,27 +656,29 @@
     ) {
       notificationElm.previousElementSibling.focus();
     }
+
+    const checkCapellaEntitlementOnly = () => {
+      const orgs = HelpCenter.user.organizations;
+      for (var c in orgs) {
+        if (orgs[c].tags.includes("entitlement__capella") && !(orgs[c].tags.includes("entitlement_override") || orgs[c].tags.includes("entitlement__server") || orgs[c].tags.includes("entitlement__mobile") || orgs[c].tags.includes("entitlement__edge"))) {
+          return true;
+        }
+      }
+      return false;
+    }
   });
   
   $( document ).ready(function() {
-    //const EDITOR_FIELD_ID = {DESC_EDITOR:"request_description", DESC_EDITOR_BODY:"request_description_mimetype", DESC_EDITOR_BODY2:"request_description_ifr", COMMENT_EDITOR:"request_comment_body", COMMENT_EDITOR_BODY:"request_comment_body_ifr"}
+    const checkCapellaEntitlementOnly = () => {
+      const orgs = HelpCenter.user.organizations;
+      for (var c in orgs) {
+        if (orgs[c].tags.includes("entitlement__capella") && !(orgs[c].tags.includes("entitlement_override") || orgs[c].tags.includes("entitlement__server") || orgs[c].tags.includes("entitlement__mobile") || orgs[c].tags.includes("entitlement__edge"))) {
+          return true;
+        }
+      }
+      return false;
+    }
 
-    //const FORM = {SERVER:"Couchbase Server Issue", CLIENT:"Couchbase Server SDK Issue", MOBILE:"Couchbase Mobile Issue", OPERATOR:"Couchbase Autonomous Operator Issue", CONNECTOR:"Couchbase Connector Issue", QUESTION:"General Question", SUGGESTION:"Product Suggestion"}
-      
-    //const FORM_ID = {SERVER:"360000545232", CLIENT:"1260811054369", MOBILE:"1900000174384", OPERATOR:"1260811054329", CONNECTOR:"1260811116990", QUESTION:"1260811052249", SUGGESTION:"1900000171804"}
-
-    //Store the ticket form ID text
-    //const ticketForm = $(".request_ticket_form_id a").text() //location.search.split("ticket_form_id=")[1];
-    //if (ticketForm == null) {
-    //     ticketForm = location.search.split("ticket_form_id=")[1];
-    //}
-      
-    //Verify if we are in the form to submit Ticket
-    //const isSubmitTicketForm = $("#request_subject").length
-    //const isSubmitTicketForm = $("#" + EDITOR_FIELD_ID.DESC_EDITOR).length
-    //const isCommentTicketForm = $("#" + EDITOR_FIELD_ID.COMMENT_EDITOR).length
-    //console.log("Is Submit Ticket Form? " + isSubmitTicketForm)
-    //console.log(isCommentTicketForm)
     var isValid = false;
     if (HelpCenter && HelpCenter.user) {
       var role =  HelpCenter.user.role;
@@ -698,6 +700,12 @@
           isValid = true;
         }
       }
+    }
+sc
+    if (checkCapellaEntitlementOnly()) {
+      // Check organization and hide opening a ticket for Capella
+      $("#contact_us :first-child").attr("href", "https://cloud.couchbase.com/");
+      $("#mobile_create_ticket :first-child").attr("href", "https://cloud.couchbase.com/");
     }
   });
 

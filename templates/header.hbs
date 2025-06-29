@@ -19,7 +19,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <nav class="user-nav" id="user-nav" aria-label="{{t 'user_navigation'}}">
       <ul class="user-nav-list">
         <li>{{link 'community'}}</li>
-        <li>{{link 'new_request' class='submit-a-request'}}</li>
+        <!--li>{{link 'new_request' class='submit-a-request'}}</li-->
         {{#unless signed_in}}
           <li>
             {{#link "sign_in" class="sign-in"}}
@@ -39,7 +39,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="https://www.couchbase.com/blog/" target="_blank" rel="noopener noreferrer">Blog</a>
         <a href="https://www.couchbase.com/forums/" target="_blank" rel="noopener noreferrer">Forum</a>
         {{!--<a style="text-decoration:none" href="https://www.couchbase.com/contact" target="_blank" rel="noopener noreferrer">CONTACT US</a>--}}
-        {{#link 'new_request' class='submit-a-request'}}Contact{{/link}}
+        <span id="contact_us">{{#link 'new_request' class='submit-a-request'}}Contact{{/link}}</span>
  				{{!--{{#link 'new_request' class='submit-a-request' ticket_form_id='360001347252'}}CONTACT US{{/link}}--}}
     </nav>
 
@@ -101,7 +101,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li class="nav-divider"></li>
         {{/if}}
         <li class="item">{{link 'community'}}</li>
-        <li class="item">{{link 'new_request' class='submit-a-request'}}</li>
+        <li id="mobile_create_ticket" class="item">{{link 'new_request' class='submit-a-request'}}</li>
         <li class="nav-divider"></li>
         {{#if signed_in}}
           <li class="item">

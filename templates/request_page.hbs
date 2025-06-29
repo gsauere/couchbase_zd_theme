@@ -24,7 +24,7 @@
               <form id="escalate_form">
                 <label for="fname">What is your reason for escalation? (min. 50 characters)</label><br>
                 <textarea id="escalate_reason" name="reason" cols="150" rows="2" minlength="50" maxlength="1000" required></textarea><br>
-                <b style="color:red">*Couchbase reserves the right to decide if a call or escalation is warrant based on your justification. Live troubleshooting sessions often delays resolution time, and if one warrants Couchbase Team will initiate a call once we have adequate logs.</b>
+                <div class="escalation-disclaimer ">*Couchbase reserves the right to decide if a call or escalation is warrant based on your justification. Live troubleshooting sessions often delays resolution time, and if one warrants Couchbase Team will initiate a call once we have adequate logs.</div>
                 <input type="submit" value="Escalate"><br>
                 <!--button type="button" id="escalate_button">Escalate</button-->
               </form>
@@ -345,142 +345,126 @@
 </div>
 
 
-<script type="text/javascript">
-    var editorInstance = null;    
-    var id = null;
-  
-    var coll = $(".tkt-action-collapsible")
-    var i;
-    for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("tkt-action-active");
-        var content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
-          content.style.display = "block";
-        }
-      });
-    }
-  
-    $('#escalate_form').on('submit', function(e) {
-      e.preventDefault();                           
-      var business_impact = $('#escalate_reason')
-
-      if (id && business_impact) {
-        business_impact = business_impact.val().trim()
-        if (business_impact.length < 25) {
-          alert("The escalation reason doesn't meet the 50-character minimum.")                              
-        } else {
-           jQuery.ajax({url: "/api/v2/users/me.json",
-             type: "GET", 
-             contentType: 'application/json', 
-             success: function(json) {
-               console.log(json);
-               var csrftoken = json['user']['authenticity_token'];
-               //alert("Subdomain "+subdomain+" had "+json['total']+' incidents in the last 30 days'); 
-
-               jQuery.ajax({url: "/api/v2/requests/" + id + ".json",
-                 type: "PUT", 
-                 contentType: 'application/json', 
-                 headers: { "X-CSRF-Token": csrftoken },
-                 data: JSON.stringify({
-                      request: { comment: { html_body: "This is an automated message triggered by an escalation action (code:#escalate)<br><b>Reason for your escalation:</b> " + business_impact + "<br>---<br>Dear " + HelpCenter.user.name + ",<br>A Couchbase Support Engineer is being contacted and will be updating the ticket shortly.<br>" } }
-                 }),
-                 success: function(json) {
-                   $("#customer_action_section").html("<b style='color:green'>Your ticket has been escalated! The Support Team will be reaching out to you shortly.</b>");
-                   console.log(json)
-                 }
-               });
-             }
-           });
-
-           /*var data = editorInstance.getData();
-           if (data.indexOf('#escalate') < 0) {
-             editorInstance.setData( "#escalate, " + business_impact + data);
-           }*/
-        }
-      }
-    });
-
+<script type="text/javascript">   
     $( function() {
       const ENABLE_ACTION_SECTION = true;
-      const EDITOR_TIMEOUT = 1000;
-      var COMMENT_ON_TOP = false;
-      // This will change the spacing inside the Description field
-      // $("#request_comment_body_ifr").contents().find(".mce-content-body").css({'line-height': '8px'});
+
+      // Cache jQuery selector and create a reusable function for processing request details
+      const $requestDetails = $(".request-details dt");
+      const processRequestDetail = (label, processor) => {
+        let result = null;
+        $requestDetails.filter(function() {
+          return $.trim($(this).text()) === label;
+        }).each((ind, obj) => {
+          const $next = $(obj).next();
+          result = processor($next, obj);
+        });
+        return result;
+      };
+
+      const getTicketId = () => {
+        // Process Ticket Id field
+        return processRequestDetail("Id", ($next, obj) => {
+          return $.trim($next.text()).substring(1);
+        });
+      };
+
+      const canEscalate = (status, ent, isManager) => {
+        return (ENABLE_ACTION_SECTION && status !== "solved" && (ent.includes("gold") || ent.includes("platinum") || isManager));
+      };
+
+      $('#escalate_form').on('submit', function(e) {
+        e.preventDefault();                           
+        var business_impact = $('#escalate_reason')
+        const id = getTicketId();
+
+        if (id && business_impact) {
+          business_impact = business_impact.val().trim()
+          if (business_impact.length < 25) {
+            alert("The escalation reason doesn't meet the 50-character minimum.")                              
+          } else {
+            jQuery.ajax({url: "/api/v2/users/me.json",
+              type: "GET", 
+              contentType: 'application/json', 
+              success: function(json) {
+                //console.log(json);
+                var csrftoken = json['user']['authenticity_token'];
+                //alert("Subdomain "+subdomain+" had "+json['total']+' incidents in the last 30 days'); 
+
+                jQuery.ajax({url: "/api/v2/requests/" + id + ".json",
+                  type: "PUT", 
+                  contentType: 'application/json', 
+                  headers: { "X-CSRF-Token": csrftoken },
+                  data: JSON.stringify({
+                        request: { comment: { html_body: "This is an automated message triggered by an escalation action (code:#escalate)<br><b>Reason for your escalation:</b> " + business_impact + "<br>---<br>Dear " + HelpCenter.user.name + ",<br>A Couchbase Support Engineer is being contacted and will be updating the ticket shortly.<br>" } }
+                  }),
+                  success: function(json) {
+                    $("#customer_action_section").html("<b style='color:green'>Your ticket has been escalated! The Support Team will be reaching out to you shortly.</b>");
+                    //console.log(json)
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+     
+    $(document).ready(function() {
+      const isManager = HelpCenter.user.role === "manager";
+    
+      // Toggle the collapsible section
+      $(".tkt-action-collapsible").on("click", function() {
+        $(this).toggleClass("tkt-action-active");
+        $(this).next().slideToggle();
+      });
   
       // This will add valid information to the Attachment field and description
-      // $('div#upload-dropzone').prev().text('Attachments (maximum attachment size 50MB)');
-      // $("<div class='extra-upload-info'><p>Review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>").insertAfter("#upload-dropzone");
+      $('div#upload-dropzone').after("<div class='form-field'><p>Maximum attachment size is 50MB. Please, review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>");
 
-      $("<div class='form-field'><p>Maximum attachment size is 50MB. Please, review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>").insertAfter("#upload-dropzone");	
-  
-  			var status = "", ent = "", priority = "";
-        $(".request-details dt").filter(function() {
-  			    //console.log("item: " + $.trim($(this).text()))
-        	  return $.trim($(this).text()) === "Id";
-          } //have to trim whitespace!
-    	  ).each( function( ind, obj ) {
-          id = $.trim($( obj ).next().text()).substring(1);
-          //console.log("data: " + obj)
-    		});
-        $(".request-details dt").filter(function() {
-  			    //console.log("item: " + $.trim($(this).text()))
-        	  return $.trim($(this).text()) === "Escalated";
-          } //have to trim whitespace!
-    	  ).each( function( ind, obj ) {
-      		esc = $.trim($( obj ).next().text().toLowerCase());
-          //console.log("data: " + esc)
-          if (esc === "—") {
-            $( obj ).next().text("No");
-          } else {
-            $( obj ).next().text("Yes");
-          }
-    		});
-        $(".request-details dt").filter(function() {
-  			    //console.log("item: " + $.trim($(this).text()))
-        	  return $.trim($(this).text()) === "Last Escalated";
-          } //have to trim whitespace!
-    	  ).each( function( ind, obj ) {
-      		last_escalatedStr = $.trim($( obj ).next().text().toLowerCase());
+        // Process Escalated field
+        const escalated = processRequestDetail("Escalated", ($next, obj) => {
+          const esc = $.trim($next.text().toLowerCase());
+          $next.text(esc === "—" ? "No" : "Yes");
+          return esc === "—" ? "No" : "Yes";
+        });
+
+        // Process Last Escalated field
+        const lastEscalated = processRequestDetail("Last Escalated", ($next, obj) => {
+          const lastEscalatedStr = $.trim($next.text().toLowerCase());
           try {
-            const last_escalated = new Date(Date.parse(last_escalatedStr)).toJSON().slice(0, 10)
+            const lastEscalated = new Date(Date.parse(lastEscalatedStr)).toJSON().slice(0, 10);
             const today = new Date().toJSON().slice(0, 10);
-            if (today === last_escalated) {
+            if (today === lastEscalated) {
               $("#customer_action_section").html("<b style='color:blue'>This ticket has already been escalated today! Support Team was notified and is engaged.<br>Please update the ticket if you have more details to share or call our <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#escalation\" target=\"_blank\" rel=\"noopener noreferrer\">Hotline</a> for anything else urgent.</b>");
             }
+            return lastEscalated;
           } catch {
-  					//swallow
+            // Swallow parsing errors
+            return null;
           }
-    		});
-        $(".request-details dt").filter(function() {
-        	  return $.trim($(this).text()) === "Status";
-          } //have to trim whitespace!
-    	  ).each( function( ind, obj ) {
-      		status = $.trim($( obj ).next().text().toLowerCase());
-    		});
-        $(".request-details dt").filter(function() {
-        	  return $.trim($(this).text()) === "Entitlement";
-          }
-    	  ).each( function( ind, obj ) {
-      		ent = $.trim($( obj ).next().text().toLowerCase());
-          $( obj ).next().remove();
-      		  $( obj ).remove();
-    		});
-        $(".request-details dt").filter(function() {
-        	  return $.trim($(this).text()) === "Priority";
-          }
-    	  ).each( function( ind, obj ) {
-      		priority = $.trim($( obj ).next().text().toLowerCase());
-    		});
+        });
+
+        // Process Status field
+        const status = processRequestDetail("Status", ($next, obj) => {
+          return $.trim($next.text().toLowerCase());
+        });
+
+        // Process Entitlement field
+        const ent = processRequestDetail("Entitlement", ($next, obj) => {
+          const entitlement = $.trim($next.text().toLowerCase());
+          $next.remove();
+          $(obj).remove();
+          return entitlement;
+        });
+
+        // Process Priority field
+        const priority = processRequestDetail("Priority", ($next, obj) => {
+          return $.trim($next.text().toLowerCase());
+        });
         //console.log(ent + " - " + priority)
-  
-        //console.log(HelpCenter.user.role)
-        var role = HelpCenter.user.role;
-        $("#call_request_action").hide();
-        if (ENABLE_ACTION_SECTION && status !== "solved" && ((ent.indexOf("gold") >= 0 || ent.indexOf("platinum") >= 0) || role === "manager")) {
-        //if (ENABLE_ACTION_SECTION && (ent.indexOf("gold") >= 0 || ent.indexOf("platinum") >= 0 || role === "manager")) {
+
+        $("#call_request_action").remove();
+        if (canEscalate(status, ent, isManager)) {
     			$("#customer_action_section").show();
           /*if (priority == "p1") { //|| priority == "p2"
   					 //$("#call_request_action").show();
@@ -490,44 +474,6 @@
   			} else {
     		  $("#customer_action_section").hide();
         }
-  
-      setTimeout(
-        function() 
-        {
-          // A reference to the editor editable element in the DOM.
-          const domEditableElement = document.querySelector('.ck-editor__editable');
-
-          // Get the editor instance from the editable element.
-          const editorInstance = domEditableElement.ckeditorInstance;
-          /* editorInstance.theme.container.views.dropzone.remove();
-          editorInstance.settings.paste_data_images = false; */
-
-          // Use the editor instance API.
-          //editorInstance.setData( '<p>Hello world!<p>' );
-          // Append canned response to existing textarea value
-          //$('#wpas_reply').val(function (i, val) {
-          //	return val + cannedResponse;
-          //});
-
-          var descriptionField = $(".ck .ck-content");  
-  				//console.log(editor)
-          //console.log(editor.buttons)
-          //console.log(editor.theme);
-          
-          //editor.theme.container.views.dropzone.remove();
-          //editor.settings.paste_data_images = false;
-         
-          //console.log(descriptionField);
-          //descriptionField.on("keyup", function(e) {
-            //var string = (((descriptionField.getContent()).replace(/(&nbsp;)*/g, "")).replace(/(<p>)*/g, "")).replace(/<(\/)?p[^>]*>/g, ""); //({format : 'raw'});
-            //var string = (descriptionField.getContent({ format: "text" })).replace(/\r?\n|\r/g, "");
-          //  var string = this.textContent.replace(/\r?\n|\r/g, "");
-                
-            //if (string == '')
-            //  $("#" + EDITOR_FIELD_ID.COMMENT_EDITOR_BODY).contents().find(".mce-content-body").find("p").css({'margin-block': '0'})
-          //});
-  
-        }, EDITOR_TIMEOUT);
-    } 
-  );
+    });     
+  });
 </script>
