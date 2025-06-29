@@ -701,7 +701,7 @@
         }
       }
     }
-sc
+
     if (checkCapellaEntitlementOnly()) {
       // Check organization and hide opening a ticket for Capella
       $("#contact_us :first-child").attr("href", "https://cloud.couchbase.com/");
