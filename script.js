@@ -681,13 +681,25 @@
 
     const checkCapellaEntitlementOnly = () => {
       const orgs = HelpCenter.user.organizations;
-      for (var c in orgs) {
-        if (orgs[c].tags.includes("entitlement__capella") && !(orgs[c].tags.includes("entitlement_override") || orgs[c].tags.includes("entitlement__server") || orgs[c].tags.includes("entitlement__mobile") || orgs[c].tags.includes("entitlement__edge"))) {
-          return true;
+      let isCapellaEntitlementOnly = false;
+      for (const org of orgs) {
+        const tags = org.tags || [];
+        if (
+          tags.some(tag =>
+            tag.includes("entitlement_override") ||
+            tag.includes("entitlement__server") ||
+            tag.includes("entitlement__mobile") ||
+            tag.includes("entitlement__edge")
+          )
+        ) {
+          return false;
+        }
+        if (tags.includes("entitlement__capella")) {
+          isCapellaEntitlementOnly = true;
         }
       }
-      return false;
-    }
+      return isCapellaEntitlementOnly;
+    };
 
     var isValid = false;
     if (HelpCenter && HelpCenter.user) {
