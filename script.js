@@ -656,19 +656,29 @@
     ) {
       notificationElm.previousElementSibling.focus();
     }
-
-    const checkCapellaEntitlementOnly = () => {
+  });
+  
+  $( document ).ready(function() {
+    const checkOrganizationEntitlement = () => {
       const orgs = HelpCenter.user.organizations;
       for (var c in orgs) {
-        if (orgs[c].tags.includes("entitlement__capella") && !(orgs[c].tags.includes("entitlement_override") || orgs[c].tags.includes("entitlement__server") || orgs[c].tags.includes("entitlement__mobile") || orgs[c].tags.includes("entitlement__edge"))) {
+        if (orgs[c].tags.includes('entitled_customer')) {
           return true;
         }
       }
       return false;
     }
-  });
-  
-  $( document ).ready(function() {
+
+    const checkOrganizationOnHold = () => {
+      const orgs = HelpCenter.user.organizations;
+      for (var c in orgs) {
+        if (orgs[c].tags.includes('entitlement__on__hold')) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     const checkCapellaEntitlementOnly = () => {
       const orgs = HelpCenter.user.organizations;
       for (var c in orgs) {
@@ -702,7 +712,14 @@
       }
     }
 
-    if (checkCapellaEntitlementOnly()) {
+    const isOrganizationEntitled = checkOrganizationEntitlement();
+    const isOrganizationOnHold = checkOrganizationOnHold();
+    const isCapellaEntitlementOnly = checkCapellaEntitlementOnly();
+  
+    if (!isOrganizationEntitled || isOrganizationOnHold) {
+      $("#contact_us :first-child").remove();
+      $("#mobile_create_ticket").remove();
+    } else if (isCapellaEntitlementOnly) {
       // Check organization and hide opening a ticket for Capella
       $("#contact_us :first-child").attr("href", "https://cloud.couchbase.com/");
       $("#mobile_create_ticket :first-child").attr("href", "https://cloud.couchbase.com/");
