@@ -4831,7 +4831,7 @@ zd-summary-block {
 }
 
 /* NEW SECTION */
-.article-banner {
+.warning-banner {
   /* Taken from header above */
   margin: 0 auto;
   padding: 0 20px;
@@ -4849,10 +4849,11 @@ zd-summary-block {
   display: flex;
   line-height: 1.2;
   margin: 0rem 0rem 1.5rem;
-  padding: 1rem 2.25rem; 
+  padding: 1rem 2.25rem;
+  font-weight: bold;
 }
 
-.article-banner a.btn {
+.warning-banner a.btn {
   color: #fff;
   background: transparent;
   border: 1px solid #fff;
@@ -4868,7 +4869,7 @@ zd-summary-block {
   white-space: nowrap;
 }
 
-.article-banner a.btn:hover {
+.warning-banner a.btn:hover {
     background-color: #fff;
     color: #b36cdb;
 }
