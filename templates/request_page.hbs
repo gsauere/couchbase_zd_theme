@@ -347,11 +347,11 @@
 
 <script type="text/javascript">   
     $( function() {
-      const ENABLE_ACTION_SECTION = true;
+      const ENABLE_ACTION_SECTION = Object.freeze(true);
 
       // Cache jQuery selector and create a reusable function for processing request details
-      const $requestDetails = $(".request-details dt");
-      const processRequestDetail = (label, processor) => {
+      const $requestDetails = Object.freeze($(".request-details dt"));
+      const processRequestDetail = Object.freeze((label, processor) => {
         let result = null;
         $requestDetails.filter(function() {
           return $.trim($(this).text()) === label;
@@ -360,23 +360,23 @@
           result = processor($next, obj);
         });
         return result;
-      };
+      });
 
-      const getTicketId = () => {
+      const getTicketId = Object.freeze(() => {
         // Process Ticket Id field
         return processRequestDetail("Id", ($next, obj) => {
           return $.trim($next.text()).substring(1);
         });
-      };
+      });
 
-      const canEscalate = (status, ent, isManager) => {
+      const canEscalate = Object.freeze((status, ent, isManager) => {
         return (ENABLE_ACTION_SECTION && status !== "solved" && (ent.includes("gold") || ent.includes("platinum") || isManager));
-      };
+      });
 
       $('#escalate_form').on('submit', function(e) {
         e.preventDefault();                           
-        var business_impact = $('#escalate_reason')
-        const id = getTicketId();
+        const business_impact = Object.freeze($('#escalate_reason')); 
+        const id = Object.freeze(getTicketId());
 
         if (id && business_impact) {
           business_impact = business_impact.val().trim()
@@ -388,7 +388,7 @@
               contentType: 'application/json', 
               success: function(json) {
                 //console.log(json);
-                var csrftoken = json['user']['authenticity_token'];
+                const csrftoken = Object.freeze(json['user']['authenticity_token']);
                 //alert("Subdomain "+subdomain+" had "+json['total']+' incidents in the last 30 days'); 
 
                 jQuery.ajax({url: "/api/v2/requests/" + id + ".json",
@@ -410,8 +410,21 @@
       });
      
     $(document).ready(function() {
-      const isManager = HelpCenter.user.role === "manager";
-    
+      // Protect the value of isManager by using an IIFE to encapsulate the logic, similar to how eval isolates scope
+      const isManager = Object.freeze(HelpCenter.user?.role === "manager");
+      
+      /*      // Protect the value of isManager by using an IIFE to encapsulate the logic, similar to how eval isolates scope
+      // Encapsulate isManager in a closure to prevent tampering via the console
+      Object.defineProperty(window, "isManager", {
+        value: (() => {
+          const role = HelpCenter.user && HelpCenter.user.role;
+          return Object.freeze(role === "manager");
+        })(),
+        writable: false,
+        configurable: false,
+        enumerable: false
+      });*/
+      
       // Toggle the collapsible section
       $(".tkt-action-collapsible").on("click", function() {
         $(this).toggleClass("tkt-action-active");
@@ -422,14 +435,21 @@
       $('div#upload-dropzone').after("<div class='form-field'><p>Maximum attachment size is 50MB. Please, review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>");
 
         // Process Escalated field
-        const escalated = processRequestDetail("Escalated", ($next, obj) => {
-          const esc = $.trim($next.text().toLowerCase());
-          $next.text(esc === "—" ? "No" : "Yes");
-          return esc === "—" ? "No" : "Yes";
-        });
+        const escalated = (() => {
+          const value = processRequestDetail("Escalated", ($next, obj) => {
+            const esc = $.trim($next.text().toLowerCase());
+            $next.text(esc === "—" ? "No" : "Yes");
+            return esc === "—" ? "No" : "Yes";
+          });
+          return {
+            get value() {
+              return value;
+            }
+          };
+        })();
 
         // Process Last Escalated field
-        const lastEscalated = processRequestDetail("Last Escalated", ($next, obj) => {
+        const lastEscalated = Object.freeze(processRequestDetail("Last Escalated", ($next, obj) => {
           const lastEscalatedStr = $.trim($next.text().toLowerCase());
           try {
             const lastEscalated = new Date(Date.parse(lastEscalatedStr)).toJSON().slice(0, 10);
@@ -442,25 +462,25 @@
             // Swallow parsing errors
             return null;
           }
-        });
+        }));
 
         // Process Status field
-        const status = processRequestDetail("Status", ($next, obj) => {
+        const status = Object.freeze(processRequestDetail("Status", ($next, obj) => {
           return $.trim($next.text().toLowerCase());
-        });
+        }));
 
         // Process Entitlement field
-        const ent = processRequestDetail("Entitlement", ($next, obj) => {
+        const ent = Object.freeze(processRequestDetail("Entitlement", ($next, obj) => {
           const entitlement = $.trim($next.text().toLowerCase());
           $next.remove();
           $(obj).remove();
           return entitlement;
-        });
+        }));
 
         // Process Priority field
-        const priority = processRequestDetail("Priority", ($next, obj) => {
+        const priority = Object.freeze(processRequestDetail("Priority", ($next, obj) => {
           return $.trim($next.text().toLowerCase());
-        });
+        }));
         //console.log(ent + " - " + priority)
 
         $("#call_request_action").remove();

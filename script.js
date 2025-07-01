@@ -701,29 +701,6 @@
       return isCapellaEntitlementOnly;
     };
 
-    var isValid = false;
-    if (HelpCenter && HelpCenter.user) {
-      var role =  HelpCenter.user.role;
-      //console.log(role);
-      if (role != "anonymous") {
-        //alert(role);
-        if (role == "end_user") {
-          //console.log(HelpCenter.user.organizations);
-          if (HelpCenter.user.organizations.length > 0) {
-            isValid = true;
-            //for (var c in HelpCenter.user.organizations) {
-              //alert(HelpCenter.user.organizations[c].name);
-              //if (HelpCenter.user.organizations[c].name !== "ZENDESK"){
-              //		$("#TICKET_FORM_ID").remove();
-              //} 
-            //}
-          }
-        } else { //"agent" || "manager"
-          isValid = true;
-        }
-      }
-    }
-
     const isOrganizationEntitled = checkOrganizationEntitlement();
     const isOrganizationOnHold = checkOrganizationOnHold();
     const isCapellaEntitlementOnly = checkCapellaEntitlementOnly();

@@ -65,9 +65,9 @@
 
   const container = document.getElementById("new-request-form");
 
-  const settings = {{json settings}};
+  const settings = Object.freeze({{json settings}});
 
-   const props = {
+   const props = Object.freeze({
     requestForm: {{json new_request_form}},
     newRequestPath: {{json (page_path 'new_request')}},
     parentId: {{json parent.id}},
@@ -88,141 +88,189 @@
       requestsPath: {{json (page_path 'requests')}},
       requestPath: {{json (page_path 'request' id=answer_bot.request_id)}}
     },
-  };
+  });
 
-  formId = props.requestForm.ticket_form_field.value
-  isAnonmymous = props.userRole.indexOf("anonymous") != -1;
-  hasOrganization = props.organizations.length > 0;
-  var indexEol = [];
-  var indexClient = [];
+  const formId = Object.freeze(props.requestForm.ticket_form_field.value);
+  isAnonmymous = Object.freeze((props.userRole === "anonymous"));
+  const hasOrganization = Object.freeze(props.organizations.length > 0);
+  const indexEol = [];
+  const indexClient = [];
 
   if (isAnonmymous || !hasOrganization) {
-    for (let i = props.requestForm.ticket_form_field.options.length - 1; i >= 0; i--) {
+    //props.requestForm.ticket_form_field.options = [];
+    /*for (let i = props.requestForm.ticket_form_field.options.length - 1; i >= 0; i--) {
       const value = props.requestForm.ticket_form_field.options[i].name;
       if (value.indexOf("General Question") == -1) {
           props.requestForm.ticket_form_field.options.splice(i, 1);
       }
     }
-    props.requestForm.ticket_form_field.value = "1260811052249";
+    props.requestForm.ticket_form_field.value = "1260811052249";*/
 
     if (!hasOrganization) {
-      var domainName = window.location.origin;
-      var node = $("#sign_out_link")
-      var updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
+      const domainName = window.location.origin;
+      const node = $("#sign_out_link")
+      const updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
       node.attr("href", updatedHref);
       $("#invalidOrganization").css("display", "block");
       $("#new-request-form").css("display", "none");
     }
-  }
+  } else {
 
-  if (formId != null) {
-      props.requestForm.cc_field.label = "Additional contacts you would like to include:";
+    if (formId != null) {
+      // Set common field labels
+      if (!isAnonmymous) {
+        props.requestForm.cc_field.label = "Additional contacts you would like to include:";
+      }
       props.requestForm.attachments_field.label = "Attachments (maximum attachment size 50MB)";
 
-      if (formId == getFormId().QUESTION || formId == getFormId().SUGGESTION) {
+      const isQuestionOrSuggestion = formId === getFormId().QUESTION || formId === getFormId().SUGGESTION;
+      
+      if (isQuestionOrSuggestion) {
+        // Handle Question/Suggestion form
         props.requestForm.ticket_fields[4].label = "Is this ticket for a Private Marketplace account?";
         props.requestForm.ticket_fields[4].description = "Please select this field if you are a private marketplace customer";
-
         indexEol.push(0);
 
         if (isAnonmymous) {
-          //Only leave No Impact is user is anonymous
-          props.requestForm.ticket_fields[0].options.forEach(function (node, index) {
-            const value = node.name;
-            const indexNone = value.indexOf("No Impact");
-            if (indexNone != -1) {
-              props.requestForm.ticket_fields[0].options.splice(index+1)
-            }
-          });
+          // Keep only "No Impact" option for anonymous users
+          const options = props.requestForm.ticket_fields[0].options;
+          const noImpactIndex = options.findIndex(option => option.name.includes("No Impact"));
+          if (noImpactIndex !== -1) {
+            options.splice(noImpactIndex + 1);
+          }
         }
       } else {
-
+        // Handle other form types
         props.requestForm.ticket_fields[0].label = "Please select your Environment followed by Current Impact";
-        //props.requestForm.ticket_fields[0].description = "Review our KB article for priority definitions<link>";
         props.requestForm.ticket_fields[1].label = "Briefly describe your business impact (max 2 lines)";
-        //props.requestForm.ticket_fields[1].description = "Provide the business impact for your current production outage";
-        //props.requestForm.ticket_fields[2].description = "Review our End Of Life (EOL) Policy<link>";
-
         indexEol.push(2);
-        //Remove everything after Obsolete
-        props.requestForm.ticket_fields[0].options.forEach(function (node, index) {
-          const value = node.name;
-          const indexObsolete = value.indexOf("Obsolete");
-          if (indexObsolete != -1) {
-            props.requestForm.ticket_fields[0].options.splice(index)
+
+        // Filter options for non-question/suggestion forms
+        const options = props.requestForm.ticket_fields[0].options;
+        
+        // Remove options after "Obsolete"
+        const obsoleteIndex = options.findIndex(option => option.name.includes("Obsolete"));
+        if (obsoleteIndex !== -1) {
+          options.splice(obsoleteIndex);
+        }
+
+        // Remove "Urgent / Blocker" and "No Impact" options
+        for (let i = options.length - 1; i >= 0; i--) {
+          const optionName = options[i].name;
+          if (optionName.includes("Urgent / Blocker") || optionName.includes("No Impact")) {
+            options.splice(i, 1);
           }
-        });
+        }
 
-        //Remove everything that is Urgent / Blocker or No Impact
-        props.requestForm.ticket_fields[0].options.forEach(function (node, index) {
-          const value = node.name;
-          const indexUrgent = value.indexOf("Urgent / Blocker");
-          const indexNone = value.indexOf("No Impact");
-          if (indexUrgent != -1 || indexNone != -1) {
-            props.requestForm.ticket_fields[0].options.splice(index, 1)
+        // Form-specific configurations
+        const formConfigs = {
+          [getFormId().SERVER]: {
+            fields: {
+              4: { label: "Is this SDK or Connector related?" },
+              9: { 
+                label: "Is this ticket for a Private Marketplace account?",
+                description: "Please select this field if you are a private marketplace customer"
+              },
+              12: {
+                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
+                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+              }
+            },
+            indices: { client: [5] }
+          },
+          [getFormId().MOBILE]: {
+            fields: {
+              6: { label: "Is this Couchbase Lite related?" },
+              11: {
+                label: "Is this ticket for a Private Marketplace account?",
+                description: "Please select this field if you are a private marketplace customer"
+              },
+              14: {
+                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
+                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+              }
+            },
+            indices: { eol: [4], client: [7] }
+          },
+          [getFormId().EDGE]: {
+            fields: {
+              4: { label: "Is this Couchbase Lite related?" },
+              14: {
+                label: "Is this ticket for a Private Marketplace account?",
+                description: "Please select this field if you are a private marketplace customer"
+              },
+              17: {
+                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
+                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+              }
+            },
+            indices: { eol: [5, 7], client: [10] }
+          },
+          [getFormId().OPERATOR]: {
+            fields: {
+              4: { label: "Is this Autonomous Operator related?" },
+              8: {
+                label: "Is this ticket for a Private Marketplace account?",
+                description: "Please select this field if you are a private marketplace customer"
+              },
+              11: {
+                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
+                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+              }
+            },
+            indices: { eol: [5] }
           }
-        });
+        };
 
-        if (formId == getFormId().SERVER) {
-          props.requestForm.ticket_fields[4].label = "Is this SDK or Connector related?";
-          props.requestForm.ticket_fields[9].label = "Is this ticket for a Private Marketplace account?";
-          props.requestForm.ticket_fields[9].description = "Please select this field if you are a private marketplace customer";
-          props.requestForm.ticket_fields[12].label = "I understand and will collect and share the logs with Support shortly after ticket is created.";
-          props.requestForm.ticket_fields[12].description = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
-          indexClient.push(5);
-        } else if (formId == getFormId().MOBILE) {
-          //props.requestForm.ticket_fields[6].label = "Is this Sync Gateway or CBLite related?";
-          props.requestForm.ticket_fields[6].label = "Is this Couchbase Lite related?";
-          props.requestForm.ticket_fields[11].label = "Is this ticket for a Private Marketplace account?";
-          props.requestForm.ticket_fields[11].description = "Please select this field if you are a private marketplace customer";
-          props.requestForm.ticket_fields[14].label = "I understand and will collect and share the logs with Support shortly after ticket is created.";
-          props.requestForm.ticket_fields[14].description = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
+        const config = formConfigs[formId];
+        if (config) {
+          // Apply field configurations
+          Object.entries(config.fields).forEach(([fieldIndex, fieldConfig]) => {
+            const field = props.requestForm.ticket_fields[parseInt(fieldIndex)];
+            field.label = fieldConfig.label;
+            if (fieldConfig.description) {
+              field.description = fieldConfig.description;
+            }
+          });
 
-          indexEol.push(4);
-          indexClient.push(7);
-        } else if (formId == getFormId().EDGE) {
-          //props.requestForm.ticket_fields[4].label = "Is this Edge Server related?";
-          props.requestForm.ticket_fields[4].label = "Is this Couchbase Lite related?";
-          props.requestForm.ticket_fields[14].label = "Is this ticket for a Private Marketplace account?";
-          props.requestForm.ticket_fields[14].description = "Please select this field if you are a private marketplace customer";
-          props.requestForm.ticket_fields[17].label = "I understand and will collect and share the logs with Support shortly after ticket is created.";
-          props.requestForm.ticket_fields[17].description = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
-
-          indexEol.push(5);
-          indexEol.push(7);
-          indexClient.push(10);
-        } else if (formId == getFormId().OPERATOR) {
-          props.requestForm.ticket_fields[4].label = "Is this Autonomous Operator related?";
-          props.requestForm.ticket_fields[8].label = "Is this ticket for a Private Marketplace account?";
-          props.requestForm.ticket_fields[8].description = "Please select this field if you are a private marketplace customer";
-          props.requestForm.ticket_fields[11].label = "I understand and will collect and share the logs with Support shortly after ticket is created.";
-          props.requestForm.ticket_fields[11].description = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
-          indexEol.push(5);
+          // Apply indices
+          if (config.indices.eol) {
+            indexEol.push(...config.indices.eol);
+          }
+          if (config.indices.client) {
+            indexClient.push(...config.indices.client);
+          }
         }
       }
     }
 
-    indexEol.forEach(function (indexEol) {
-      //Remove everything after End of Life
-      props.requestForm.ticket_fields[indexEol].options.forEach(function (node, index) {
-        const value = node.name;
-        const indexEOL = value.indexOf("End of Life");
-        if (indexEOL != -1) {
-          props.requestForm.ticket_fields[indexEol].options.splice(index + 1); // Removes all elements from index + 1 to the end
-        }
-      });
+    // Process EOL indices
+    indexEol.forEach(index => {
+      const options = props.requestForm.ticket_fields[index].options;
+      const eolIndex = options.findIndex(node => node.name.includes("End of Life"));
+      
+      if (eolIndex !== -1) {
+        options.splice(eolIndex + 1); // Remove all elements from EOL index + 1 to the end
+      }
     });
 
-    indexClient.forEach(function (indexClient) {
-      //Remove elements containing "End of Life" individually from ticket_fields[5]
-      for (let i = props.requestForm.ticket_fields[indexClient].options.length - 1; i >= 0; i--) {
-        const value = props.requestForm.ticket_fields[indexClient].options[i].name;
-        const indexEOL = value.indexOf("End of Life");
-        if (indexEOL !== -1) {
-          const target = value.substring(0, indexEOL - 1);
-          for (let j = i + 1; j < props.requestForm.ticket_fields[indexClient].options.length;) {
-            if (props.requestForm.ticket_fields[indexClient].options[j].name.indexOf(target) != -1 || props.requestForm.ticket_fields[indexClient].options[j].name.indexOf("Obsolete") != -1) {
-              props.requestForm.ticket_fields[indexClient].options.splice(j, 1);
+    // Process client indices
+    indexClient.forEach(index => {
+      const options = props.requestForm.ticket_fields[index].options;
+      
+      // Remove elements containing "End of Life" and related items
+      for (let i = options.length - 1; i >= 0; i--) {
+        const optionName = options[i].name;
+        const eolIndex = optionName.indexOf("End of Life");
+        
+        if (eolIndex !== -1) {
+          const target = optionName.substring(0, eolIndex - 1);
+          
+          // Remove subsequent options that match target or contain "Obsolete"
+          for (let j = i + 1; j < options.length;) {
+            const nextOptionName = options[j].name;
+            if (nextOptionName.includes(target) || nextOptionName.includes("Obsolete")) {
+              options.splice(j, 1);
             } else {
               break;
             }
@@ -231,18 +279,17 @@
       }
     });
 
-  renderNewRequestForm(settings, props, container);
+    renderNewRequestForm(settings, props, container);
+  }
 </script>
 
 <script type="text/javascript">
   /*$(document).submit(function() {
       window.open("https://support.couchbase.com/hc/en-us/articles/218320083#support_server_logs", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=768,height=768");
   });*/
-  let formId = null;
   let isAnonmymous = false;
-  let hasOrganization = false;
-  var currentURL = window.location.href;
-  var isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+  const currentURL = window.location.href;
+  const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
 
   function getFormId(condition = isSandbox) {
     if (condition) {
@@ -271,10 +318,7 @@
     $("#notSignedMsg").css("display", "none");
   }
 
-
   $(function() {
-    var editorInstance = null;
-
     function getZdCustomFieldId(condition = isSandbox) {
       if (condition) {
         return {
@@ -324,40 +368,47 @@
       ATTACHMENTS_MSG: "attachments_msg"
     }
 
-    const END_OF_LIFE = {
-      EOL: ["end_of_life"],
-      SERVER: ["serverver__end_of_life"],
-      OPERATOR: ["operatorver__end_of_life"],
-      CONNECTOR: ["connectorver__elastic__end_of_life", "connectorver__kafka__end_of_life", "connectorver__spark__end_of_life", "connectorver__tableau__end_of_life"],
-      SYNC_GATEWAY: ["syncgwver__end_of_life"],
-      LITE: ["litever__android__end_of_life", "litever__java__end_of_life", "litever__net__end_of_life", "litever__ios__end_of_life", "litever__c__end_of_life"],
-      EDGE: ["edgeserverver__end_of_life"],
-      CLIENT: ["clientver__scala__end_of_life",
-        "clientver__ruby__end_of_life", "clientver__kotlin__end_of_life", "clientver__python__end_of_life", "clientver__php__end_of_life", "clientver__node_js__end_of_life", "clientver__java__end_of_life",
-        "clientver__go__end_of_life", "clientver__c__end_of_life", "clientver__net__end_of_life"
-      ]
-    }
+    const END_OF_LIFE_TAG = "__end_of_life";
 
-    const SERVER_END_OF_FULL_MAINTENANCE = ["(7_1_\\d+)", "(7_0_\\d+)"]
-    const SERVER_END_OF_LIFE = ["(5_5_\\d+)", "(5_1_\\d+)", "(5_0_\\d+)"]
-
-    const CLIENT_END_OF_FULL_MAINTENANCE = ["(clientver__java__3_4_x)", "(clientver__dotnet__3_4_x)", "(clientver__go__2_6_x)", "(clientver__node_js__4_2_x)", "(clientver__ruby__3_4_x)", "(clientver__c__3_2_x)", "(clientver__python__4_1_x)", "(clientver__php__4_1_x)", "(clientver__scala__1_4_x)", "(clientver__kotlin__1_1_x)"]
-    const CLIENT_END_OF_LIFE = ["(clientver__java__2_\\d+)", "(clientver__dotneet__2_\\d+)", "(clientver__ruby__1_3_\\d+)", "(clientver__go__2_0_\\d+)", "(clientver__node_js__2_6_\\d+)", "(clientver__c__2_\\d+)", "(clientver__python__2_5_\\d+)", "(clientver__php__2_6_\\d+)", "(clientver__scala__1_0_\\d+)"]
-
-    const SYNC_GATEWAY_END_OF_FULL_MAINTENANCE = ["(3_0_\\d+)"]
-    const SYNC_GATEWAY_END_OF_LIFE = ["(1_5_\\d+)", "(2_0_\\d+)", "(2_1_\\d+)", "(2_5_\\d+)", "(2_6_\\d+)", "(2_7_\\d+)"]
-
-    const LITE_END_OF_FULL_MAINTENANCE = ["(3_0_x)"]
-    const LITE_END_OF_LIFE = ["(1_5_\\d+)", "(2_0_\\d+)", "(2_1_\\d+)", "(2_5_\\d+)", "(2_6_\\d+)", "(2_7_\\d+)"]
-
-    const EDGE_END_OF_FULL_MAINTENANCE = ["(0_0_x)"]
-    const EDGE_END_OF_LIFE = ["(0_0_x)"]
-
-    const OPERATOR_END_OF_FULL_MAINTENANCE = ["(2_4_\\d+)"]
-    const OPERATOR_END_OF_LIFE = ["(1_2_\\d+)"]
-
-    const CONNECTOR_END_OF_FULL_MAINTENANCE = ["(connectorver__elastic__4__x)", "(connectorver__spark__3_0_x)", "(connectorver__spark__3_1_x)", "(connectorver__spark__3_2_x)", "(connectorver__tableau__1_0_x)"]
-    const CONNECTOR_END_OF_LIFE = ["(X 0_0_\\d+)"]
+    // Version lifecycle constants organized by product type
+    const VERSION_LIFECYCLE = {
+      SERVER: {
+        END_OF_FULL_MAINTENANCE: ["(7_1_\\d+)", "(7_0_\\d+)"],
+        END_OF_LIFE: ["(5_5_\\d+)", "(5_1_\\d+)", "(5_0_\\d+)"]
+      },
+      CLIENT: {
+        END_OF_FULL_MAINTENANCE: [
+          "(clientver__java__3_5_x)", "(clientver__net__3_4_x)", "(clientver__go__2_7_x)",
+          "(clientver__node_js__4_2_x)", "(clientver__ruby__3_4_x)", "(clientver__c__3_2_x)",
+          "(clientver__python__4_1_x)", "(clientver__php__4_1_x)", "(clientver__scala__1_5_x)",
+          "(clientver__kotlin__1_2_x)",
+          "(connectorver__kafka__4_1_x)", "(connectorver__elastic__4_3_x)", "(connectorver__spark__3_3_x)",
+          "(connectorver__tableau__1_0_x)"
+        ],
+        END_OF_LIFE: [
+          "(clientver__java__2_\\d+)", "(clientver__net__2_\\d+)", "(clientver__ruby__1_3_\\d+)",
+          "(clientver__go__2_0_\\d+)", "(clientver__node_js__2_6_\\d+)", "(clientver__c__2_\\d+)",
+          "(clientver__python__2_5_\\d+)", "(clientver__php__2_6_\\d+)", "(clientver__scala__1_5_\\d+)",
+          "(X 0_0_\\d+)"
+        ]
+      },
+      SYNC_GATEWAY: {
+        END_OF_FULL_MAINTENANCE: ["(3_0_\\d+)", "(3_1_\\d+)"],
+        END_OF_LIFE: ["(1_5_\\d+)", "(2_0_\\d+)", "(2_1_\\d+)", "(2_5_\\d+)", "(2_6_\\d+)", "(2_7_\\d+)"]
+      },
+      LITE: {
+        END_OF_FULL_MAINTENANCE: ["(3_0_x)", "(3_1_x)"],
+        END_OF_LIFE: ["(1_5_\\d+)", "(2_0_\\d+)", "(2_1_\\d+)", "(2_5_\\d+)", "(2_6_\\d+)", "(2_7_\\d+)"]
+      },
+      EDGE: {
+        END_OF_FULL_MAINTENANCE: ["(0_0_x)"],
+        END_OF_LIFE: ["(0_0_x)"]
+      },
+      OPERATOR: {
+        END_OF_FULL_MAINTENANCE: ["(2_4_\\d+)", "(2_5_\\d+)", "(2_6_\\d+)"],
+        END_OF_LIFE: ["(1_2_\\d+)"]
+      }
+    };
 
     // This list contain all the tags that are NOT applicable
     const IMPACT_TO_HIDE = ["current_impact__none", "current_impact__production__urgent_blocker", "current_impact__standby_dr__urgent_blocker",
@@ -369,7 +420,7 @@
       $(id).html("");
 
       // End of Life selection
-      var pattern = new RegExp(END_OF_LIFE.EOL);
+      const pattern = new RegExp(END_OF_LIFE_TAG);
       if (pattern.test(value)) {
         $(id).html("<div class='end_of_life'>You have selected an <b>End of Life</b> version. We strongly advise you to migrate to a supported version at your earliest convenience. You will receive Support if you have purchased Extended Support for this version. Please contact your Account Manager if you have an inquire about this offering.</div>")
         end_of_life = true;
@@ -377,7 +428,7 @@
       }
       if (!end_of_life) {
         $.each(endOfFullMaintenanceValues, function(i, val) {
-          var pattern = new RegExp(val);
+          const pattern = new RegExp(val);
           if (pattern.test(value)) {
             $(id).html("<div class='end_of_full_maintanence'>You have selected an <b>End of Full Maintenance</b> version. We strongly advise you to migrate to a maintained version to benefit from fixes. Please contact your Account Manager if you have an inquire about Extended Maintenance which is available for Couchbase Server. </div>")
             return false; // breaks
@@ -413,45 +464,35 @@
             //console.log('value changed!');
             //console.log('Old value:', mutation.oldValue);
             //console.log('New value:', mutation.target.getAttribute('value'));
-            var name = mutation.target.getAttribute('name');
-            var value = mutation.target.getAttribute('value');
+            const name = mutation.target.getAttribute('name');
+            const value = mutation.target.getAttribute('value');
             // Perform actions based on the attribute change
             if (name.indexOf(getZdCustomFieldId().SERVER) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.SERVER_MSG, SERVER_END_OF_LIFE, SERVER_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.SERVER) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.SERVER).show() : $('#' + CUSTOM_FIELD_ID.SERVER).hide());
+              checkSupportPolicyVersion("#" + DOM_ID.SERVER_MSG, VERSION_LIFECYCLE.SERVER.END_OF_LIFE, VERSION_LIFECYCLE.SERVER.END_OF_FULL_MAINTENANCE, value);
             } else if (name.indexOf(getZdCustomFieldId().CLIENT) != -1) {
-              // Check for Couchbase Server SDKs
-              checkSupportPolicyVersion("#" + DOM_ID.CLIENT_MSG, CLIENT_END_OF_LIFE, CLIENT_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.CLIENT) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.CLIENT).show() : $('#' + CUSTOM_FIELD_ID.CLIENT).hide());
-
-              // Check for Couchbase Server Connectors
-              checkSupportPolicyVersion("#" + DOM_ID.CLIENT_MSG, CONNECTOR_END_OF_LIFE, CONNECTOR_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.CONNECTOR) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.CLIENT).show() : $('#' + CUSTOM_FIELD_ID.CLIENT).hide());;
+              // Check for Couchbase Server SDKs and Connectors
+              checkSupportPolicyVersion("#" + DOM_ID.CLIENT_MSG, VERSION_LIFECYCLE.CLIENT.END_OF_LIFE, VERSION_LIFECYCLE.CLIENT.END_OF_FULL_MAINTENANCE, value);
             } else if (name.indexOf(getZdCustomFieldId().SYNC_GATEWAY) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.SYNC_GATEWAY_MSG, SYNC_GATEWAY_END_OF_LIFE, SYNC_GATEWAY_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.SYNC_GATEWAY) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.SYNC_GATEWAY).show() : $('#' + CUSTOM_FIELD_ID.SYNC_GATEWAY).hide());
+              checkSupportPolicyVersion("#" + DOM_ID.SYNC_GATEWAY_MSG, VERSION_LIFECYCLE.SYNC_GATEWAY.END_OF_LIFE, VERSION_LIFECYCLE.SYNC_GATEWAY.END_OF_FULL_MAINTENANCE, value);
             } else if (name.indexOf(getZdCustomFieldId().LITE) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.LITE_MSG, LITE_END_OF_LIFE, LITE_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.LITE) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.LITE).show() : $('#' + CUSTOM_FIELD_ID.LITE).hide());
+              checkSupportPolicyVersion("#" + DOM_ID.LITE_MSG, VERSION_LIFECYCLE.LITE.END_OF_LIFE, VERSION_LIFECYCLE.LITE.END_OF_FULL_MAINTENANCE, value);
             } else if (name.indexOf(getZdCustomFieldId().EDGE) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.EDGE_MSG, EDGE_END_OF_LIFE, EDGE_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.EDGE) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.EDGE).show() : $('#' + CUSTOM_FIELD_ID.EDGE).hide());
+              checkSupportPolicyVersion("#" + DOM_ID.EDGE_MSG, VERSION_LIFECYCLE.EDGE.END_OF_LIFE, VERSION_LIFECYCLE.EDGE.END_OF_FULL_MAINTENANCE, value);
             } else if (name.indexOf(getZdCustomFieldId().OPERATOR) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.OPERATOR_MSG, OPERATOR_END_OF_LIFE, OPERATOR_END_OF_FULL_MAINTENANCE, value);
-              //(($.inArray(value, END_OF_LIFE.OPERATOR) > -1) || value == "" ? $('#' + CUSTOM_FIELD_ID.OPERATOR).show() : $('#' + CUSTOM_FIELD_ID.OPERATOR).hide());
+              checkSupportPolicyVersion("#" + DOM_ID.OPERATOR_MSG, VERSION_LIFECYCLE.OPERATOR.END_OF_LIFE, VERSION_LIFECYCLE.OPERATOR.END_OF_FULL_MAINTENANCE, value);
             }
           }
         }
       });
       
       // Configure the observer to watch for attribute changes
-      const configValue = { attributes: true, attributeOldValue: true, attributeFilter: ['value'] };
+      const configValue = Object.freeze({ attributes: true, attributeOldValue: true, attributeFilter: ['value'] });
 
       // Example using MutationObserver (vanilla JavaScript, but can be used with jQuery)
-      var targetNode = document.body; // Or a more specific container element
-      var config = { childList: true, subtree: true };
+      const targetNode = document.body; // Or a more specific container element
+      const config = Object.freeze({ childList: true, subtree: true });
 
-      var observer = new MutationObserver((mutationsList, observer) => {
+      const observer = new MutationObserver((mutationsList, observer) => {
         for (const mutation of mutationsList) {
           if (mutation.type === 'childList') {
             const server = $('[name="request[custom_fields][' + getZdCustomFieldId().SERVER + ']"]')
@@ -505,20 +546,13 @@
               // This will add a description to the Couchbase Connector field
               critical.after("<div id='" + DOM_ID.CRITICAL_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our KB article for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">how to escalate your support ticket</a>.</p></div>");
  
-              $(critical).css({
-                'max-height': '65px',
-                'min-height': '65px'
-              });
-              $(critical).attr({
-                'rows': '2',
-                'wrap': 'hard',
-                maxlength: '256'
-              });
+              $(critical).css({'max-height': '65px', 'min-height': '65px'});
+              $(critical).attr({'rows': '2', 'wrap': 'hard', 'maxlength': '256'});
 
               $(critical).on('keypress', function (event) {
-                var textarea = $(this),
-                  numberOfLines = (textarea.val().match(/\n/g) || []).length + 1,
-                  maxRows = parseInt(textarea.attr('rows'));
+                const textarea = $(this);
+                const numberOfLines = ((textarea.val().match(/\n/g) || []).length + 1);
+                const maxRows = parseInt(textarea.attr('rows'));
 
                 if (event.which === 13 && numberOfLines === maxRows) {
                   return false;
