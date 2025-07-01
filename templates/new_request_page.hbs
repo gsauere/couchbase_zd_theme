@@ -104,8 +104,15 @@
           props.requestForm.ticket_form_field.options.splice(i, 1);
       }
     }
-    props.requestForm.ticket_form_field.value = "1260811052249";*/
 
+    // Keep only "No Impact" option for anonymous users
+    const options = props.requestForm.ticket_fields[0].options;
+    const noImpactIndex = options.findIndex(option => option.name.includes("No Impact"));
+    if (noImpactIndex !== -1) {
+      options.splice(noImpactIndex + 1);
+    }
+    props.requestForm.ticket_form_field.value = "1260811052249";*/
+    
     if (!hasOrganization) {
       const domainName = window.location.origin;
       const node = $("#sign_out_link")
@@ -118,9 +125,7 @@
 
     if (formId != null) {
       // Set common field labels
-      if (!isAnonmymous) {
-        props.requestForm.cc_field.label = "Additional contacts you would like to include:";
-      }
+      props.requestForm.cc_field.label = "Additional contacts you would like to include:";
       props.requestForm.attachments_field.label = "Attachments (maximum attachment size 50MB)";
 
       const isQuestionOrSuggestion = formId === getFormId().QUESTION || formId === getFormId().SUGGESTION;
@@ -130,15 +135,6 @@
         props.requestForm.ticket_fields[4].label = "Is this ticket for a Private Marketplace account?";
         props.requestForm.ticket_fields[4].description = "Please select this field if you are a private marketplace customer";
         indexEol.push(0);
-
-        if (isAnonmymous) {
-          // Keep only "No Impact" option for anonymous users
-          const options = props.requestForm.ticket_fields[0].options;
-          const noImpactIndex = options.findIndex(option => option.name.includes("No Impact"));
-          if (noImpactIndex !== -1) {
-            options.splice(noImpactIndex + 1);
-          }
-        }
       } else {
         // Handle other form types
         props.requestForm.ticket_fields[0].label = "Please select your Environment followed by Current Impact";
@@ -155,12 +151,17 @@
         }
 
         // Remove "Urgent / Blocker" and "No Impact" options
-        for (let i = options.length - 1; i >= 0; i--) {
+        const filteredOptions = options.filter(option => 
+          !option.name.includes("Urgent / Blocker") && !option.name.includes("No Impact")
+        );
+        options.length = 0;
+        options.push(...filteredOptions);
+        /*for (let i = options.length - 1; i >= 0; i--) {
           const optionName = options[i].name;
           if (optionName.includes("Urgent / Blocker") || optionName.includes("No Impact")) {
             options.splice(i, 1);
           }
-        }
+        }*/
 
         // Form-specific configurations
         const formConfigs = {
@@ -218,7 +219,7 @@
                 description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
               }
             },
-            indices: { eol: [5] }
+            indices: { eol: [4] }
           }
         };
 
@@ -227,19 +228,13 @@
           // Apply field configurations
           Object.entries(config.fields).forEach(([fieldIndex, fieldConfig]) => {
             const field = props.requestForm.ticket_fields[parseInt(fieldIndex)];
-            field.label = fieldConfig.label;
-            if (fieldConfig.description) {
-              field.description = fieldConfig.description;
-            }
+            Object.assign(field, fieldConfig);
           });
 
           // Apply indices
-          if (config.indices.eol) {
-            indexEol.push(...config.indices.eol);
-          }
-          if (config.indices.client) {
-            indexClient.push(...config.indices.client);
-          }
+          const { eol, client } = config.indices;
+          if (eol) indexEol.push(...eol);
+          if (client) indexClient.push(...client);
         }
       }
     }
@@ -294,21 +289,21 @@
   function getFormId(condition = isSandbox) {
     if (condition) {
       return {
-        SERVER: "360000545232",
-        MOBILE: "360001799691",
-        EDGE: "34622105022875",
-        OPERATOR: "360001771952",
-        QUESTION: "360001799831",
-        SUGGESTION: "1900000171804"
+        SERVER: 360001771732,
+        MOBILE: 360001799691,
+        EDGE: 34622105022875,
+        OPERATOR: 360001771952,
+        QUESTION: 360001799831,
+        SUGGESTION: 360001771972
       };
     } else {
       return {
-        SERVER: "360000545232",
-        MOBILE: "1900000174384",
-        EDGE: "34692946527003",
-        OPERATOR: "1260811054329",
-        QUESTION: "1260811052249",
-        SUGGESTION: "1900000171804"
+        SERVER: 360000545232,
+        MOBILE: 1900000174384,
+        EDGE: 34692946527003,
+        OPERATOR: 1260811054329,
+        QUESTION: 1260811052249,
+        SUGGESTION: 1900000171804
       };
     }
   }
@@ -322,31 +317,31 @@
     function getZdCustomFieldId(condition = isSandbox) {
       if (condition) {
         return {
-          IMPACT: "360041809432",
-          CRITICAL: "6004410489",
-          SERVER: "360041809492",
-          SYNC_GATEWAY: "360041809512",
-          HAS_SDK: "31131035055771",
-          CLIENT: "360041784231",
-          LITE: "360041784251",
-          EDGE: "34621365112091",
-          OPERATOR: "360041809732",
-          MARKET_PLACE: "8050543819035",
-          LOGS_AGREEMENT: "1260822948929"
+          IMPACT: 360041809432,
+          CRITICAL: 360044104892,
+          SERVER: 360041809492,
+          SYNC_GATEWAY: 360041809512,
+          HAS_SDK: 31131035055771,
+          CLIENT: 360041784231,
+          LITE: 360041784251,
+          EDGE: 34621365112091,
+          OPERATOR: 360041809732,
+          MARKET_PLACE: 8050543819035,
+          LOGS_AGREEMENT: 1260822948929
         };
       } else {
         return {
-          IMPACT: "21227650",
-          CRITICAL: "360045140512",
-          SERVER: "20518787",
-          SYNC_GATEWAY: "21076534",
-          HAS_SDK: "31156791679259",
-          CLIENT: "21076524",
-          LITE: "21115995",
-          EDGE: "34620727056155",
-          OPERATOR: "360030664772",
-          MARKET_PLACE: "12734656072219",
-          LOGS_AGREEMENT: "1900002551744"
+          IMPACT: 21227650,
+          CRITICAL: 360045140512,
+          SERVER: 20518787,
+          SYNC_GATEWAY: 21076534,
+          HAS_SDK: 31156791679259,
+          CLIENT: 21076524,
+          LITE: 21115995,
+          EDGE: 34620727056155,
+          OPERATOR: 360030664772,
+          MARKET_PLACE: 12734656072219,
+          LOGS_AGREEMENT: 1900002551744
         };
       }
     }
@@ -416,26 +411,33 @@
     ]
 
     function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintenanceValues, value) {
-      var end_of_life = false;
-      $(id).html("");
+      const $element = $(id);
+      $element.empty();
 
-      // End of Life selection
-      const pattern = new RegExp(END_OF_LIFE_TAG);
-      if (pattern.test(value)) {
-        $(id).html("<div class='end_of_life'>You have selected an <b>End of Life</b> version. We strongly advise you to migrate to a supported version at your earliest convenience. You will receive Support if you have purchased Extended Support for this version. Please contact your Account Manager if you have an inquire about this offering.</div>")
-        end_of_life = true;
-        return false; // breaks
+      // Check for End of Life version first
+      if (new RegExp(END_OF_LIFE_TAG).test(value)) {
+        $element.html(`
+          <div class='end_of_life'>
+            You have selected an <b>End of Life</b> version. We strongly advise you to migrate to a supported version at your earliest convenience. 
+            You will receive Support if you have purchased Extended Support for this version. Please contact your Account Manager if you have an inquire about this offering.
+          </div>
+        `);
+        return false;
       }
-      if (!end_of_life) {
-        $.each(endOfFullMaintenanceValues, function(i, val) {
-          const pattern = new RegExp(val);
-          if (pattern.test(value)) {
-            $(id).html("<div class='end_of_full_maintanence'>You have selected an <b>End of Full Maintenance</b> version. We strongly advise you to migrate to a maintained version to benefit from fixes. Please contact your Account Manager if you have an inquire about Extended Maintenance which is available for Couchbase Server. </div>")
-            return false; // breaks
-          }
-        });
+
+      // Check for End of Full Maintenance versions
+      const endOfFullMaintenancePattern = endOfFullMaintenanceValues.find(val => new RegExp(val).test(value));
+      if (endOfFullMaintenancePattern) {
+        $element.html(`
+          <div class='end_of_full_maintanence'>
+            You have selected an <b>End of Full Maintenance</b> version. We strongly advise you to migrate to a maintained version to benefit from fixes. 
+            Please contact your Account Manager if you have an inquire about Extended Maintenance which is available for Couchbase Server.
+          </div>
+        `);
+        return false;
       }
-      return;
+
+      return true;
     }
 
     /*
@@ -464,22 +466,47 @@
             //console.log('value changed!');
             //console.log('Old value:', mutation.oldValue);
             //console.log('New value:', mutation.target.getAttribute('value'));
-            const name = mutation.target.getAttribute('name');
+            // Parse the string and extract only the number
+            const match = mutation.target.getAttribute('name').match(/\[(\d+)\]/);
+            const name = match ? match[1] : null;
             const value = mutation.target.getAttribute('value');
-            // Perform actions based on the attribute change
-            if (name.indexOf(getZdCustomFieldId().SERVER) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.SERVER_MSG, VERSION_LIFECYCLE.SERVER.END_OF_LIFE, VERSION_LIFECYCLE.SERVER.END_OF_FULL_MAINTENANCE, value);
-            } else if (name.indexOf(getZdCustomFieldId().CLIENT) != -1) {
-              // Check for Couchbase Server SDKs and Connectors
-              checkSupportPolicyVersion("#" + DOM_ID.CLIENT_MSG, VERSION_LIFECYCLE.CLIENT.END_OF_LIFE, VERSION_LIFECYCLE.CLIENT.END_OF_FULL_MAINTENANCE, value);
-            } else if (name.indexOf(getZdCustomFieldId().SYNC_GATEWAY) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.SYNC_GATEWAY_MSG, VERSION_LIFECYCLE.SYNC_GATEWAY.END_OF_LIFE, VERSION_LIFECYCLE.SYNC_GATEWAY.END_OF_FULL_MAINTENANCE, value);
-            } else if (name.indexOf(getZdCustomFieldId().LITE) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.LITE_MSG, VERSION_LIFECYCLE.LITE.END_OF_LIFE, VERSION_LIFECYCLE.LITE.END_OF_FULL_MAINTENANCE, value);
-            } else if (name.indexOf(getZdCustomFieldId().EDGE) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.EDGE_MSG, VERSION_LIFECYCLE.EDGE.END_OF_LIFE, VERSION_LIFECYCLE.EDGE.END_OF_FULL_MAINTENANCE, value);
-            } else if (name.indexOf(getZdCustomFieldId().OPERATOR) != -1) {
-              checkSupportPolicyVersion("#" + DOM_ID.OPERATOR_MSG, VERSION_LIFECYCLE.OPERATOR.END_OF_LIFE, VERSION_LIFECYCLE.OPERATOR.END_OF_FULL_MAINTENANCE, value);
+
+            // Map of custom field IDs to their corresponding DOM_ID and VERSION_LIFECYCLE objects
+            const fieldConfig = {
+              [getZdCustomFieldId().SERVER]: {
+                domId: DOM_ID.SERVER_MSG,
+                lifecycle: VERSION_LIFECYCLE.SERVER
+              },
+              [getZdCustomFieldId().CLIENT]: {
+                domId: DOM_ID.CLIENT_MSG,
+                lifecycle: VERSION_LIFECYCLE.CLIENT
+              },
+              [getZdCustomFieldId().SYNC_GATEWAY]: {
+                domId: DOM_ID.SYNC_GATEWAY_MSG,
+                lifecycle: VERSION_LIFECYCLE.SYNC_GATEWAY
+              },
+              [getZdCustomFieldId().LITE]: {
+                domId: DOM_ID.LITE_MSG,
+                lifecycle: VERSION_LIFECYCLE.LITE
+              },
+              [getZdCustomFieldId().EDGE]: {
+                domId: DOM_ID.EDGE_MSG,
+                lifecycle: VERSION_LIFECYCLE.EDGE
+              },
+              [getZdCustomFieldId().OPERATOR]: {
+                domId: DOM_ID.OPERATOR_MSG,
+                lifecycle: VERSION_LIFECYCLE.OPERATOR
+              }
+            };
+
+            if (name && fieldConfig[name]) {
+              const cfg = fieldConfig[name];
+              checkSupportPolicyVersion(
+                "#" + cfg.domId,
+                cfg.lifecycle.END_OF_LIFE,
+                cfg.lifecycle.END_OF_FULL_MAINTENANCE,
+                value
+              );
             }
           }
         }
@@ -495,86 +522,117 @@
       const observer = new MutationObserver((mutationsList, observer) => {
         for (const mutation of mutationsList) {
           if (mutation.type === 'childList') {
-            const server = $('[name="request[custom_fields][' + getZdCustomFieldId().SERVER + ']"]')
-            const client = $('[name="request[custom_fields][' + getZdCustomFieldId().CLIENT + ']"]')
-            const mobile = $('[name="request[custom_fields][' + getZdCustomFieldId().SYNC_GATEWAY + ']"]')
-            const cblite = $('[name="request[custom_fields][' + getZdCustomFieldId().LITE + ']"]')
-            const edge = $('[name="request[custom_fields][' + getZdCustomFieldId().EDGE + ']"]')
-            const operator = $('[name="request[custom_fields][' + getZdCustomFieldId().OPERATOR + ']"]')
-            const impact = $('[name="request[custom_fields][' + getZdCustomFieldId().IMPACT + ']"]')
-            const critical = $('[name="request[custom_fields][' + getZdCustomFieldId().CRITICAL + ']"]')
-            const description = $('[name="request[description]"]')
-            const market_place = $('[name="request[custom_fields][' + getZdCustomFieldId().MARKET_PLACE + ']"]')
-            const logs = $('[name="request[custom_fields][' + getZdCustomFieldId().LOGS_AGREEMENT + ']"]') //I understand and will collect and share the logs with Support shortly after ticket is created.
-            const attachments = $('label:contains("Attachments")') // $('[name="request[attachments]"]')
+            // Cache field selectors to avoid repeated DOM queries
+            const fieldSelectors = {
+              server: `[name="request[custom_fields][${getZdCustomFieldId().SERVER}]"]`,
+              client: `[name="request[custom_fields][${getZdCustomFieldId().CLIENT}]"]`,
+              mobile: `[name="request[custom_fields][${getZdCustomFieldId().SYNC_GATEWAY}]"]`,
+              cblite: `[name="request[custom_fields][${getZdCustomFieldId().LITE}]"]`,
+              edge: `[name="request[custom_fields][${getZdCustomFieldId().EDGE}]"]`,
+              operator: `[name="request[custom_fields][${getZdCustomFieldId().OPERATOR}]"]`,
+              impact: `[name="request[custom_fields][${getZdCustomFieldId().IMPACT}]"]`,
+              critical: `[name="request[custom_fields][${getZdCustomFieldId().CRITICAL}]"]`,
+              description: '[name="request[description]"]',
+              market_place: `[name="request[custom_fields][${getZdCustomFieldId().MARKET_PLACE}]"]`,
+              logs: `[name="request[custom_fields][${getZdCustomFieldId().LOGS_AGREEMENT}]"]`,
+              attachments: 'label:contains("Attachments")'
+            };
 
-            //if ($(mutation.addedNodes).find('#your-async-element-id').length > 0) {
-            if (server.length > 0 && $("#" + DOM_ID.SERVER_MSG).length == 0) {
-              // This will add a description to the Couchbase Server field
-              server.parent().parent().parent().after("<div id='" + DOM_ID.SERVER_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our <a href=\"https://www.couchbase.com/support-policy/EOL\" target=\"_blank\" rel=\"noopener noreferrer\">End Of Life (EOL) Policy</a></p></div>");
-              // Start observing the server field
-              observerValue.observe(server[0], configValue);
-            } else if (client.length > 0 && $("#" + DOM_ID.CLIENT_MSG).length == 0) {
-              // This will add a description to the Couchbase Client field
-              client.parent().parent().parent().after("<div id='" + DOM_ID.CLIENT_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Provide the complete version (major.minor.maintenance) in the details section and send us the <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#client_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and server SDK logs</a>.</p></div>");
-              // Start observing the server field
-              observerValue.observe(client[0], configValue);
-            } else if (mobile.length > 0 && $("#" + DOM_ID.SYNC_GATEWAY_MSG).length == 0) {
-              // This will add a description to the Couchbase Mobile field
-              mobile.parent().parent().parent().after("<div id='" + DOM_ID.SYNC_GATEWAY_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review how to send us <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and mobile logs</a>.</p></div>");
-              // Start observing the server field
-              observerValue.observe(mobile[0], configValue);
-            } else if (cblite.length > 0 && $("#" + DOM_ID.LITE_MSG).length == 0) {
-              // This will add a description to the Couchbase Mobile field
-              cblite.parent().parent().parent().after("<div id='" + DOM_ID.LITE_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review how to send us <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and mobile logs</a>.</p></div>");
-              // Start observing the server field
-              observerValue.observe(cblite[0], configValue);
-            } else if (edge.length > 0 && $("#" + DOM_ID.EDGE_MSG).length == 0) {
-              // This will add a description to the Couchbase Edge field
-              edge.parent().parent().parent().after("<div id='" + DOM_ID.EDGE_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our <a href=\"https://www.couchbase.com/support-policy/EOL\" target=\"_blank\" rel=\"noopener noreferrer\">End Of Life (EOL) Policy</a></p></div>");
-              // Start observing the server field
-              observerValue.observe(edge[0], configValue);
-            } else if (operator.length > 0 && $("#" + DOM_ID.OPERATOR_MSG).length == 0) {
-              // This will add a description to the Couchbase Operator field
-              operator.parent().parent().parent().after("<div id='" + DOM_ID.OPERATOR_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review how to send us <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#server_logs\" target=\"_blank\" rel=\"noopener noreferrer\">server and operator logs</a>.</p></div>");
-              // Start observing the server field
-              observerValue.observe(operator[0], configValue);
-            } else if (impact.length > 0 && $("#" + DOM_ID.IMPACT_MSG).length == 0) {
-              // This will add a description to the Couchbase Connector field
-              impact.parent().parent().parent().after("<div id='" + DOM_ID.IMPACT_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our KB article for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">priority definitions</a>.</p></div>");
-            } else if (critical.length > 0 && $("#" + DOM_ID.CRITICAL_MSG).length == 0) {
-              // This will add a description to the Couchbase Connector field
-              critical.after("<div id='" + DOM_ID.CRITICAL_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our KB article for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">how to escalate your support ticket</a>.</p></div>");
- 
-              $(critical).css({'max-height': '65px', 'min-height': '65px'});
-              $(critical).attr({'rows': '2', 'wrap': 'hard', 'maxlength': '256'});
+            // Get field elements using cached selectors
+            const fields = Object.fromEntries(
+              Object.entries(fieldSelectors).map(([key, selector]) => [key, $(selector)])
+            );
 
-              $(critical).on('keypress', function (event) {
-                const textarea = $(this);
-                const numberOfLines = ((textarea.val().match(/\n/g) || []).length + 1);
-                const maxRows = parseInt(textarea.attr('rows'));
+            // Helper function to create message HTML
+            const createMessageHtml = (id, content) => 
+              `<div id="${id}"></div><div class="form-field" style="margin-top:5px"><p>${content}</p></div>`;
 
-                if (event.which === 13 && numberOfLines === maxRows) {
-                  return false;
-                }
-              });
+            // Helper function to check if field exists and message doesn't
+            const shouldProcessField = (field, messageId) => 
+              field.length > 0 && $(`#${messageId}`).length === 0;
 
-           } else if (description.length > 0 && $("#" + DOM_ID.DESCRIPTION_MSG).length == 0) {
-              description.prev().remove();
-              // This will add a description to the Couchbase Connector field
-              description.last().after("<div id='" + DOM_ID.DESCRIPTION_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Please enter the details of your request. A member of our support staff will respond as soon as possible.</p></div>");
-           } else if (market_place.length > 0 && isAnonmymous /*&& $("#" + DOM_ID.MARKET_PLACE_MSG).length == 0*/) {
-              market_place.parent().remove();
-              // This will add a description to the Couchbase Market Place field
-              //market_place.last().after("<div id='" + DOM_ID.MARKET_PLACE_MSG + "'></div>");  
-              //market_place.parent().parent().parent().after("<div id='" + DOM_ID.MARKET_PLACE_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review our <a href=\"https://www.couchbase.com/support-policy/EOL\" target=\"_blank\" rel=\"noopener noreferrer\">End Of Life (EOL) Policy</a></p></div>");  
-            } else if (logs.length > 0 && $("#" + DOM_ID.LOGS_CHECK_MSG).length == 0) {
-              // This will add a description to the Couchbase Logs field
-              logs.next().html("<div id='" + DOM_ID.LOGS_CHECK_MSG + "' class='form-field' style='display: inline-block;'><p style='color: rgb(47, 57, 65); font-size: 14px; font-weight: 600;'>I understand and will <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#server_logs\" target=\"_blank\" rel=\"noopener noreferrer\">collect and share the logs with Support</a> shortly after ticket is created.</p></div>");
-              //logs.next().html("<div id='" + DOM_ID.LOGS_CHECK_MSG + "' class='form-field' style='padding-left: 10px;display: inline-block;'><p style='color: black; font-weight: bold;'>I understand and will <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#server_logs\" target=\"_blank\" rel=\"noopener noreferrer\">collect and share the logs with Support</a> shortly after ticket is created.</p></div>");
-            } else if (attachments.length > 0 && $("#" + DOM_ID.ATTACHMENTS_MSG).length == 0) {
-              // This will add a description to the Couchbase Attachments field
-              attachments.parent().append("<div id='" + DOM_ID.ATTACHMENTS_MSG + "'></div><div class='form-field' style='margin-top:5px'><p>Review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>").insertAfter("#upload-dropzone");
+            // Process each field type
+            if (shouldProcessField(fields.server, DOM_ID.SERVER_MSG)) {
+              fields.server.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.SERVER_MSG, 
+                  'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+              );
+              observerValue.observe(fields.server[0], configValue);
+            } else if (shouldProcessField(fields.client, DOM_ID.CLIENT_MSG)) {
+              fields.client.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.CLIENT_MSG,
+                  'Provide the complete version (major.minor.maintenance) in the details section and send us the <a href="https://support.couchbase.com/hc/en-us/articles/218320083#client_logs" target="_blank" rel="noopener noreferrer">server and server SDK logs</a>.')
+              );
+              observerValue.observe(fields.client[0], configValue);
+            } else if (shouldProcessField(fields.mobile, DOM_ID.SYNC_GATEWAY_MSG)) {
+              fields.mobile.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.SYNC_GATEWAY_MSG,
+                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
+              );
+              observerValue.observe(fields.mobile[0], configValue);
+            } else if (shouldProcessField(fields.cblite, DOM_ID.LITE_MSG)) {
+              fields.cblite.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.LITE_MSG,
+                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
+              );
+              observerValue.observe(fields.cblite[0], configValue);
+            } else if (shouldProcessField(fields.edge, DOM_ID.EDGE_MSG)) {
+              fields.edge.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.EDGE_MSG,
+                  'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+              );
+              observerValue.observe(fields.edge[0], configValue);
+            } else if (shouldProcessField(fields.operator, DOM_ID.OPERATOR_MSG)) {
+              fields.operator.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.OPERATOR_MSG,
+                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">server and operator logs</a>.')
+              );
+              observerValue.observe(fields.operator[0], configValue);
+            } else if (shouldProcessField(fields.impact, DOM_ID.IMPACT_MSG)) {
+              fields.impact.parent().parent().parent().after(
+                createMessageHtml(DOM_ID.IMPACT_MSG,
+                  'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">priority definitions</a>.')
+              );
+            } else if (shouldProcessField(fields.critical, DOM_ID.CRITICAL_MSG)) {
+              fields.critical.after(
+                createMessageHtml(DOM_ID.CRITICAL_MSG,
+                  'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">how to escalate your support ticket</a>.')
+              );
+
+              // Configure critical field styling and behavior
+              const criticalField = $(fields.critical);
+              criticalField.css({'max-height': '65px', 'min-height': '65px'})
+                          .attr({'rows': '2', 'wrap': 'hard', 'maxlength': '256'})
+                          .on('keypress', function(event) {
+                            const textarea = $(this);
+                            const numberOfLines = ((textarea.val().match(/\n/g) || []).length + 1);
+                            const maxRows = parseInt(textarea.attr('rows'));
+
+                            if (event.which === 13 && numberOfLines === maxRows) {
+                              return false;
+                            }
+                          });
+            } else if (shouldProcessField(fields.description, DOM_ID.DESCRIPTION_MSG)) {
+              fields.description.prev().remove();
+              fields.description.last().after(
+                createMessageHtml(DOM_ID.DESCRIPTION_MSG,
+                  'Please enter the details of your request. A member of our support staff will respond as soon as possible.')
+              );
+            } else if (fields.market_place.length > 0 && isAnonmymous) {
+              fields.market_place.parent().remove();
+            } else if (shouldProcessField(fields.logs, DOM_ID.LOGS_CHECK_MSG)) {
+              fields.logs.next().html(
+                `<div id="${DOM_ID.LOGS_CHECK_MSG}" class="form-field" style="display: inline-block;">
+                  <p style="color: rgb(47, 57, 65); font-size: 14px; font-weight: 600;">
+                    I understand and will <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">collect and share the logs with Support</a> shortly after ticket is created.
+                  </p>
+                </div>`
+              );
+            } else if (shouldProcessField(fields.attachments, DOM_ID.ATTACHMENTS_MSG)) {
+              fields.attachments.parent()
+                .append(createMessageHtml(DOM_ID.ATTACHMENTS_MSG,
+                  'Review instructions for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">Working with the Couchbase Support Team</a> on how to upload larger files.'))
+                .insertAfter("#upload-dropzone");
             }
           }
         }
