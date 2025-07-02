@@ -17,10 +17,7 @@
       {{t 'submit_a_request'}}
     </h1>
     <div id="main-content" class="form">
-      <div id="invalidOrganization" style="display: none">
-        <h3> To submit a case and access available support channels, you must be registered under a valid organization.</h3>
-        <h3>Please <a id="sign_out_link" href="/access/logout?return_to=[zendesk_domain_url]{{page_path 'help_center'}}">sign out</a> , self-register using your company email address, and then sign in again with that account.</h3>
-      </div>
+      <div id="invalidOrganization" style="display: none"></div>
       <div id="new-request-form"></div>
     </div>
   {{else}}
@@ -61,6 +58,7 @@
 </div>
 
 <script type="module">
+  import * as couchbase from "couchbase";
   import { renderNewRequestForm } from "new-request-form";
 
   const container = document.getElementById("new-request-form");
@@ -91,12 +89,17 @@
   });
 
   const formId = Object.freeze(props.requestForm.ticket_form_field.value);
-  isAnonmymous = Object.freeze((props.userRole === "anonymous"));
-  const hasOrganization = Object.freeze(props.organizations.length > 0);
   const indexEol = [];
   const indexClient = [];
+  
+  isAnonymous = couchbase.isAnonymous();
+  //window.isAnonymous = isAnonymous;
+  const hasOrganization = couchbase.hasOrganization();
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled();
+  const isOrganizationOnHold = couchbase.isOrganizationOnHold();
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly();
 
-  if (isAnonmymous || !hasOrganization) {
+  if (isAnonymous || !isOrganizationEntitled || isOrganizationOnHold || isCapellaEntitlementOnly || !hasOrganization) {
     //props.requestForm.ticket_form_field.options = [];
     /*for (let i = props.requestForm.ticket_form_field.options.length - 1; i >= 0; i--) {
       const value = props.requestForm.ticket_form_field.options[i].name;
@@ -112,15 +115,42 @@
       options.splice(noImpactIndex + 1);
     }
     props.requestForm.ticket_form_field.value = "1260811052249";*/
-    
-    if (!hasOrganization) {
+  
+    /*const domainName = window.location.origin;
+    const node = $("#sign_out_link")
+    const updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
+    node.attr("href", updatedHref);
+    $("#invalidOrganization").css("display", "block");
+    $("#new-request-form").css("display", "none");*/
+    //$("#new-request-form").remove();
+    const $invalidOrg = $("#invalidOrganization").empty().show();
+    $("#new-request-form").hide();
+
+    let message = "";
+    if (isOrganizationOnHold) {
+      message = "<h3>" + couchbase.ON_HOLD_MESSAGE + "</h3>";
+    } else if (!hasOrganization) {
+      message = "<h3>" + couchbase.NO_ORGANIZATION_MESSAGE + "</h3>";
+    } else if (!isOrganizationEntitled) {
       const domainName = window.location.origin;
-      const node = $("#sign_out_link")
-      const updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
-      node.attr("href", updatedHref);
-      $("#invalidOrganization").css("display", "block");
-      $("#new-request-form").css("display", "none");
+      message = `
+        <h3>${couchbase.NO_ENTITLEMENT_MESSAGE}</h3>
+        <h3>
+          Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a>, self-register using your company email address, and then sign in again with that account.
+        </h3>
+      `;
+    } else if (isCapellaEntitlementOnly) {
+      message = '<h3>' + couchbase.CAPELLA_ONLY_MESSAGE + '</h3>';
     }
+    if (message) $invalidOrg.append(message);
+       //$( "#create_ticket_block" ).hide();
+    /*if (!hasOrganization) {
+      const domainName = window.location.origin;
+      //const node = $("#sign_out_link")
+      //const updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
+      //node.attr("href", updatedHref);
+      $("#invalidOrganization").append('<h3>Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a> , self-register using your company email address, and then sign in again with that account.</h3>');
+    }*/
   } else {
 
     if (formId != null) {
@@ -282,7 +312,7 @@
   /*$(document).submit(function() {
       window.open("https://support.couchbase.com/hc/en-us/articles/218320083#support_server_logs", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=768,height=768");
   });*/
-  let isAnonmymous = false;
+  let isAnonymous = false;
   const currentURL = window.location.href;
   const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
 
@@ -618,7 +648,7 @@
                 createMessageHtml(DOM_ID.DESCRIPTION_MSG,
                   'Please enter the details of your request. A member of our support staff will respond as soon as possible.')
               );
-            } else if (fields.market_place.length > 0 && isAnonmymous) {
+            } else if (fields.market_place.length > 0 && isAnonymous) {
               fields.market_place.parent().remove();
             } else if (shouldProcessField(fields.logs, DOM_ID.LOGS_CHECK_MSG)) {
               fields.logs.next().html(

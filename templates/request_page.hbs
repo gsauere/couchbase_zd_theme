@@ -369,7 +369,7 @@
         });
       });
 
-      const canEscalate = Object.freeze((status, ent, isManager) => {
+      const isEscalatable = Object.freeze((status, ent, isManager) => {
         return (ENABLE_ACTION_SECTION && status !== "solved" && (ent.includes("gold") || ent.includes("platinum") || isManager));
       });
 
@@ -484,7 +484,7 @@
         //console.log(ent + " - " + priority)
 
         $("#call_request_action").remove();
-        if (canEscalate(status, ent, isManager)) {
+        if (isEscalatable(status, ent, isManager)) {
     			$("#customer_action_section").show();
           /*if (priority == "p1") { //|| priority == "p2"
   					 //$("#call_request_action").show();

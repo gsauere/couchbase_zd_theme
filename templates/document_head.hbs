@@ -20,6 +20,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-MVPNN2');</script>
 <!-- End Google Tag Manager -->
 
+<script type="text/javascript">
+  if (!(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) {
+    document.write('<script async src="{{asset 'es-module-shims.js'}}"><\/script>');
+  }
+</script>
+<!--script src="{{asset 'couchbase.js'}}"></script-->
+<!-- END NEW -->
+
 <!-- OneTrust Cookies Consent Notice start for couchbase.com -->
 <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"  type="text/javascript" charset="UTF-8" data-domain-script="748511ff-10bf-44bf-88b8-36382e5b5fd9" ></script>
 <script type="text/javascript">
@@ -45,7 +53,8 @@ function OptanonWrapper() { }
     "flash-notifications": "{{asset 'flash-notifications-bundle.js'}}",
     "new-request-form-translations": "{{asset 'new-request-form-translations-bundle.js'}}",
     "shared": "{{asset 'shared-bundle.js'}}",
-    "wysiwyg": "{{asset 'wysiwyg-bundle.js'}}"
+    "wysiwyg": "{{asset 'wysiwyg-bundle.js'}}",
+    "couchbase": "{{asset 'couchbase-bundle.js'}}"
   }
 }
 </script>

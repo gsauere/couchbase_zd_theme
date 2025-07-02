@@ -21,89 +21,78 @@
   {{#if signed_in}}
     <section class="section knowledge-base">
       <div id="invalidOrganization" style="display: none">
-          <div id="entitlementOnHold" style="display: none">
-            <div class="warning-banner">
-              <p>Your organization's support entitlement is currently on hold. Please contact your sales representative for any questions.</p>
-            </div>
-          </div>
-          <div id="organizationNotEntitled" style="display: none">
-            <div class="warning-banner">
-              <p>Your organization is not entitled to support. Please contact your sales representative for any questions.</p>
-            </div>
-          </div>
-          <h1 class="blocks-section-header">Enterprise Support</h1>
-          <section class="categories blocks">
-            <ul class="blocks-list">
-              <li class="blocks-item">
-                <a href='{{page_path "sign_in"}}' class="blocks-item-link">
-                  <i class="fas fa-user-tie fa-4x"></i>
-                  <h1 class="blocks-item-title-minor">My Account</h1>
-                  <p class="blocks-item-description"></p>
-                </a>
-              </li>
-              <li class="blocks-item">
-                <a href='articles/360043247551' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
-                  <i class="fas fa-user-plus fa-4x"></i>
-                  <h1 class="blocks-item-title-minor">Getting Started with Support</h1>
-                  <p class="blocks-item-description"></p>
-                </a>
-              </li>
-            </ul>
-            {{pagination}}
-          </section>
+        <div class="warning-banner"></div>
+        <h1 class="blocks-section-header">Enterprise Support</h1>
+        <section class="categories blocks">
+          <ul class="blocks-list">
+            <li class="blocks-item">
+              <a href='{{page_path "sign_in"}}' class="blocks-item-link">
+                <i class="fas fa-user-tie fa-4x"></i>
+                <h1 class="blocks-item-title-minor">My Account</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+            <li class="blocks-item">
+              <a href='articles/360043247551' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+                <i class="fas fa-user-plus fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Getting Started with Support</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+          </ul>
+          {{pagination}}
+        </section>
 
-          <hr>
+        <hr>
 
-          <h1 class="blocks-section-header">Couchbase Capella Support</h1>
-          <section class="categories blocks">
-            <ul class="blocks-list">
-              <li class="blocks-item">
-                <a href='https://cloud.couchbase.com/' class="blocks-item-link">
-                  <i class="fas fa-cloud fa-4x"></i>
-                  <h1 class="blocks-item-title-minor">Capella Support Portal</h1>
-                  <p class="blocks-item-description"></p>
-                </a>
-              </li>
-              <li class="blocks-item">
-                <a href='https://www.couchbase.com/forums/c/couchbase-capella/41' class="blocks-item-link">
-                  <i class="fas fa-user-friends fa-4x"></i>
-                  <h1 class="blocks-item-title-minor">Capella Forum</h1>
-                  <p class="blocks-item-description"></p>
-                </a>
-              </li>
-            </ul>
-            {{pagination}}
-          </section>
+        <h1 class="blocks-section-header">Couchbase Capella Support</h1>
+        <section class="categories blocks">
+          <ul class="blocks-list">
+            <li class="blocks-item">
+              <a href='https://cloud.couchbase.com/' class="blocks-item-link">
+                <i class="fas fa-cloud fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Capella Support Portal</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+            <li class="blocks-item">
+              <a href='https://www.couchbase.com/forums/c/couchbase-capella/41' class="blocks-item-link">
+                <i class="fas fa-user-friends fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Capella Forum</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+          </ul>
+          {{pagination}}
+        </section>
 
-          <hr>
+        <hr>
 
-          <h1 class="blocks-section-header">Community Support</h1>
-          <section class="categories blocks">
-            <ul class="blocks-list">
-              <li class="blocks-item">
-                <a href='https://www.couchbase.com/forums/' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
-                  <i class="fas fa-user-friends fa-4x"></i>
-                  <h1 class="blocks-item-title-minor">Couchbase Forums</h1>
-                  <p class="blocks-item-description"></p>
-                </a>
-              </li>
-              <li class="blocks-item">
-                <a href='https://learn.couchbase.com/store' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
-                  <icon :id="'community'"></icon>
-                  <i class="fas fa-chalkboard-teacher fa-4x"></i>
-                  <h1 class="blocks-item-title-minor">Free Training</h1>
-                  <p class="blocks-item-description"></p>
-                </a>
-              </li>
-            </ul>
-            {{pagination}}
-          </section>
+        <h1 class="blocks-section-header">Community Support</h1>
+        <section class="categories blocks">
+          <ul class="blocks-list">
+            <li class="blocks-item">
+              <a href='https://www.couchbase.com/forums/' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+                <i class="fas fa-user-friends fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Couchbase Forums</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+            <li class="blocks-item">
+              <a href='https://learn.couchbase.com/store' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+                <icon :id="'community'"></icon>
+                <i class="fas fa-chalkboard-teacher fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Free Training</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+          </ul>
+          {{pagination}}
+        </section>
       </div>
       <div id="validOrganization" style="display: block">
         <div id="capellaEntitlementOnly" style="display: none">
-          <div class="warning-banner">
-            <p>Your organization is entitled to Capella support only. Please use Control Plane to create your support tickets.</p>
-          </div>
+          <div class="warning-banner"></div>
         </div>
           <h2 class="visibility-hidden">{{ t 'categories' }}</h2>
           <section class="categories blocks">
@@ -279,6 +268,7 @@
   {{/if}}
 
 <script type="module">
+  import * as couchbase from "couchbase";
   const settings = {{json settings}};
 
    const props = {
@@ -293,68 +283,43 @@
     wysiwyg: true
   };
 
-  const isAnonmymous = props.userRole.indexOf("anonymous") != -1;
-  const hasOrganization = props.organizations.length > 0;
-  
-  const checkOrganizationEntitlement = () => {
-    const orgs = HelpCenter.user.organizations;
-    for (var c in orgs) {
-      if (orgs[c].tags.includes('entitled_customer')) {
-        return true;
-      }
-    }
-    return false;
-  }
-  const checkOrganizationOnHold = () => {
-    const orgs = HelpCenter.user.organizations;
-    for (var c in orgs) {
-      if (orgs[c].tags.includes('entitlement__on__hold')) {
-        return true;
-      }
-    }
-    return false;
-  }
-  const checkCapellaEntitlementOnly = () => {
-    const orgs = HelpCenter.user.organizations;
-    let isCapellaEntitlementOnly = false;
-    for (const org of orgs) {
-      const tags = org.tags || [];
-      if (
-        tags.some(tag =>
-          tag.includes("entitlement_override") ||
-          tag.includes("entitlement__server") ||
-          tag.includes("entitlement__mobile") ||
-          tag.includes("entitlement__edge")
-        )
-      ) {
-        return false;
-      }
-      if (tags.includes("entitlement__capella")) {
-        isCapellaEntitlementOnly = true;
-      }
-    }
-    return isCapellaEntitlementOnly;
-  };
+  const isAnonymous = couchbase.isAnonymous();
+  const hasOrganization = couchbase.hasOrganization();
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled();
+  const isOrganizationOnHold = couchbase.isOrganizationOnHold();
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly();
 
-  const isOrganizationEntitled = checkOrganizationEntitlement();
-  const isOrganizationOnHold = checkOrganizationOnHold();
-  const isCapellaEntitlementOnly = checkCapellaEntitlementOnly();
+  // Hide all banners initially
+  $("#validOrganization, #invalidOrganization, #capellaEntitlementOnly").hide();
 
   if (!isOrganizationEntitled || isOrganizationOnHold) {
-    $("#invalidOrganization").css("display", "block");
-    if (isOrganizationOnHold) {
-      $("#entitlementOnHold").css("display", "block");
-    } else if (!isOrganizationEntitled && hasOrganization) {
-      $("#organizationNotEntitled").css("display", "block");
-    }
-    $("#validOrganization").css("display", "none");
-  } else if (isCapellaEntitlementOnly) {
-    // Check organization and hide opening a ticket for Capella
-    $("#capellaEntitlementOnly").css("display", "block");
-    $("#create_ticket").attr("href", "https://cloud.couchbase.com/");
-    //$( "#create_ticket_block" ).hide();
-  }
+    $("#invalidOrganization").show();
 
+    let message = "";
+    if (isOrganizationOnHold) {
+      message = couchbase.ON_HOLD_MESSAGE;
+    } else if (!hasOrganization) {
+      message = couchbase.NO_ORGANIZATION_MESSAGE;
+    } else if (!isOrganizationEntitled) {
+      message = couchbase.NO_ENTITLEMENT_MESSAGE;
+    }
+    if (message) {
+      $("#invalidOrganization .warning-banner").replaceWith(
+        `<div class='warning-banner'><p>${message}</p></div>`
+      );
+    }
+  } else {
+    $("#validOrganization").show();
+    $("#tabs").tabs();
+
+    if (isCapellaEntitlementOnly) {
+      $("#capellaEntitlementOnly").show();
+      $("#capellaEntitlementOnly .warning-banner").replaceWith(
+        `<div class='warning-banner'><p>${couchbase.CAPELLA_ONLY_MESSAGE}</p></div>`
+      );
+      $("#create_ticket").attr("href", "https://cloud.couchbase.com/");
+    }
+  }
 </script>
 
 {{!--
@@ -370,9 +335,3 @@
   {{/if}}
 --}}
 </div>
-
-<script type="text/javascript">
-  $( function() {
-      $( "#tabs" ).tabs();
-   });
-</script>

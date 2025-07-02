@@ -113,3 +113,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
 </header>
+
+<script type="module">
+  import * as couchbase from "couchbase";
+  
+  // Use couchbase utility functions for consistency and efficiency
+  const isEntitled = couchbase.isOrganizationEntitled();
+  const isOnHold = couchbase.isOrganizationOnHold();
+  const isCapellaOnly = couchbase.isCapellaEntitlementOnly();
+
+  const $contactUsLink = $("#contact_us :first-child");
+  const $mobileCreateTicket = $("#mobile_create_ticket");
+
+  if (!isEntitled || isOnHold) {
+    $contactUsLink.remove();
+    $mobileCreateTicket.remove();
+  } else if (isCapellaOnly) {
+    const capellaUrl = "https://cloud.couchbase.com/";
+    $contactUsLink.attr("href", capellaUrl);
+    $mobileCreateTicket.find(":first-child").attr("href", capellaUrl);
+  }
+  </script>

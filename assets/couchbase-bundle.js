@@ -1,0 +1,48 @@
+export const ON_HOLD_MESSAGE  = "Your organization's support entitlement is currently on hold. Please contact your account manager for any questions.";
+export const CAPELLA_ONLY_MESSAGE = "Your organization is currently entitled to Capella support only. To submit support tickets, please use <a style='color: darkblue; text-decoration: underline;' href='https://cloud.couchbase.com/'>Couchbase Cloud Support Portal</a>.";
+export const NO_ENTITLEMENT_MESSAGE = "Your organization does not currently have an active support entitlement. If you have any questions, please contact your account manager.";
+export const NO_ORGANIZATION_MESSAGE = "The email domain you registered with is not associated with any valid organization. If you believe this is correct, please contact your account manager to have your email domain added to an organization. Otherwise, please self-register using an appropriate email domain for the organization you will be submitting tickets for.The email domain you registered with is not associated with any valid organization. If you believe this is correct, please contact your account manager to have your email domain added to an organization. Otherwise, please self-register using the appropriate email domain for the organization on whose behalf you will be submitting tickets.";
+
+// Check if the user is anonymous
+export const isAnonymous = () => {
+  return Object.freeze(HelpCenter.user?.role === "anonymous");
+}
+// Attach to window for global access
+//window.isAnonymous = isAnonymous;
+
+// Check if the user has an organization
+export const hasOrganization = () => {
+  const orgs = HelpCenter.user.organizations;
+  return orgs && orgs.length > 0;
+}
+
+// Check if the user's organization is entitled
+export const isOrganizationEntitled = () => {
+  const orgs = HelpCenter.user.organizations;
+  return orgs.some(org => org.tags.includes('entitled_customer'));
+}
+
+// Check if the user's organization is on hold
+export const isOrganizationOnHold = () => {
+  const orgs = HelpCenter.user.organizations;
+  return orgs.some(org => org.tags.includes('entitlement__on_hold'));
+}
+
+// Check if the user's organization is entitled to Capella support only
+export const isCapellaEntitlementOnly = () => {
+  const orgs = HelpCenter.user.organizations;
+  const hasOtherEntitlements = orgs.some(org => {
+    const tags = org.tags || [];
+    return tags.some(tag =>
+      tag.includes("entitlement_override") ||
+      tag.includes("entitlement__server") ||
+      tag.includes("entitlement__mobile") ||
+      tag.includes("entitlement__edge")
+    );
+  });
+  
+  if (hasOtherEntitlements) return false;
+  
+  return orgs.some(org => (org.tags || []).includes("entitlement__capella"));
+};
+
