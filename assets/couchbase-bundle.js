@@ -3,7 +3,21 @@ export const CAPELLA_ONLY_MESSAGE = "Your organization is currently entitled to 
 export const NO_ENTITLEMENT_MESSAGE = "Your organization does not currently have an active support entitlement. If you have any questions, please contact your account manager.";
 export const NO_ORGANIZATION_MESSAGE = "The email domain you registered with is not associated with any valid organization. If you believe this is correct, please contact your account manager to have your email domain added to an organization. Otherwise, please self-register using an appropriate email domain for the organization you will be submitting tickets for.The email domain you registered with is not associated with any valid organization. If you believe this is correct, please contact your account manager to have your email domain added to an organization. Otherwise, please self-register using the appropriate email domain for the organization on whose behalf you will be submitting tickets.";
 
-// Check if the user is anonymous
+export const CC_FIELD_LABEL = "Additional contacts you would like to include:";
+export const ATTACHMENTS_FIELD_LABEL = "Attachments (maximum attachment size 50MB)";
+export const IMPACT_LABEL = "Please select your Environment followed by Current Impact";
+export const IMPACT_DESCRIPTION = "Briefly describe your business impact (max 2 lines)";
+
+export const SDK_OR_CONNECTOR_LABEL = "Is this SDK or Connector related?";
+export const LITE_LABEL = "Is this Couchbase Lite related?";
+export const SYNC_GATEWAY_LABEL = "Are you replicating with Sync Gateway?";
+
+export const MARKET_PLACE_LABEL = "Is this ticket for a Private Marketplace account?";
+export const MARKET_PLACE_DESCRIPTION = "Please select this field if you are a private marketplace customer";
+export const LOGS_AGREEMENT_LABEL = "I understand and will collect and share the logs with Support shortly after ticket is created.";
+export const LOGS_AGREEMENT_DESCRIPTION = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
+
+ // Check if the user is anonymous
 export const isAnonymous = () => {
   return Object.freeze(HelpCenter.user?.role === "anonymous");
 }

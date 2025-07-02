@@ -155,20 +155,20 @@
 
     if (formId != null) {
       // Set common field labels
-      props.requestForm.cc_field.label = "Additional contacts you would like to include:";
-      props.requestForm.attachments_field.label = "Attachments (maximum attachment size 50MB)";
+      props.requestForm.cc_field.label = couchbase.CC_FIELD_LABEL;
+      props.requestForm.attachments_field.label = couchbase.ATTACHMENTS_FIELD_LABEL;
 
       const isQuestionOrSuggestion = formId === getFormId().QUESTION || formId === getFormId().SUGGESTION;
       
       if (isQuestionOrSuggestion) {
         // Handle Question/Suggestion form
-        props.requestForm.ticket_fields[4].label = "Is this ticket for a Private Marketplace account?";
-        props.requestForm.ticket_fields[4].description = "Please select this field if you are a private marketplace customer";
+        props.requestForm.ticket_fields[4].label = couchbase.MARKET_PLACE_LABEL;
+        props.requestForm.ticket_fields[4].description = couchbase.MARKET_PLACE_DESCRIPTION;
         indexEol.push(0);
       } else {
         // Handle other form types
-        props.requestForm.ticket_fields[0].label = "Please select your Environment followed by Current Impact";
-        props.requestForm.ticket_fields[1].label = "Briefly describe your business impact (max 2 lines)";
+        props.requestForm.ticket_fields[0].label = couchbase.IMPACT_LABEL;
+        props.requestForm.ticket_fields[1].label = couchbase.IMPACT_DESCRIPTION;
         indexEol.push(2);
 
         // Filter options for non-question/suggestion forms
@@ -197,56 +197,56 @@
         const formConfigs = {
           [getFormId().SERVER]: {
             fields: {
-              4: { label: "Is this SDK or Connector related?" },
+              4: { label: couchbase.SDK_OR_CONNECTOR_LABEL },
               9: { 
-                label: "Is this ticket for a Private Marketplace account?",
-                description: "Please select this field if you are a private marketplace customer"
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
               },
               12: {
-                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
-                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
               }
             },
             indices: { client: [5] }
           },
           [getFormId().MOBILE]: {
             fields: {
-              6: { label: "Is this Couchbase Lite related?" },
+              6: { label: couchbase.LITE_LABEL },
               11: {
-                label: "Is this ticket for a Private Marketplace account?",
-                description: "Please select this field if you are a private marketplace customer"
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
               },
               14: {
-                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
-                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
               }
             },
             indices: { eol: [4], client: [7] }
           },
           [getFormId().EDGE]: {
             fields: {
-              4: { label: "Is this Couchbase Lite related?" },
+              4: { label: couchbase.SYNC_GATEWAY_LABEL },
+              9: { label: couchbase.LITE_LABEL },
               14: {
-                label: "Is this ticket for a Private Marketplace account?",
-                description: "Please select this field if you are a private marketplace customer"
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
               },
               17: {
-                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
-                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
               }
             },
             indices: { eol: [5, 7], client: [10] }
           },
           [getFormId().OPERATOR]: {
             fields: {
-              4: { label: "Is this Autonomous Operator related?" },
               8: {
-                label: "Is this ticket for a Private Marketplace account?",
-                description: "Please select this field if you are a private marketplace customer"
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
               },
               11: {
-                label: "I understand and will collect and share the logs with Support shortly after ticket is created.",
-                description: "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience."
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
               }
             },
             indices: { eol: [4] }
@@ -344,36 +344,37 @@
   }
 
   $(function() {
-    function getZdCustomFieldId(condition = isSandbox) {
-      if (condition) {
-        return {
-          IMPACT: 360041809432,
-          CRITICAL: 360044104892,
-          SERVER: 360041809492,
-          SYNC_GATEWAY: 360041809512,
-          HAS_SDK: 31131035055771,
-          CLIENT: 360041784231,
-          LITE: 360041784251,
-          EDGE: 34621365112091,
-          OPERATOR: 360041809732,
-          MARKET_PLACE: 8050543819035,
-          LOGS_AGREEMENT: 1260822948929
-        };
-      } else {
-        return {
-          IMPACT: 21227650,
-          CRITICAL: 360045140512,
-          SERVER: 20518787,
-          SYNC_GATEWAY: 21076534,
-          HAS_SDK: 31156791679259,
-          CLIENT: 21076524,
-          LITE: 21115995,
-          EDGE: 34620727056155,
-          OPERATOR: 360030664772,
-          MARKET_PLACE: 12734656072219,
-          LOGS_AGREEMENT: 1900002551744
-        };
+    const ZD_CUSTOM_FIELD_IDS = {
+      sandbox: {
+        IMPACT: 360041809432,
+        CRITICAL: 360044104892,
+        SERVER: 360041809492,
+        SYNC_GATEWAY: 360041809512,
+        HAS_SDK: 31131035055771,
+        CLIENT: 360041784231,
+        LITE: 360041784251,
+        EDGE: 34621365112091,
+        OPERATOR: 360041809732,
+        MARKET_PLACE: 8050543819035,
+        LOGS_AGREEMENT: 1260822948929
+      },
+      production: {
+        IMPACT: 21227650,
+        CRITICAL: 360045140512,
+        SERVER: 20518787,
+        SYNC_GATEWAY: 21076534,
+        HAS_SDK: 31156791679259,
+        CLIENT: 21076524,
+        LITE: 21115995,
+        EDGE: 34620727056155,
+        OPERATOR: 360030664772,
+        MARKET_PLACE: 12734656072219,
+        LOGS_AGREEMENT: 1900002551744
       }
+    };
+
+    function getZdCustomFieldId(condition = isSandbox) {
+      return condition ? ZD_CUSTOM_FIELD_IDS.sandbox : ZD_CUSTOM_FIELD_IDS.production;
     }
     // Usage:
     // const ZD_CUSTOM_FIELD_ID = getZdCustomFieldId(yourCondition);
@@ -441,29 +442,29 @@
     ]
 
     function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintenanceValues, value) {
-      const $element = $(id);
-      $element.empty();
+      const $element = $(id).empty();
 
-      // Check for End of Life version first
-      if (new RegExp(END_OF_LIFE_TAG).test(value)) {
-        $element.html(`
-          <div class='end_of_life'>
+      // Precompile regexes for efficiency
+      const endOfLifeRegex = new RegExp(END_OF_LIFE_TAG);
+
+      if (endOfLifeRegex.test(value)) {
+        $element.html(
+          `<div class='end_of_life'>
             You have selected an <b>End of Life</b> version. We strongly advise you to migrate to a supported version at your earliest convenience. 
             You will receive Support if you have purchased Extended Support for this version. Please contact your Account Manager if you have an inquire about this offering.
-          </div>
-        `);
+          </div>`
+        );
         return false;
       }
 
-      // Check for End of Full Maintenance versions
-      const endOfFullMaintenancePattern = endOfFullMaintenanceValues.find(val => new RegExp(val).test(value));
-      if (endOfFullMaintenancePattern) {
-        $element.html(`
-          <div class='end_of_full_maintanence'>
+      // Use Array.prototype.some for early exit and avoid unnecessary regex creation
+      if (endOfFullMaintenanceValues.some(pattern => new RegExp(pattern).test(value))) {
+        $element.html(
+          `<div class='end_of_full_maintanence'>
             You have selected an <b>End of Full Maintenance</b> version. We strongly advise you to migrate to a maintained version to benefit from fixes. 
             Please contact your Account Manager if you have an inquire about Extended Maintenance which is available for Couchbase Server.
-          </div>
-        `);
+          </div>`
+        );
         return false;
       }
 
@@ -583,43 +584,43 @@
 
             // Process each field type
             if (shouldProcessField(fields.server, DOM_ID.SERVER_MSG)) {
-              fields.server.parent().parent().parent().after(
+              fields.server.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.SERVER_MSG, 
                   'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
               );
               observerValue.observe(fields.server[0], configValue);
             } else if (shouldProcessField(fields.client, DOM_ID.CLIENT_MSG)) {
-              fields.client.parent().parent().parent().after(
+              fields.client.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.CLIENT_MSG,
                   'Provide the complete version (major.minor.maintenance) in the details section and send us the <a href="https://support.couchbase.com/hc/en-us/articles/218320083#client_logs" target="_blank" rel="noopener noreferrer">server and server SDK logs</a>.')
               );
               observerValue.observe(fields.client[0], configValue);
             } else if (shouldProcessField(fields.mobile, DOM_ID.SYNC_GATEWAY_MSG)) {
-              fields.mobile.parent().parent().parent().after(
+              fields.mobile.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.SYNC_GATEWAY_MSG,
                   'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
               );
               observerValue.observe(fields.mobile[0], configValue);
             } else if (shouldProcessField(fields.cblite, DOM_ID.LITE_MSG)) {
-              fields.cblite.parent().parent().parent().after(
+              fields.cblite.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.LITE_MSG,
                   'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
               );
               observerValue.observe(fields.cblite[0], configValue);
             } else if (shouldProcessField(fields.edge, DOM_ID.EDGE_MSG)) {
-              fields.edge.parent().parent().parent().after(
+              fields.edge.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.EDGE_MSG,
                   'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
               );
               observerValue.observe(fields.edge[0], configValue);
             } else if (shouldProcessField(fields.operator, DOM_ID.OPERATOR_MSG)) {
-              fields.operator.parent().parent().parent().after(
+              fields.operator.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.OPERATOR_MSG,
                   'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">server and operator logs</a>.')
               );
               observerValue.observe(fields.operator[0], configValue);
             } else if (shouldProcessField(fields.impact, DOM_ID.IMPACT_MSG)) {
-              fields.impact.parent().parent().parent().after(
+              fields.impact.parent().parent().parent().parent().parent().append(
                 createMessageHtml(DOM_ID.IMPACT_MSG,
                   'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">priority definitions</a>.')
               );
@@ -643,8 +644,9 @@
                             }
                           });
             } else if (shouldProcessField(fields.description, DOM_ID.DESCRIPTION_MSG)) {
-              fields.description.prev().remove();
-              fields.description.last().after(
+              const descriptionParent = fields.description.parent();
+              descriptionParent.children().eq(1).remove();
+              descriptionParent.append(
                 createMessageHtml(DOM_ID.DESCRIPTION_MSG,
                   'Please enter the details of your request. A member of our support staff will respond as soon as possible.')
               );
