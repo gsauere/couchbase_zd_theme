@@ -30,20 +30,7 @@
           {{t 'submit_a_request'}}
         </h1>
         <div id="main-content" class="form">
-          <div id="notSignedMsg" style="display: block">
-            <h3>To submit a case and access available support channels, please self-register using your company email address and sign in 
-              {{#link "sign_in" class="sign-in"}}here
-              {{!--t 'sign_in'--}}
-              {{/link}}.
-            </h3>
-            {{!--
-            <p>If you are unable to sign in, click <a href="/hc/en-us/requests/new?ticket_form_id=1260811052249">here</a>.</p>
-            --}}
-            {{!--
-            <p>If you are unable to sign in, click <a href="javascript:void(0);" onclick="show();">here</a>.</p>
-            --}}
-            <h3>Contact your account manager if you are unable to self-register or sign-in.</h3>
-          </div>
+          <div id="invalidOrganization" style="display: block"></div>
           <!--div id="notSignedForm" style="display: none">
             <h2>Before you start, <span style="color: red;">please read</span>:</h2>
             <ul class="sso-form-notes" style="margin-top:-10px">
@@ -128,19 +115,21 @@
 
     let message = "";
     if (isOrganizationOnHold) {
-      message = "<h3>" + couchbase.ON_HOLD_MESSAGE + "</h3>";
+      message = "<div class='warning-banner'><p>" + couchbase.ON_HOLD_MESSAGE + "</p></div>";
+    } else if (isAnonymous) {
+       message = '<div class="warning-banner"><p>' + couchbase.NO_ORGANIZATION_MESSAGE + '</p></div>';
     } else if (!hasOrganization) {
-      message = "<h3>" + couchbase.NO_ORGANIZATION_MESSAGE + "</h3>";
-    } else if (!isOrganizationEntitled) {
       const domainName = window.location.origin;
       message = `
-        <h3>${couchbase.NO_ENTITLEMENT_MESSAGE}</h3>
-        <h3>
-          Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a>, self-register using your company email address, and then sign in again with that account.
-        </h3>
+        <div class='warning-banner'>
+          <p>${couchbase.NO_ORGANIZATION_MESSAGE}</p>
+          <p>Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a>, self-register using your company email address, and then sign in again with that account.</p>
+        </div>
       `;
+    } else if (!isOrganizationEntitled) {
+      message = '<div class="warning-banner"><p>' + couchbase.NO_ENTITLEMENT_MESSAGE + '</p></div>';
     } else if (isCapellaEntitlementOnly) {
-      message = '<h3>' + couchbase.CAPELLA_ONLY_MESSAGE + '</h3>';
+      message = '<div class="warning-banner"><p>' + couchbase.CAPELLA_ONLY_MESSAGE + '</p></div>';
     }
     if (message) $invalidOrg.append(message);
        //$( "#create_ticket_block" ).hide();
