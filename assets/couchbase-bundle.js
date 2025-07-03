@@ -1,3 +1,4 @@
+export const ANONYMOUS_MESSAGE = "Please sign in using the registered company email address associated with the organization for which you intend to submit tickets. If you are not yet registered, kindly complete the self-registration process.";
 export const ON_HOLD_MESSAGE  = "Your organization's support entitlement is currently on hold. Please contact your account manager for any questions.";
 export const CAPELLA_ONLY_MESSAGE = "Your organization is currently entitled to Capella support only. To submit support tickets, please use <a style='color: darkblue; text-decoration: underline;' href='https://cloud.couchbase.com/'>Couchbase Cloud Support Portal</a>.";
 export const NO_ENTITLEMENT_MESSAGE = "Your organization does not currently have an active support entitlement. If you have any questions, please contact your account manager.";

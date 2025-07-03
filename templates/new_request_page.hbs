@@ -117,7 +117,7 @@
     if (isOrganizationOnHold) {
       message = "<div class='warning-banner'><p>" + couchbase.ON_HOLD_MESSAGE + "</p></div>";
     } else if (isAnonymous) {
-       message = '<div class="warning-banner"><p>' + couchbase.NO_ORGANIZATION_MESSAGE + '</p></div>';
+       message = '<div class="warning-banner"><p>' + couchbase.ANONYMOUS_MESSAGE + '</p></div>';
     } else if (!hasOrganization) {
       const domainName = window.location.origin;
       message = `

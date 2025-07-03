@@ -292,16 +292,18 @@
   // Hide all banners initially
   $("#validOrganization, #invalidOrganization, #capellaEntitlementOnly").hide();
 
-  if (!isOrganizationEntitled || isOrganizationOnHold) {
+  if (!isOrganizationEntitled || isOrganizationOnHold || !hasOrganization || isAnonymous) {
     $("#invalidOrganization").show();
 
     let message = "";
-    if (isOrganizationOnHold) {
-      message = couchbase.ON_HOLD_MESSAGE;
+    if (isAnonymous) {
+      message = couchbase.ANONYMOUS_MESSAGE;
     } else if (!hasOrganization) {
       message = couchbase.NO_ORGANIZATION_MESSAGE;
     } else if (!isOrganizationEntitled) {
       message = couchbase.NO_ENTITLEMENT_MESSAGE;
+    } else if (isOrganizationOnHold) {
+      message = couchbase.ON_HOLD_MESSAGE;
     }
     if (message) {
       $("#invalidOrganization .warning-banner").replaceWith(
