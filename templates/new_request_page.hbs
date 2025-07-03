@@ -115,21 +115,21 @@
 
     let message = "";
     if (isOrganizationOnHold) {
-      message = "<div class='warning-banner'><p>" + couchbase.ON_HOLD_MESSAGE + "</p></div>";
+      message = "<div><p>" + couchbase.ON_HOLD_MESSAGE + "</p></div>";
     } else if (isAnonymous) {
-       message = '<div class="warning-banner"><p>' + couchbase.ANONYMOUS_MESSAGE + '</p></div>';
+       message = '<div><p>' + couchbase.ANONYMOUS_MESSAGE + '</p></div>';
     } else if (!hasOrganization) {
       const domainName = window.location.origin;
       message = `
-        <div class='warning-banner'>
+        <div>
           <p>${couchbase.NO_ORGANIZATION_MESSAGE}</p>
           <p>Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a>, self-register using your company email address, and then sign in again with that account.</p>
         </div>
       `;
     } else if (!isOrganizationEntitled) {
-      message = '<div class="warning-banner"><p>' + couchbase.NO_ENTITLEMENT_MESSAGE + '</p></div>';
+      message = '<div><p>' + couchbase.NO_ENTITLEMENT_MESSAGE + '</p></div>';
     } else if (isCapellaEntitlementOnly) {
-      message = '<div class="warning-banner"><p>' + couchbase.CAPELLA_ONLY_MESSAGE + '</p></div>';
+      message = '<div><p>' + couchbase.CAPELLA_ONLY_MESSAGE + '</p></div>';
     }
     if (message) $invalidOrg.append(message);
        //$( "#create_ticket_block" ).hide();
