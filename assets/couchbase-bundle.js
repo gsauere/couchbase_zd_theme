@@ -42,22 +42,17 @@ export const areOrganizationsOnHold = (orgs) => {
 
 // Check if the user's organization is entitled to Capella support only
 export const isCapellaEntitlementOnly = (orgs) => {
-  return orgs.length > 0 && orgs.every(org => org.tags.includes('entitlement__capella'));
-  /*
-  const orgs = HelpCenter.user.organizations;
-  const hasOtherEntitlements = orgs.some(org => {
+  if (!Array.isArray(orgs) || orgs.length === 0) return false;
+  return orgs.every(org => {
     const tags = org.tags || [];
-    return tags.some(tag =>
-      tag.includes("entitlement_override") ||
-      tag.includes("entitlement__server") ||
-      tag.includes("entitlement__mobile") ||
-      tag.includes("entitlement__edge")
+    if (!tags.includes("entitlement__capella")) return false;
+    return !tags.some(tag =>
+      tag.startsWith("entitlement_override") ||
+      tag.startsWith("entitlement__server") ||
+      tag.startsWith("entitlement__mobile") ||
+      tag.startsWith("entitlement__edge")
     );
   });
-  
-  if (hasOtherEntitlements) return false;
-  
-  return orgs.some(org => (org.tags || []).includes("entitlement__capella"));*/
 };
 
 export const removeUnentitledOrganizations = (orgs) => {
