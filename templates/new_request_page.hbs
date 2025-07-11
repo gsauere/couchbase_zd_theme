@@ -84,10 +84,10 @@
   couchbase.removeUnentitledOrganizations();
   const hasOrganization = couchbase.hasOrganization();
   const isOrganizationEntitled = couchbase.isOrganizationEntitled();
-  const isOrganizationOnHold = couchbase.isOrganizationOnHold();
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold();
   const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly();
 
-  if (isAnonymous || !isOrganizationEntitled || isOrganizationOnHold || isCapellaEntitlementOnly || !hasOrganization) {
+  if (isAnonymous || !isOrganizationEntitled || areOrganizationsOnHold || isCapellaEntitlementOnly || !hasOrganization) {
     //props.requestForm.ticket_form_field.options = [];
     /*for (let i = props.requestForm.ticket_form_field.options.length - 1; i >= 0; i--) {
       const value = props.requestForm.ticket_form_field.options[i].name;
@@ -115,7 +115,7 @@
     $("#new-request-form").hide();
 
     let message = "";
-    if (isOrganizationOnHold) {
+    if (areOrganizationsOnHold) {
       message = "<div><p>" + couchbase.ON_HOLD_MESSAGE + "</p></div>";
     } else if (isAnonymous) {
        message = '<div><p>' + couchbase.ANONYMOUS_MESSAGE + '</p></div>';

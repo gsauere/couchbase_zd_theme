@@ -38,13 +38,16 @@ export const isOrganizationEntitled = () => {
 }
 
 // Check if the user's organization is on hold
-export const isOrganizationOnHold = () => {
+export const areOrganizationsOnHold = () => {
   const orgs = HelpCenter.user.organizations;
-  return orgs.some(org => org.tags.includes('entitlement__on_hold'));
+  return orgs.length > 0 && orgs.every(org => org.tags.includes('entitlement__on_hold'));
 }
 
 // Check if the user's organization is entitled to Capella support only
 export const isCapellaEntitlementOnly = () => {
+  const orgs = HelpCenter.user.organizations;
+  return orgs.length > 0 && orgs.every(org => org.tags.includes('entitlement__capella'));
+  /*
   const orgs = HelpCenter.user.organizations;
   const hasOtherEntitlements = orgs.some(org => {
     const tags = org.tags || [];
@@ -58,7 +61,7 @@ export const isCapellaEntitlementOnly = () => {
   
   if (hasOtherEntitlements) return false;
   
-  return orgs.some(org => (org.tags || []).includes("entitlement__capella"));
+  return orgs.some(org => (org.tags || []).includes("entitlement__capella"));*/
 };
 
 export const removeUnentitledOrganizations = () => {

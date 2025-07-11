@@ -285,15 +285,16 @@
   };
 
   const isAnonymous = couchbase.isAnonymous();
+  couchbase.removeUnentitledOrganizations();
   const hasOrganization = couchbase.hasOrganization();
   const isOrganizationEntitled = couchbase.isOrganizationEntitled();
-  const isOrganizationOnHold = couchbase.isOrganizationOnHold();
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold();
   const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly();
 
   // Hide all banners initially
   $("#validOrganization, #invalidOrganization, #capellaEntitlementOnly").hide();
 
-  if (!isOrganizationEntitled || isOrganizationOnHold || !hasOrganization || isAnonymous) {
+  if (!isOrganizationEntitled || areOrganizationsOnHold || !hasOrganization || isAnonymous) {
     $("#invalidOrganization").show();
 
     let message = "";
@@ -303,7 +304,7 @@
       message = couchbase.NO_ORGANIZATION_MESSAGE;
     } else if (!isOrganizationEntitled) {
       message = couchbase.NO_ENTITLEMENT_MESSAGE;
-    } else if (isOrganizationOnHold) {
+    } else if (areOrganizationsOnHold) {
       message = couchbase.ON_HOLD_MESSAGE;
     }
     if (message) {

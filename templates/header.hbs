@@ -127,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   
   // Use couchbase utility functions for consistency and efficiency
   const isEntitled = couchbase.isOrganizationEntitled();
-  const isOnHold = couchbase.isOrganizationOnHold();
+  const isOnHold = couchbase.areOrganizationsOnHold();
   const isCapellaOnly = couchbase.isCapellaEntitlementOnly();
 
   const $contactUsLink = $("#contact_us :first-child");
