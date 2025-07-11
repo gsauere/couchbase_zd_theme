@@ -64,6 +64,7 @@
     userId: {{json user.id}},
     brandId: {{json brand.id}},
     organizations: {{json user.organizations}},
+    orgs: HelpCenter.user.organizations,
     wysiwyg: true,
     answerBotModal: {
       answerBot: {{json answer_bot}},
@@ -81,11 +82,12 @@
   
   isAnonymous = couchbase.isAnonymous();
   //window.isAnonymous = isAnonymous;
-  couchbase.removeUnentitledOrganizations();
-  const hasOrganization = couchbase.hasOrganization();
-  const isOrganizationEntitled = couchbase.isOrganizationEntitled();
-  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold();
-  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly();
+  props.orgs = couchbase.removeUnentitledOrganizations(props.organizations);
+  const isAnonymous = couchbase.isAnonymous();
+  const hasOrganization = couchbase.hasOrganization(props.orgs);
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled(props.orgs);
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(props.orgs);
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(props.orgs);
 
   if (isAnonymous || !isOrganizationEntitled || areOrganizationsOnHold || isCapellaEntitlementOnly || !hasOrganization) {
     //props.requestForm.ticket_form_field.options = [];

@@ -26,26 +26,22 @@ export const isAnonymous = () => {
 //window.isAnonymous = isAnonymous;
 
 // Check if the user has an organization
-export const hasOrganization = () => {
-  const orgs = HelpCenter.user.organizations;
+export const hasOrganization = (orgs) => {
   return orgs && orgs.length > 0;
 }
 
 // Check if the user's organization is entitled
-export const isOrganizationEntitled = () => {
-  const orgs = HelpCenter.user.organizations;
+export const isOrganizationEntitled = (orgs) => {
   return orgs.some(org => org.tags.includes('entitled_customer'));
 }
 
 // Check if the user's organization is on hold
-export const areOrganizationsOnHold = () => {
-  const orgs = HelpCenter.user.organizations;
+export const areOrganizationsOnHold = (orgs) => {
   return orgs.length > 0 && orgs.every(org => org.tags.includes('entitlement__on_hold'));
 }
 
 // Check if the user's organization is entitled to Capella support only
-export const isCapellaEntitlementOnly = () => {
-  const orgs = HelpCenter.user.organizations;
+export const isCapellaEntitlementOnly = (orgs) => {
   return orgs.length > 0 && orgs.every(org => org.tags.includes('entitlement__capella'));
   /*
   const orgs = HelpCenter.user.organizations;
@@ -64,9 +60,10 @@ export const isCapellaEntitlementOnly = () => {
   return orgs.some(org => (org.tags || []).includes("entitlement__capella"));*/
 };
 
-export const removeUnentitledOrganizations = () => {
-  const orgs = HelpCenter.user.organizations;
-  HelpCenter.user.organizations = orgs.filter(org => org.tags.includes('entitled_customer'));
-  //return HelpCenter.user.organizations;
+export const removeUnentitledOrganizations = (orgs) => {
+  return orgs.filter(org =>
+    org.tags.includes('entitled_customer') ||
+    org.tags.includes('entitlement__on_hold')
+  );
 }
 

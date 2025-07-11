@@ -126,17 +126,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   import * as couchbase from "couchbase";
   
   // Use couchbase utility functions for consistency and efficiency
-  const isEntitled = couchbase.isOrganizationEntitled();
-  const isOnHold = couchbase.areOrganizationsOnHold();
-  const isCapellaOnly = couchbase.isCapellaEntitlementOnly();
+  const isAnonymous = couchbase.isAnonymous();
+  const orgs = couchbase.removeUnentitledOrganizations(HelpCenter.user.organizations);
+  const hasOrganization = couchbase.hasOrganization(orgs);
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(orgs);
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(orgs);
 
   const $contactUsLink = $("#contact_us :first-child");
   const $mobileCreateTicket = $("#mobile_create_ticket");
 
-  if (!isEntitled || isOnHold) {
+  if (!isOrganizationEntitled || areOrganizationsOnHold) {
     $contactUsLink.remove();
     $mobileCreateTicket.remove();
-  } else if (isCapellaOnly) {
+  } else if (isCapellaEntitlementOnly) {
     const capellaUrl = "https://cloud.couchbase.com/";
     $contactUsLink.attr("href", capellaUrl);
     $mobileCreateTicket.find(":first-child").attr("href", capellaUrl);
