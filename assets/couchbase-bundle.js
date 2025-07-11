@@ -61,3 +61,9 @@ export const isCapellaEntitlementOnly = () => {
   return orgs.some(org => (org.tags || []).includes("entitlement__capella"));
 };
 
+export const removeUnentitledOrganizations = () => {
+  const orgs = HelpCenter.user.organizations;
+  HelpCenter.user.organizations = orgs.filter(org => org.tags.includes('entitled_customer'));
+  //return HelpCenter.user.organizations;
+}
+

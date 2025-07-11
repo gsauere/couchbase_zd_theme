@@ -81,6 +81,7 @@
   
   isAnonymous = couchbase.isAnonymous();
   //window.isAnonymous = isAnonymous;
+  couchbase.removeUnentitledOrganizations();
   const hasOrganization = couchbase.hasOrganization();
   const isOrganizationEntitled = couchbase.isOrganizationEntitled();
   const isOrganizationOnHold = couchbase.isOrganizationOnHold();
