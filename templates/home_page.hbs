@@ -286,6 +286,8 @@
 
   const isAnonymous = couchbase.isAnonymous();
   const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
+  props.organizations = couchbase.orgsToKeep(props.organizations, orgs);
+  
   const hasOrganization = couchbase.hasOrganization(orgs);
   const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
   const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(orgs);

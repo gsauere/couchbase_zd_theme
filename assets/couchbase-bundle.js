@@ -66,3 +66,17 @@ export const removeUnentitledOrganizations = (orgs) => {
   );
 }
 
+export const orgsToKeep = (orgs, orgsToKeep) => {
+  if (!Array.isArray(orgs) || orgs.length === 0) return false;
+  return orgs.filter(org => orgsToKeep.includes(org.id));
+}
+
+/*export a aa{
+    // Remove from props.organizations any organizations not present in orgs
+    if (Array.isArray(props.organizations) && Array.isArray(orgs)) {
+      // Create a Set of org ids in orgs for fast lookup
+      const orgIds = new Set(orgs.map(org => org.id));
+      // Filter props.organizations in-place to only keep those present in orgs
+      props.organizations = props.organizations.filter(org => orgIds.has(org.id));
+    }
+}*/
