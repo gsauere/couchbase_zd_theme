@@ -285,11 +285,11 @@
   };
 
   const isAnonymous = couchbase.isAnonymous();
-  props.orgs = couchbase.removeUnentitledOrganizations(props.organizations);
-  const hasOrganization = couchbase.hasOrganization(props.orgs);
-  const isOrganizationEntitled = couchbase.isOrganizationEntitled(props.orgs);
-  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(props.orgs);
-  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(props.orgs);
+  const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
+  const hasOrganization = couchbase.hasOrganization(orgs);
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(orgs);
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(orgs);
 
   // Hide all banners initially
   $("#validOrganization, #invalidOrganization, #capellaEntitlementOnly").hide();

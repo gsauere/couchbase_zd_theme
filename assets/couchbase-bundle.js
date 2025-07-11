@@ -27,16 +27,19 @@ export const isAnonymous = () => {
 
 // Check if the user has an organization
 export const hasOrganization = (orgs) => {
+  if (!Array.isArray(orgs) || orgs.length === 0) return false;
   return orgs && orgs.length > 0;
 }
 
 // Check if the user's organization is entitled
 export const isOrganizationEntitled = (orgs) => {
+  if (!Array.isArray(orgs) || orgs.length === 0) return false;
   return orgs.some(org => org.tags.includes('entitled_customer'));
 }
 
 // Check if the user's organization is on hold
 export const areOrganizationsOnHold = (orgs) => {
+  if (!Array.isArray(orgs) || orgs.length === 0) return false;
   return orgs.length > 0 && orgs.every(org => org.tags.includes('entitlement__on_hold'));
 }
 
@@ -56,6 +59,7 @@ export const isCapellaEntitlementOnly = (orgs) => {
 };
 
 export const removeUnentitledOrganizations = (orgs) => {
+  if (!Array.isArray(orgs) || orgs.length === 0) return false;
   return orgs.filter(org =>
     org.tags.includes('entitled_customer') ||
     org.tags.includes('entitlement__on_hold')
