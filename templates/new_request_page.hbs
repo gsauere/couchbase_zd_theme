@@ -84,6 +84,7 @@
   //window.isAnonymous = isAnonymous;
   const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
   props.organizations = couchbase.orgsToKeep(props.organizations, orgs)
+  allowedValues = props.organizations 
 
   const hasOrganization = couchbase.hasOrganization(orgs);
   const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
@@ -306,6 +307,7 @@
       window.open("https://support.couchbase.com/hc/en-us/articles/218320083#support_server_logs", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=768,height=768");
   });*/
   let isAnonymous = false;
+  let allowedValues = [];
   const currentURL = window.location.href;
   const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
 
@@ -664,6 +666,25 @@
       });
 
       observer.observe(targetNode, config);
+
+      const listbox = document.getElementById('1--listbox');
+      const allowedNamesSet = new Set(allowedValues.map(o => o.name));
+      const observerListBox = new MutationObserver((mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            // Only process element nodes
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // Adjust the selector or property as needed
+              const value = node.textContent.trim();
+              if (!allowedValues.includes(value)) {
+                node.remove();
+              }
+            }
+          });
+        });
+      });
+
+      observerListBox.observe(listbox, { childList: true });
 
       // This will change the spacing inside the Description field
       //$("#request_description_ifr").contents().find(".mce-content-body").css({'line-height': '8px'});
