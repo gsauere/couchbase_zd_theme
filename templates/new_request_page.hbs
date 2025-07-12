@@ -83,6 +83,7 @@
   isAnonymous = couchbase.isAnonymous();
   //window.isAnonymous = isAnonymous;
   const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
+  HelpCenter.user.organizations = orgs;
   props.organizations = couchbase.orgsToKeep(props.organizations, orgs)
   allowedValues = props.organizations 
 
@@ -151,6 +152,12 @@
       // Set common field labels
       props.requestForm.cc_field.label = couchbase.CC_FIELD_LABEL;
       props.requestForm.attachments_field.label = couchbase.ATTACHMENTS_FIELD_LABEL;
+ 			if (props.requestForm.organization_field !== undefined) {
+        const allowedNames = new Set(props.organizations.map(org => org.id));
+        props.requestForm.organization_field.options = props.requestForm.organization_field.options.filter(option =>
+          allowedNames.has(option.value)
+        );
+      }
 
       const isQuestionOrSuggestion = formId === getFormId().QUESTION || formId === getFormId().SUGGESTION;
       
@@ -375,6 +382,7 @@
     // const ZD_CUSTOM_FIELD_ID = getZdCustomFieldId(yourCondition);
 
     const DOM_ID = {
+      ORG_MSG: "org_msg",
       SERVER_MSG: "server_msg",
       CLIENT_MSG: "client_msg",
       SYNC_GATEWAY_MSG: "sync_gateway_msg",
@@ -485,6 +493,24 @@
       // This will add a placeholder the Description fields
       $("#request_description_hint").replaceWith("");
 
+      /*const allowedNamesSet = new Set(allowedValues.map(o => o.name));
+    	// Create a MutationObserver instance
+      const observerListBox = new MutationObserver((mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            // Only process element nodes
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // Adjust the selector or property as needed
+              const value = node.textContent.trim();
+
+              if (!allowedNamesSet.has(value)) {
+                node.remove();
+              }
+            }
+          });
+        });
+      });*/
+  
       // Create a MutationObserver instance
       const observerValue = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {
@@ -550,6 +576,7 @@
           if (mutation.type === 'childList') {
             // Cache field selectors to avoid repeated DOM queries
             const fieldSelectors = {
+              //organization: '[name="request[organization_id]"]',
               server: `[name="request[custom_fields][${getZdCustomFieldId().SERVER}]"]`,
               client: `[name="request[custom_fields][${getZdCustomFieldId().CLIENT}]"]`,
               mobile: `[name="request[custom_fields][${getZdCustomFieldId().SYNC_GATEWAY}]"]`,
@@ -660,14 +687,23 @@
                 .append(createMessageHtml(DOM_ID.ATTACHMENTS_MSG,
                   'Review instructions for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">Working with the Couchbase Support Team</a> on how to upload larger files.'))
                 .insertAfter("#upload-dropzone");
-            }
-          }
+            } /*else if (shouldProcessField(fields.organization, DOM_ID.ORG_MSG)) {
+              const orgBox = fields.organization.parent().parent().parent().parent().parent();
+              const listbox = orgBox.children().last().find('#id\\:1--listbox');
+              observerListBox.observe(listbox[0], config);
+              //observerValue.observe(fields.organization[0], configValue);
+  						orgBox.append(
+                createMessageHtml(DOM_ID.ORG_MSG, 
+                  'List of entitled organizations you can submit a ticket against')
+              );
+            }*/
+  				}
         }
       });
 
       observer.observe(targetNode, config);
 
-      const listbox = document.getElementById('1--listbox');
+      /*const listbox = document.getElementById('1--listbox');
       const allowedNamesSet = new Set(allowedValues.map(o => o.name));
       const observerListBox = new MutationObserver((mutationsList) => {
         mutationsList.forEach((mutation) => {
@@ -682,9 +718,11 @@
             }
           });
         });
-      });
+      });*/
+      //id=id:1--trigger"
+      //name="request[organization_id]" value="361355207672"
 
-      observerListBox.observe(listbox, { childList: true });
+      //observerListBox.observe(listbox, { childList: true });
 
       // This will change the spacing inside the Description field
       //$("#request_description_ifr").contents().find(".mce-content-body").css({'line-height': '8px'});
