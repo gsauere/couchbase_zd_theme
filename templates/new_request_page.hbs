@@ -52,7 +52,7 @@
 
   const settings = Object.freeze({{json settings}});
 
-   const props = Object.freeze({
+   const props = {
     requestForm: {{json new_request_form}},
     newRequestPath: {{json (page_path 'new_request')}},
     parentId: {{json parent.id}},
@@ -74,7 +74,7 @@
       requestsPath: {{json (page_path 'requests')}},
       requestPath: {{json (page_path 'request' id=answer_bot.request_id)}}
     },
-  });
+  };
 
   const formId = Object.freeze(props.requestForm.ticket_form_field.value);
   const indexEol = [];
