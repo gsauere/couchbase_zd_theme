@@ -68,7 +68,7 @@ export const removeUnentitledOrganizations = (orgs) => {
 
 export const orgsToKeep = (orgs, orgsToKeep) => {
   if (!Array.isArray(orgs) || orgs.length === 0) return false;
-  return orgs.filter(org => orgsToKeep.includes(org.id));
+  return orgs.filter(org => orgsToKeep.includes(org.name));
 }
 
 /*export a aa{
