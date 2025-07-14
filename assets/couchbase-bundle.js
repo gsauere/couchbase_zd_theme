@@ -18,7 +18,14 @@ export const MARKET_PLACE_DESCRIPTION = "Please select this field if you are a p
 export const LOGS_AGREEMENT_LABEL = "I understand and will collect and share the logs with Support shortly after ticket is created.";
 export const LOGS_AGREEMENT_DESCRIPTION = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
 
- // Check if the user is anonymous
+
+//export const currentURL = window.location.href;
+//export const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+export function isSandbox() {
+  const currentURL = window.location.href;
+  return /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+}
+// Check if the user is anonymous
 export const isAnonymous = () => {
   return Object.freeze(HelpCenter.user?.role === "anonymous");
 }
@@ -89,7 +96,7 @@ export function intersection(set1, ...sets) {
   return Array.isArray(set1) ? tmp : new Set(tmp);
 }
 
-export function getFormId(condition = isSandbox) {
+export function getFormId(condition = isSandbox()) {
   if (condition) {
     return {
       SERVER: 360001771732,
@@ -217,13 +224,6 @@ export function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintena
   return true;
 }
 
-//export const currentURL = window.location.href;
-//export const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
-
-export function isSandbox() {
-  const currentURL = window.location.href;
-  return /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
-}
 
 export function getZdCustomFieldId(condition = isSandbox()) {
   return condition ? ZD_CUSTOM_FIELD_IDS.sandbox : ZD_CUSTOM_FIELD_IDS.production;
