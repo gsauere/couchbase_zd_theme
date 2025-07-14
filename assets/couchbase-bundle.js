@@ -191,7 +191,7 @@ export function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintena
   const $element = $(id).empty();
 
   // Precompile regexes for efficiency
-  const endOfLifeRegex = new RegExp(couchbase.END_OF_LIFE_TAG);
+  const endOfLifeRegex = new RegExp(END_OF_LIFE_TAG);
 
   if (endOfLifeRegex.test(value)) {
     $element.html(
@@ -225,6 +225,6 @@ export function isSandbox() {
   return /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
 }
 
-export function getZdCustomFieldId(condition = couchbase.isSandbox()) {
-  return condition ? couchbase.ZD_CUSTOM_FIELD_IDS.sandbox : couchbase.ZD_CUSTOM_FIELD_IDS.production;
+export function getZdCustomFieldId(condition = isSandbox()) {
+  return condition ? ZD_CUSTOM_FIELD_IDS.sandbox : ZD_CUSTOM_FIELD_IDS.production;
 }
