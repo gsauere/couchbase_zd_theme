@@ -217,6 +217,14 @@ export function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintena
   return true;
 }
 
-export function getZdCustomFieldId(condition = isSandbox) {
+export const currentURL = window.location.href;
+export const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+
+export function isSandbox() {
+  const currentURL = window.location.href;
+  return /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+}
+
+export function getZdCustomFieldId(condition = couchbase.isSandbox()) {
   return condition ? couchbase.ZD_CUSTOM_FIELD_IDS.sandbox : couchbase.ZD_CUSTOM_FIELD_IDS.production;
 }

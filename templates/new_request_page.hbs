@@ -79,8 +79,7 @@
   const formId = Object.freeze(props.requestForm.ticket_form_field.value);
   const indexEol = [];
   const indexClient = [];
-  const currentURL = window.location.href;
-  const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+
   const isAnonymous = couchbase.isAnonymous();
   //window.isAnonymous = isAnonymous;
   const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
