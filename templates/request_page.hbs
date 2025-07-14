@@ -375,11 +375,11 @@
 
       $('#escalate_form').on('submit', function(e) {
         e.preventDefault();                           
-        const business_impact = Object.freeze($('#escalate_reason')); 
+        const business_impact_id = Object.freeze($('#escalate_reason')); 
         const id = Object.freeze(getTicketId());
 
-        if (id && business_impact) {
-          business_impact = business_impact.val().trim()
+        if (id && business_impact_id) {
+          const business_impact = business_impact_id.val().trim()
           if (business_impact.length < 25) {
             alert("The escalation reason doesn't meet the 50-character minimum.")                              
           } else {
