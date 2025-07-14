@@ -217,8 +217,8 @@ export function checkSupportPolicyVersion(id, endOfLifeValues, endOfFullMaintena
   return true;
 }
 
-export const currentURL = window.location.href;
-export const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
+//export const currentURL = window.location.href;
+//export const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
 
 export function isSandbox() {
   const currentURL = window.location.href;
