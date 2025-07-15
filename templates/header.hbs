@@ -1,3 +1,8 @@
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://metrics.couchbase.com/ns.html?id=GTM-MVPNN2"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
 <a class="skip-navigation" tabindex="1" href="#main-content">{{t 'skip_navigation' }}</a>
 
 <header class="header">
@@ -14,7 +19,7 @@
     <nav class="user-nav" id="user-nav" aria-label="{{t 'user_navigation'}}">
       <ul class="user-nav-list">
         <li>{{link 'community'}}</li>
-        <li>{{link 'new_request' class='submit-a-request'}}</li>
+        <!--li>{{link 'new_request' class='submit-a-request'}}</li-->
         {{#unless signed_in}}
           <li>
             {{#link "sign_in" class="sign-in"}}
@@ -24,6 +29,23 @@
         {{/unless}}
       </ul>
     </nav>
+    <nav class="user-nav" id="user-nav" aria-label="{{t 'user_navigation'}}"></nav>
+        <a href="https://docs.couchbase.com/home" target="_blank" rel="noopener noreferrer">Docs</a>
+        <a href="https://www.couchbase.com/developers/" target="_blank" rel="noopener noreferrer">Developer</a>
+        <a href="https://www.couchbase.com/resources?content=videos" target="_blank" rel="noopener noreferrer">Videos</a>
+        <a href="https://www.couchbase.com/resources/webcasts-and-events/" target="_blank" rel="noopener noreferrer">Webinars</a>
+        <a href=" https://www.couchbase.com/academy/" target="_blank" rel="noopener noreferrer">Academy</a>
+        <a href="https://www.couchbase.com/blog/" target="_blank" rel="noopener noreferrer">Blog</a>
+        <a href="https://www.couchbase.com/forums/" target="_blank" rel="noopener noreferrer">Forum</a>
+        {{!--<a style="text-decoration:none" href="https://www.couchbase.com/contact" target="_blank" rel="noopener noreferrer">CONTACT US</a>--}}
+        {{#if signed_in}}
+          <span id="contact_us">{{#link 'new_request' class='submit-a-request'}}Contact{{/link}}</span>
+        {{!--{{#link 'new_request' class='submit-a-request' ticket_form_id='360001347252'}}CONTACT US{{/link}}--}}
+        {{else}}
+          <a href="https://www.couchbase.com/contact/" target="_blank" rel="noopener noreferrer">Contact</a>
+        {{/if}}
+    </nav>
+
     {{#if signed_in}}
       <div class="user-info dropdown">
         <button class="dropdown-toggle" aria-haspopup="true">
@@ -45,6 +67,10 @@
           {{link "sign_out" role="menuitem"}}
         </div>
       </div>
+    {{else}}
+      {{#link "sign_in" class="sign-in"}}
+        {{t 'sign_in'}}
+      {{/link}}
     {{/if}}
   </div>
 
@@ -95,3 +121,27 @@
   </div>
 
 </header>
+
+<script type="module">
+  import * as couchbase from "couchbase";
+  
+  // Use couchbase utility functions for consistency and efficiency
+  const isAnonymous = couchbase.isAnonymous();
+  const orgs = couchbase.removeUnentitledOrganizations(HelpCenter.user.organizations);
+  const hasOrganization = couchbase.hasOrganization(orgs);
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(orgs);
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(orgs);
+
+  const $contactUsLink = $("#contact_us :first-child");
+  const $mobileCreateTicket = $("#mobile_create_ticket");
+
+  if (!isOrganizationEntitled || areOrganizationsOnHold) {
+    $contactUsLink.remove();
+    $mobileCreateTicket.remove();
+  } else if (isCapellaEntitlementOnly) {
+    const capellaUrl = "https://cloud.couchbase.com/";
+    $contactUsLink.attr("href", capellaUrl);
+    $mobileCreateTicket.find(":first-child").attr("href", capellaUrl);
+  }
+  </script>

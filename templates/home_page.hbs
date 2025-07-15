@@ -1,83 +1,331 @@
 <h1 class="visibility-hidden">{{ help_center.name }}</h1>
 
 <section id="main-content" class="section hero">
+  <h1>Couchbase Support</h1>
+  <p class="welcome-text">Search our knowledge base for frequently asked questions and troubleshooting</p>
   <div class="hero-inner">
     <h2 class="visibility-hidden">{{ t 'search' }}</h2>
     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" focusable="false" viewBox="0 0 12 12" class="search-icon" aria-hidden="true">
       <circle cx="4.5" cy="4.5" r="4" fill="none" stroke="currentColor"/>
       <path stroke="currentColor" stroke-linecap="round" d="M11 11L7.5 7.5"/>
     </svg>
-    {{search submit=false instant=settings.instant_search class='search search-full'}}
+    {{search submit=false instant=settings.instant_search class='search search-full' placeholder="Search in Couchbase Support"}}
   </div>
 </section>
 
 <div class="container">
+  <!--div class="warning-banner">
+    <p>Couchbase Support will maintain business as usual during the current COVID-19 outbreak. You should expect no interruption to your support services. Please contact us with any questions.</p><a class="btn" href="https://www.couchbase.com/faq-covid-19" target="_blank" rel="noopener noreferrer">FAQ</a>
+  </div-->
+
   <section class="section knowledge-base">
-    <h2 class="visibility-hidden">{{ t 'categories' }}</h2>
-    <section class="categories blocks">
-      <ul class="blocks-list">
-        {{#each categories}}
-          {{#if ../has_multiple_categories}}
+    {{#if signed_in}}
+      <div id="invalidOrganization" style="display: none">
+        <div class="warning-banner"></div>
+        <h1 class="blocks-section-header">Enterprise Support</h1>
+        <section class="categories blocks">
+          <ul class="blocks-list">
             <li class="blocks-item">
-              <a href='{{url}}' class="blocks-item-link">
-                <span class="blocks-item-title">{{name}}</span>
-                <span class="blocks-item-description">{{excerpt description}}</span>
+              <a href='{{page_path "sign_in"}}' class="blocks-item-link">
+                <i class="fas fa-user-tie fa-4x"></i>
+                <h1 class="blocks-item-title-minor">My Account</h1>
+                <p class="blocks-item-description"></p>
               </a>
             </li>
-          {{else}}
-            {{#each sections}}
-              <li class="blocks-item">
-                <a href='{{url}}' class="blocks-item-link">
-                  <span class="blocks-item-title">
-                    {{name}}
-                  </span>
-                  <span class="blocks-item-description">{{excerpt description}}</span>
-                </a>
-              </li>
-            {{/each}}
-          {{/if}}
-        {{/each}}
-      </ul>
-      {{pagination}}
-    </section>
-
-    {{#if promoted_articles}}
-      <section class="articles">
-        <h2>{{t 'promoted_articles'}}</h2>
-        <ul class="article-list promoted-articles">
-          {{#each promoted_articles}}
-            <li class="promoted-articles-item">
-                <a href="{{url}}">
-                  {{title}}
-
-                  {{#if internal}}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" focusable="false" viewBox="0 0 16 16" class="icon-lock" title="{{t 'internal'}}">
-                      <rect width="12" height="9" x="2" y="7" fill="currentColor" rx="1" ry="1"/>
-                      <path fill="none" stroke="currentColor" d="M4.5 7.5V4a3.5 3.5 0 017 0v3.5"/>
-                    </svg>
-                  {{/if}}
-                </a>
+            <li class="blocks-item">
+              <a href='articles/360043247551' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+                <i class="fas fa-user-plus fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Getting Started with Support</h1>
+                <p class="blocks-item-description"></p>
+              </a>
             </li>
-          {{/each}}
+          </ul>
+          {{pagination}}
+        </section>
+
+        <hr>
+
+        <h1 class="blocks-section-header">Couchbase Capella Support</h1>
+        <section class="categories blocks">
+          <ul class="blocks-list">
+            <li class="blocks-item">
+              <a href='https://cloud.couchbase.com/' class="blocks-item-link">
+                <i class="fas fa-cloud fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Capella Support Portal</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+            <li class="blocks-item">
+              <a href='https://www.couchbase.com/forums/c/couchbase-capella/41' class="blocks-item-link">
+                <i class="fas fa-user-friends fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Capella Forum</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+          </ul>
+          {{pagination}}
+        </section>
+
+        <hr>
+
+        <h1 class="blocks-section-header">Community Support</h1>
+        <section class="categories blocks">
+          <ul class="blocks-list">
+            <li class="blocks-item">
+              <a href='https://www.couchbase.com/forums/' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+                <i class="fas fa-user-friends fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Couchbase Forums</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+            <li class="blocks-item">
+              <a href='https://learn.couchbase.com/store' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+                <icon :id="'community'"></icon>
+                <i class="fas fa-chalkboard-teacher fa-4x"></i>
+                <h1 class="blocks-item-title-minor">Free Training</h1>
+                <p class="blocks-item-description"></p>
+              </a>
+            </li>
+          </ul>
+          {{pagination}}
+        </section>
+      </div>
+      <div id="validOrganization" style="display: block">
+        <div id="capellaEntitlementOnly" style="display: none">
+          <div class="warning-banner"></div>
+        </div>
+          <h2 class="visibility-hidden">{{ t 'categories' }}</h2>
+          <section class="categories blocks">
+            <ul class="blocks-list">
+                <li id="create_ticket_block" class="blocks-item">
+                    <a href='{{page_path "new_request"}}' id="create_ticket" class="blocks-item-link">{{!--<a href='{{page_path "new_request" ticket_form_id="360000568711"}}' class="blocks-item-link">--}}
+                        <i class="fas fa-envelope-open-text fa-4x"></i> {{!--fa-ticket-alt fa-bug fa-comment-dots--}}
+                        <h3 class="blocks-item-title">Raise A New Ticket</h1>
+                        <p class="blocks-item-description"></p>
+                    </a>
+                </li>
+                <li class="blocks-item">
+                    <a href='{{page_path "requests"}}' class="blocks-item-link">
+                        <icon :id="'community'"></icon>
+                        <i class="fas fa-search fa-4x"></i>{{!--fa-history--}}
+                        <h3 class="blocks-item-title">Check My Existing Tickets</h1>
+                        <p class="blocks-item-description"></p>
+                    </a>
+                </li>
+                <li class="blocks-item">
+                    <a href="articles/218320083-Working-with-the-Couchbase-Technical-Support-Team#escalation" class="blocks-item-link">
+                        <icon :id="'escalate'"></icon>
+                        <i class="fas fa-phone fa-4x"></i>{{!--fa-history--}}
+                        <h3 class="blocks-item-title">Escalate your ticket</h1>
+                        <p class="blocks-item-description"></p>
+                    </a>
+                </li>
+                <li class="blocks-item">
+                    <a href="articles/218320083-Working-with-the-Couchbase-Technical-Support-Team" class="blocks-item-link">
+                        <icon :id="'community'"></icon>
+                        <i class="fas fa-graduation-cap fa-4x"></i>{{!--fa-user--}}
+                        <h3 class="blocks-item-title">Learn About Support</h1>
+                        <p class="blocks-item-description"></p>
+                    </a>
+                </li>
+            </ul>
+            {{pagination}}
+
+            <ul class="blocks-list">
+              {{#each categories}}
+                {{#if ../has_multiple_categories}}
+                  <li class="blocks-item">
+                    <a href='{{url}}' class="blocks-item-link">
+                      <span class="blocks-item-title">{{name}}</span>
+                      <span class="blocks-item-description">{{excerpt description}}</span>
+                    </a>
+                  </li>
+                {{else}}
+                  {{#each sections}}
+                    <li class="blocks-item">
+                      <a href='{{url}}' class="blocks-item-link">
+                        <span class="blocks-item-title">
+                          {{name}}
+                        </span>
+                        <span class="blocks-item-description">{{excerpt description}}</span>
+                      </a>
+                    </li>
+                  {{/each}}
+                {{/if}}
+              {{/each}}
+            </ul>
+            {{pagination}}
+          </section>
+
+          <div id="tabs">
+            <ul>
+              {{#if promoted_articles}}
+                <li><a href="#tabs-1">Popular Articles</a></li>
+              {{/if}}
+              {{#if settings.show_recent_activity}}
+                <li><a href="#tabs-2">Recent Activities</a></li>
+              {{/if}}
+            </ul>
+            <div id="tabs-1">
+              <section class="articles">
+                  <ul class="article-list promoted-articles"> 
+                    {{#each promoted_articles}}
+                      <li class="promoted-articles-item">
+                        <a href="{{url}}">
+                            {{title}}
+                            {{!--
+                              {{#if internal}}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" focusable="false" viewBox="0 0 16 16" class="icon-lock" title="{{t 'internal'}}">
+                                  <rect width="12" height="9" x="2" y="7" fill="currentColor" rx="1" ry="1"/>
+                                  <path fill="none" stroke="currentColor" d="M4.5 7.5V4a3.5 3.5 0 017 0v3.5"/>
+                                </svg>
+                              {{/if}}
+                            --}}
+                        </a>
+                      </li>
+                    {{/each}}
+                </ul>
+              </section>
+            </div>
+            {{#if settings.show_recent_activity}}
+              <div id="tabs-2">
+                {{recent_activity}}
+              </div>
+            {{/if}}
+          </div>
+      </div>
+    {{else}}
+      <div id="invalidOrganization" style="display: none">
+        <div class="warning-banner"></div>
+      </div>
+      <h1 class="blocks-section-header">Enterprise Support</h1>
+      <section class="categories blocks">
+        <ul class="blocks-list">
+          <li class="blocks-item">
+            <a href='{{page_path "sign_in"}}' class="blocks-item-link">
+              <i class="fas fa-user-tie fa-4x"></i>
+              <h1 class="blocks-item-title-minor">My Account</h1>
+              <p class="blocks-item-description"></p>
+            </a>
+          </li>
+          <li class="blocks-item">
+            <a href='articles/360043247551' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+              <i class="fas fa-user-plus fa-4x"></i>
+              <h1 class="blocks-item-title-minor">Getting Started with Support</h1>
+              <p class="blocks-item-description"></p>
+            </a>
+          </li>
         </ul>
+        {{pagination}}
+      </section>
+
+      <hr>
+
+      <h1 class="blocks-section-header">Couchbase Capella Support</h1>
+      <section class="categories blocks">
+        <ul class="blocks-list">
+          <li class="blocks-item">
+            <a href='https://cloud.couchbase.com/' class="blocks-item-link">
+              <i class="fas fa-cloud fa-4x"></i>
+              <h1 class="blocks-item-title-minor">Capella Support Portal</h1>
+              <p class="blocks-item-description"></p>
+            </a>
+          </li>
+          <li class="blocks-item">
+            <a href='https://www.couchbase.com/forums/c/couchbase-capella/41' class="blocks-item-link">
+              <i class="fas fa-user-friends fa-4x"></i>
+              <h1 class="blocks-item-title-minor">Capella Forum</h1>
+              <p class="blocks-item-description"></p>
+            </a>
+          </li>
+        </ul>
+        {{pagination}}
+      </section>
+
+      <hr>
+
+      <h1 class="blocks-section-header">Community Support</h1>
+      <section class="categories blocks">
+        <ul class="blocks-list">
+          <li class="blocks-item">
+            <a href='https://www.couchbase.com/forums/' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+              <i class="fas fa-user-friends fa-4x"></i>
+              <h1 class="blocks-item-title-minor">Couchbase Forums</h1>
+              <p class="blocks-item-description"></p>
+            </a>
+          </li>
+          <li class="blocks-item">
+            <a href='https://learn.couchbase.com/store' target="_blank" rel="noopener noreferrer" class="blocks-item-link">
+              <icon :id="'community'"></icon>
+              <i class="fas fa-chalkboard-teacher fa-4x"></i>
+              <h1 class="blocks-item-title-minor">Free Training</h1>
+              <p class="blocks-item-description"></p>
+            </a>
+          </li>
+        </ul>
+        {{pagination}}
       </section>
     {{/if}}
   </section>
-
-  {{#if help_center.community_enabled}}
-    <section class="section home-section community">
-      <h2>{{t 'community'}}</h2>
-      {{#link 'community' class='community-link'}}
-        {{t 'join_conversation'}}
-      {{/link}}
-
-      <div class="community-image"></div>
-    </section>
-  {{/if}}
-
-  <section class="section home-section activity">
-    {{#if settings.show_recent_activity}}
-      {{recent_activity}}
-    {{/if}}
-  </section>
 </div>
+
+<script type="module">
+  import * as couchbase from "couchbase";
+  const settings = {{json settings}};
+
+   const props = {
+    locale: {{json help_center.locale}},
+    baseLocale: {{json help_center.base_locale}},
+    hasAtMentions: {{json help_center.at_mentions_enabled}},
+    userRole: {{json user.role}},
+    userId: {{json user.id}},
+    brandId: {{json brand.id}},
+    organizations: {{json user.organizations}},
+    orgs: HelpCenter.user.organizations,
+    wysiwyg: true
+  };
+
+  const isAnonymous = couchbase.isAnonymous();
+  const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
+  props.organizations = couchbase.orgsToKeep(props.organizations, orgs);
+  
+  const hasOrganization = couchbase.hasOrganization(orgs);
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(orgs);
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(orgs);
+
+  // Hide all banners initially
+  $("#validOrganization, #invalidOrganization, #capellaEntitlementOnly").hide();
+
+  if (!isOrganizationEntitled || areOrganizationsOnHold || !hasOrganization || isAnonymous) {
+    $("#invalidOrganization").show();
+
+    let message = "";
+    if (isAnonymous) {
+      message = couchbase.ANONYMOUS_MESSAGE;
+    } else if (!hasOrganization) {
+      message = couchbase.NO_ORGANIZATION_MESSAGE;
+    } else if (!isOrganizationEntitled) {
+      message = couchbase.NO_ENTITLEMENT_MESSAGE;
+    } else if (areOrganizationsOnHold) {
+      message = couchbase.ON_HOLD_MESSAGE;
+    }
+    if (message) {
+      $("#invalidOrganization .warning-banner").replaceWith(
+        `<div class='warning-banner'><p>${message}</p></div>`
+      );
+    }
+  } else {
+    $("#validOrganization").show();
+    $("#tabs").tabs();
+
+    if (isCapellaEntitlementOnly) {
+      $("#capellaEntitlementOnly").show();
+      $("#capellaEntitlementOnly .warning-banner").replaceWith(
+        `<div class='warning-banner'><p>${couchbase.CAPELLA_ONLY_MESSAGE}</p></div>`
+      );
+      $("#create_ticket").attr("href", "https://cloud.couchbase.com/");
+    }
+  }
+</script>
+

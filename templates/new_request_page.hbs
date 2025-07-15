@@ -1,33 +1,58 @@
 <div class="container-divider"></div>
 <div class="container">
-  <div class="sub-nav">
-    {{breadcrumbs}}
-    <div class="search-container">
-      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" focusable="false" viewBox="0 0 12 12" class="search-icon" aria-hidden="true">
-        <circle cx="4.5" cy="4.5" r="4" fill="none" stroke="currentColor"/>
-        <path stroke="currentColor" stroke-linecap="round" d="M11 11L7.5 7.5"/>
-      </svg>
-      {{search submit=false}}
+  {{#if signed_in}}{{!--{{#if true}}--}}
+    <div class="sub-nav">
+      {{breadcrumbs}}
+      <div class="search-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" focusable="false" viewBox="0 0 12 12"
+          class="search-icon" aria-hidden="true">
+          <circle cx="4.5" cy="4.5" r="4" fill="none" stroke="currentColor" />
+          <path stroke="currentColor" stroke-linecap="round" d="M11 11L7.5 7.5" />
+        </svg>
+        {{search submit=false}}
+      </div>
     </div>
-  </div>
 
-  <h1>
-    {{t 'submit_a_request'}}
-  </h1>
-
-  <div id="main-content" class="form">
-    <div id="new-request-form"></div>
-  </div>
+    <h1>
+      {{t 'submit_a_request'}}
+    </h1>
+    <div id="main-content" class="form">
+      <div id="invalidOrganization" style="display: none"></div>
+      <div id="new-request-form"></div>
+    </div>
+  {{else}}
+    <div class="sub-nav">
+      {{breadcrumbs}}
+    </div>
+    <!--div id="vue-form" v-cloak="">
+      <div id="form-not-logged-in-message" style="display: block;"-->
+        <h1>
+          {{t 'submit_a_request'}}
+        </h1>
+        <div id="main-content" class="form">
+          <div id="invalidOrganization" style="display: block"></div>
+          <!--div id="notSignedForm" style="display: none">
+            <h2>Before you start, <span style="color: red;">please read</span>:</h2>
+            <ul class="sso-form-notes" style="margin-top:-10px">
+              <li>You are submitting this request without having logged into the Couchbase Support Site.</li>
+              <li>As a result, your support case may see a longer delay before an agent is assigned.</li>
+              <li>If you are able, please first {{#link "sign_in" class="sign-in"}} {{t 'sign_in'}} {{/link}}</li>
+            </ul>
+            <div id="new-request-form"></div>
+          </div-->
+        </div>
+  {{/if}}
 </div>
 
 <script type="module">
+  import * as couchbase from "couchbase";
   import { renderNewRequestForm } from "new-request-form";
 
   const container = document.getElementById("new-request-form");
 
-  const settings = {{json settings}};
+  const settings = Object.freeze({{json settings}});
 
-  const props = {
+   const props = {
     requestForm: {{json new_request_form}},
     newRequestPath: {{json (page_path 'new_request')}},
     parentId: {{json parent.id}},
@@ -39,6 +64,7 @@
     userId: {{json user.id}},
     brandId: {{json brand.id}},
     organizations: {{json user.organizations}},
+    orgs: HelpCenter.user.organizations,
     wysiwyg: true,
     answerBotModal: {
       answerBot: {{json answer_bot}},
@@ -50,5 +76,450 @@
     },
   };
 
-  renderNewRequestForm(settings, props, container);
+  const formId = Object.freeze(props.requestForm.ticket_form_field.value);
+  const indexEol = [];
+  const indexClient = [];
+
+  const isAnonymous = couchbase.isAnonymous();
+  //window.isAnonymous = isAnonymous;
+  const orgs = couchbase.removeUnentitledOrganizations(props.orgs);
+  HelpCenter.user.organizations = orgs;
+  props.organizations = couchbase.orgsToKeep(props.organizations, orgs)
+  let allowedValues = props.organizations 
+
+  const hasOrganization = couchbase.hasOrganization(orgs);
+  const isOrganizationEntitled = couchbase.isOrganizationEntitled(orgs);
+  const areOrganizationsOnHold = couchbase.areOrganizationsOnHold(orgs);
+  const isCapellaEntitlementOnly = couchbase.isCapellaEntitlementOnly(orgs);
+
+  if (isAnonymous || !isOrganizationEntitled || areOrganizationsOnHold || isCapellaEntitlementOnly || !hasOrganization) {
+    //props.requestForm.ticket_form_field.options = [];
+    /*for (let i = props.requestForm.ticket_form_field.options.length - 1; i >= 0; i--) {
+      const value = props.requestForm.ticket_form_field.options[i].name;
+      if (value.indexOf("General Question") == -1) {
+          props.requestForm.ticket_form_field.options.splice(i, 1);
+      }
+    }
+
+    // Keep only "No Impact" option for anonymous users
+    const options = props.requestForm.ticket_fields[0].options;
+    const noImpactIndex = options.findIndex(option => option.name.includes("No Impact"));
+    if (noImpactIndex !== -1) {
+      options.splice(noImpactIndex + 1);
+    }
+    props.requestForm.ticket_form_field.value = "1260811052249";*/
+  
+    /*const domainName = window.location.origin;
+    const node = $("#sign_out_link")
+    const updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
+    node.attr("href", updatedHref);
+    $("#invalidOrganization").css("display", "block");
+    $("#new-request-form").css("display", "none");*/
+    //$("#new-request-form").remove();
+    const $invalidOrg = $("#invalidOrganization").empty().show();
+    $("#new-request-form").hide();
+
+    let message = "";
+    if (areOrganizationsOnHold) {
+      message = "<div><p>" + couchbase.ON_HOLD_MESSAGE + "</p></div>";
+    } else if (isAnonymous) {
+       message = '<div><p>' + couchbase.ANONYMOUS_MESSAGE + '</p></div>';
+    } else if (!hasOrganization) {
+      const domainName = window.location.origin;
+      message = `
+        <div>
+          <p>${couchbase.NO_ORGANIZATION_MESSAGE}</p>
+          <p>Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a>, self-register using your company email address, and then sign in again with that account.</p>
+        </div>
+      `;
+    } else if (!isOrganizationEntitled) {
+      message = '<div><p>' + couchbase.NO_ENTITLEMENT_MESSAGE + '</p></div>';
+    } else if (isCapellaEntitlementOnly) {
+      message = '<div><p>' + couchbase.CAPELLA_ONLY_MESSAGE + '</p></div>';
+    }
+    if (message) $invalidOrg.append(message);
+       //$( "#create_ticket_block" ).hide();
+    /*if (!hasOrganization) {
+      const domainName = window.location.origin;
+      //const node = $("#sign_out_link")
+      //const updatedHref = node.attr("href").replace('[zendesk_domain_url]', domainName);
+      //node.attr("href", updatedHref);
+      $("#invalidOrganization").append('<h3>Please <a id="sign_out_link" href="/access/logout?return_to=${domainName}{{page_path 'help_center'}}">sign out</a> , self-register using your company email address, and then sign in again with that account.</h3>');
+    }*/
+  } else {
+
+    if (formId != null) {
+      // Set common field labels
+      props.requestForm.cc_field.label = couchbase.CC_FIELD_LABEL;
+      props.requestForm.attachments_field.label = couchbase.ATTACHMENTS_FIELD_LABEL;
+ 			if (props.requestForm.organization_field) {
+        const allowedIds = new Set(props.organizations.map(({ id }) => id));
+        props.requestForm.organization_field.options = props.requestForm.organization_field.options.filter(
+          ({ value }) => allowedIds.has(value)
+        );
+      }
+
+      const isQuestionOrSuggestion = formId === couchbase.getFormId().QUESTION || formId === couchbase.getFormId().SUGGESTION;
+      
+      if (isQuestionOrSuggestion) {
+        // Handle Question/Suggestion form
+        props.requestForm.ticket_fields[4].label = couchbase.MARKET_PLACE_LABEL;
+        props.requestForm.ticket_fields[4].description = couchbase.MARKET_PLACE_DESCRIPTION;
+        indexEol.push(0);
+      } else {
+        // Handle other form types
+        props.requestForm.ticket_fields[0].label = couchbase.IMPACT_LABEL;
+        props.requestForm.ticket_fields[1].label = couchbase.IMPACT_DESCRIPTION;
+        indexEol.push(2);
+
+        // Filter options for non-question/suggestion forms
+        const options = props.requestForm.ticket_fields[0].options;
+        
+        // Remove options after "Obsolete"
+        const obsoleteIndex = options.findIndex(option => option.name.includes("Obsolete"));
+        if (obsoleteIndex !== -1) {
+          options.splice(obsoleteIndex);
+        }
+
+        // Remove "Urgent / Blocker" and "No Impact" options
+        const filteredOptions = options.filter(option => 
+          !option.name.includes("Urgent / Blocker") && !option.name.includes("No Impact")
+        );
+        options.length = 0;
+        options.push(...filteredOptions);
+        /*for (let i = options.length - 1; i >= 0; i--) {
+          const optionName = options[i].name;
+          if (optionName.includes("Urgent / Blocker") || optionName.includes("No Impact")) {
+            options.splice(i, 1);
+          }
+        }*/
+
+        // Form-specific configurations
+        const formConfigs = {
+          [couchbase.getFormId().SERVER]: {
+            fields: {
+              4: { label: couchbase.SDK_OR_CONNECTOR_LABEL },
+              9: { 
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
+              },
+              12: {
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
+              }
+            },
+            indices: { client: [5] }
+          },
+          [couchbase.getFormId().MOBILE]: {
+            fields: {
+              6: { label: couchbase.LITE_LABEL },
+              11: {
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
+              },
+              14: {
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
+              }
+            },
+            indices: { eol: [4], client: [7] }
+          },
+          [couchbase.getFormId().EDGE]: {
+            fields: {
+              4: { label: couchbase.SYNC_GATEWAY_LABEL },
+              9: { label: couchbase.LITE_LABEL },
+              14: {
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
+              },
+              17: {
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
+              }
+            },
+            indices: { eol: [5, 7], client: [10] }
+          },
+          [couchbase.getFormId().OPERATOR]: {
+            fields: {
+              8: {
+                label: couchbase.MARKET_PLACE_LABEL,
+                description: couchbase.MARKET_PLACE_DESCRIPTION
+              },
+              11: {
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
+              }
+            },
+            indices: { eol: [4] }
+          }
+        };
+
+        const config = formConfigs[formId];
+        if (config) {
+          // Apply field configurations
+          Object.entries(config.fields).forEach(([fieldIndex, fieldConfig]) => {
+            const field = props.requestForm.ticket_fields[parseInt(fieldIndex)];
+            Object.assign(field, fieldConfig);
+          });
+
+          // Apply indices
+          const { eol, client } = config.indices;
+          if (eol) indexEol.push(...eol);
+          if (client) indexClient.push(...client);
+        }
+      }
+    }
+
+    // Process EOL indices
+    indexEol.forEach(index => {
+      const options = props.requestForm.ticket_fields[index].options;
+      const eolIndex = options.findIndex(node => node.name.includes("End of Life"));
+      
+      if (eolIndex !== -1) {
+        options.splice(eolIndex + 1); // Remove all elements from EOL index + 1 to the end
+      }
+    });
+
+    // Process client indices
+    indexClient.forEach(index => {
+      const options = props.requestForm.ticket_fields[index].options;
+      
+      // Remove elements containing "End of Life" and related items
+      for (let i = options.length - 1; i >= 0; i--) {
+        const optionName = options[i].name;
+        const eolIndex = optionName.indexOf("End of Life");
+        
+        if (eolIndex !== -1) {
+          const target = optionName.substring(0, eolIndex - 1);
+          
+          // Remove subsequent options that match target or contain "Obsolete"
+          for (let j = i + 1; j < options.length;) {
+            const nextOptionName = options[j].name;
+            if (nextOptionName.includes(target) || nextOptionName.includes("Obsolete")) {
+              options.splice(j, 1);
+            } else {
+              break;
+            }
+          }
+        }
+      }
+    });
+
+    renderNewRequestForm(settings, props, container);
+
+
+  function show() {
+    $("#notSignedForm").css("display", "block");
+    $("#notSignedMsg").css("display", "none");
+  }
+
+    const DOM_ID = {
+      ORG_MSG: "org_msg",
+      SERVER_MSG: "server_msg",
+      CLIENT_MSG: "client_msg",
+      SYNC_GATEWAY_MSG: "sync_gateway_msg",
+      LITE_MSG: "lite_msg",
+      EDGE_MSG: "edge_msg",
+      OPERATOR_MSG: "operator_msg",
+      IMPACT_MSG: "impact_msg",
+      CRITICAL_MSG: "critical_msg",
+      DESCRIPTION_MSG: "description_msg",
+      MARKET_PLACE_MSG: "market_place_msg",
+      LOGS_CHECK_MSG: "logs_understanding_msg",
+      ATTACHMENTS_MSG: "attachments_msg"
+    }
+
+
+
+      $("#request_description_hint").replaceWith("");
+  
+      // Create a MutationObserver instance
+      const observerValue = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+            //console.log('value changed!');
+            //console.log('Old value:', mutation.oldValue);
+            //console.log('New value:', mutation.target.getAttribute('value'));
+            // Parse the string and extract only the number
+            const match = mutation.target.getAttribute('name').match(/\[(\d+)\]/);
+            const name = match ? match[1] : null;
+            const value = mutation.target.getAttribute('value');
+
+            // Map of custom field IDs to their corresponding DOM_ID and VERSION_LIFECYCLE objects
+            const fieldConfig = {
+              [couchbase.getZdCustomFieldId().SERVER]: {
+                domId: DOM_ID.SERVER_MSG,
+                lifecycle: couchbase.VERSION_LIFECYCLE.SERVER
+              },
+              [couchbase.getZdCustomFieldId().CLIENT]: {
+                domId: DOM_ID.CLIENT_MSG,
+                lifecycle: couchbase.VERSION_LIFECYCLE.CLIENT
+              },
+              [couchbase.getZdCustomFieldId().SYNC_GATEWAY]: {
+                domId: DOM_ID.SYNC_GATEWAY_MSG,
+                lifecycle: couchbase.VERSION_LIFECYCLE.SYNC_GATEWAY
+              },
+              [couchbase.getZdCustomFieldId().LITE]: {
+                domId: DOM_ID.LITE_MSG,
+                lifecycle: couchbase.VERSION_LIFECYCLE.LITE
+              },
+              [couchbase.getZdCustomFieldId().EDGE]: {
+                domId: DOM_ID.EDGE_MSG,
+                lifecycle: couchbase.VERSION_LIFECYCLE.EDGE
+              },
+              [couchbase.getZdCustomFieldId().OPERATOR]: {
+                domId: DOM_ID.OPERATOR_MSG,
+                lifecycle: couchbase.VERSION_LIFECYCLE.OPERATOR
+              }
+            };
+
+            if (name && fieldConfig[name]) {
+              const cfg = fieldConfig[name];
+              couchbase.checkSupportPolicyVersion(
+                "#" + cfg.domId,
+                cfg.lifecycle.END_OF_LIFE,
+                cfg.lifecycle.END_OF_FULL_MAINTENANCE,
+                value
+              );
+            }
+          }
+        }
+      });
+      
+      // Configure the observer to watch for attribute changes
+      const configValue = Object.freeze({ attributes: true, attributeOldValue: true, attributeFilter: ['value'] });
+
+      // Example using MutationObserver (vanilla JavaScript, but can be used with jQuery)
+      const targetNode = document.body; // Or a more specific container element
+      const config = Object.freeze({ childList: true, subtree: true });
+
+      const observer = new MutationObserver((mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            // Cache field selectors to avoid repeated DOM queries
+            const fieldSelectors = {
+              //organization: '[name="request[organization_id]"]',
+              server: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SERVER}]"]`,
+              client: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CLIENT}]"]`,
+              mobile: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SYNC_GATEWAY}]"]`,
+              cblite: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LITE}]"]`,
+              edge: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().EDGE}]"]`,
+              operator: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().OPERATOR}]"]`,
+              impact: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().IMPACT}]"]`,
+              critical: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CRITICAL}]"]`,
+              description: '[name="request[description]"]',
+              market_place: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().MARKET_PLACE}]"]`,
+              logs: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LOGS_AGREEMENT}]"]`,
+              attachments: 'label:contains("Attachments")'
+            };
+
+            // Get field elements using cached selectors
+            const fields = Object.fromEntries(
+              Object.entries(fieldSelectors).map(([key, selector]) => [key, $(selector)])
+            );
+
+            // Helper function to create message HTML
+            const createMessageHtml = (id, content) => 
+              `<div id="${id}"></div><div class="form-field" style="margin-top:5px"><p>${content}</p></div>`;
+
+            // Helper function to check if field exists and message doesn't
+            const shouldProcessField = (field, messageId) => 
+              field.length > 0 && $(`#${messageId}`).length === 0;
+
+            // Process each field type
+            if (shouldProcessField(fields.server, DOM_ID.SERVER_MSG)) {
+              fields.server.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.SERVER_MSG, 
+                  'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+              );
+              observerValue.observe(fields.server[0], configValue);
+            } else if (shouldProcessField(fields.client, DOM_ID.CLIENT_MSG)) {
+              fields.client.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.CLIENT_MSG,
+                  'Provide the complete version (major.minor.maintenance) in the details section and send us the <a href="https://support.couchbase.com/hc/en-us/articles/218320083#client_logs" target="_blank" rel="noopener noreferrer">server and server SDK logs</a>.')
+              );
+              observerValue.observe(fields.client[0], configValue);
+            } else if (shouldProcessField(fields.mobile, DOM_ID.SYNC_GATEWAY_MSG)) {
+              fields.mobile.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.SYNC_GATEWAY_MSG,
+                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
+              );
+              observerValue.observe(fields.mobile[0], configValue);
+            } else if (shouldProcessField(fields.cblite, DOM_ID.LITE_MSG)) {
+              fields.cblite.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.LITE_MSG,
+                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
+              );
+              observerValue.observe(fields.cblite[0], configValue);
+            } else if (shouldProcessField(fields.edge, DOM_ID.EDGE_MSG)) {
+              fields.edge.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.EDGE_MSG,
+                  'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+              );
+              observerValue.observe(fields.edge[0], configValue);
+            } else if (shouldProcessField(fields.operator, DOM_ID.OPERATOR_MSG)) {
+              fields.operator.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.OPERATOR_MSG,
+                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">server and operator logs</a>.')
+              );
+              observerValue.observe(fields.operator[0], configValue);
+            } else if (shouldProcessField(fields.impact, DOM_ID.IMPACT_MSG)) {
+              fields.impact.parent().parent().parent().parent().parent().append(
+                createMessageHtml(DOM_ID.IMPACT_MSG,
+                  'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">priority definitions</a>.')
+              );
+            } else if (shouldProcessField(fields.critical, DOM_ID.CRITICAL_MSG)) {
+              fields.critical.after(
+                createMessageHtml(DOM_ID.CRITICAL_MSG,
+                  'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">how to escalate your support ticket</a>.')
+              );
+
+              // Configure critical field styling and behavior
+              const criticalField = $(fields.critical);
+              criticalField.css({'max-height': '65px', 'min-height': '65px'})
+                          .attr({'rows': '2', 'wrap': 'hard', 'maxlength': '256'})
+                          .on('keypress', function(event) {
+                            const textarea = $(this);
+                            const numberOfLines = ((textarea.val().match(/\n/g) || []).length + 1);
+                            const maxRows = parseInt(textarea.attr('rows'));
+
+                            if (event.which === 13 && numberOfLines === maxRows) {
+                              return false;
+                            }
+                          });
+            } else if (shouldProcessField(fields.description, DOM_ID.DESCRIPTION_MSG)) {
+              const descriptionParent = fields.description.parent();
+              descriptionParent.children().eq(1).remove();
+              descriptionParent.append(
+                createMessageHtml(DOM_ID.DESCRIPTION_MSG,
+                  'Please enter the details of your request. A member of our support staff will respond as soon as possible.')
+              );
+            } else if (fields.market_place.length > 0 && isAnonymous) {
+              fields.market_place.parent().remove();
+            } else if (shouldProcessField(fields.logs, DOM_ID.LOGS_CHECK_MSG)) {
+              fields.logs.next().html(
+                `<div id="${DOM_ID.LOGS_CHECK_MSG}" class="form-field" style="display: inline-block;">
+                  <p style="color: rgb(47, 57, 65); font-size: 14px; font-weight: 600;">
+                    I understand and will <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">collect and share the logs with Support</a> shortly after ticket is created.
+                  </p>
+                </div>`
+              );
+            } else if (shouldProcessField(fields.attachments, DOM_ID.ATTACHMENTS_MSG)) {
+              fields.attachments.parent()
+                .append(createMessageHtml(DOM_ID.ATTACHMENTS_MSG,
+                  'Review instructions for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">Working with the Couchbase Support Team</a> on how to upload larger files.'))
+                .insertAfter("#upload-dropzone");
+            } /*else if (shouldProcessField(fields.organization, DOM_ID.ORG_MSG)) {
+              fields.organization.parent().parent().parent().parent().parent();
+  						  .append(
+                  createMessageHtml(DOM_ID.ORG_MSG, 
+                    'List of entitled organizations you can submit a ticket against')
+                );
+            }*/
+  				}
+        }
+      });
+
+      observer.observe(targetNode, config);
+  }
 </script>
