@@ -18,7 +18,6 @@ export const MARKET_PLACE_DESCRIPTION = "Please select this field if you are a m
 export const LOGS_AGREEMENT_LABEL = "I understand and will collect and share the logs with Support shortly after ticket is created.";
 export const LOGS_AGREEMENT_DESCRIPTION = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
 
-
 //export const currentURL = window.location.href;
 //export const isSandbox = /couchbasesupport\d{10}\.zendesk\.com/.test(currentURL);
 export function isSandbox() {
