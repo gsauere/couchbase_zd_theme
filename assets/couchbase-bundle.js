@@ -13,8 +13,8 @@ export const SDK_OR_CONNECTOR_LABEL = "Is this SDK or Connector related?";
 export const LITE_LABEL = "Is this Couchbase Lite related?";
 export const SYNC_GATEWAY_LABEL = "Are you replicating with Sync Gateway?";
 
-export const MARKET_PLACE_LABEL = "Is this ticket for a Private Marketplace account?";
-export const MARKET_PLACE_DESCRIPTION = "Please select this field if you are a private marketplace customer";
+export const MARKET_PLACE_LABEL = "Is this ticket for a Marketplace account?";
+export const MARKET_PLACE_DESCRIPTION = "Please select this field if you are a marketplace customer";
 export const LOGS_AGREEMENT_LABEL = "I understand and will collect and share the logs with Support shortly after ticket is created.";
 export const LOGS_AGREEMENT_DESCRIPTION = "Logs provide valuable information to help troubleshoot your problem, leading to faster turnaround times and better customer support experience.";
 
