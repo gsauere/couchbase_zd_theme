@@ -1459,10 +1459,10 @@ ul {
   font-size: 14px;
   /*overflow: hidden;*/
   /*text-overflow: ellipsis;*/
-  margin: 6px 0;
+  /*margin: 6px 0;*/
   color: $text_color;
-  display: inline-block;
-  width: 100%;
+  /*display: inline-block;*/
+  /*width: 100%;*/
 }
 .recent-activity-item-meta {
   color: $text_color;
