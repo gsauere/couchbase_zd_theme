@@ -605,9 +605,9 @@ ul {
   margin: 5px 0;
 }
 /* UPDATED */
-.search {
-  border-color: #ddd;
-  /*border-color: #87929D;*/
+.form footer {
+  margin-top: 0px;
+  /*margin-top: 40px;*/
   padding-top: 30px;
 }
 
@@ -1437,9 +1437,11 @@ ul {
   display: none;
   /*margin: 0;*/
 }
+/* UPDATED */
 .recent-activity-item-parent {
   font-size: 16px;
-  font-weight: 600;
+  display: none;
+  /*font-weight: 600;*/
 }
 .recent-activity-item-parent, .recent-activity-item-link {
   margin: 6px 0;
@@ -1457,6 +1459,10 @@ ul {
   font-size: 14px;
   /*overflow: hidden;*/
   /*text-overflow: ellipsis;*/
+  margin: 6px 0;
+  color: $text_color;
+  display: inline-block;
+  width: 100%;
 }
 .recent-activity-item-meta {
   color: $text_color;
@@ -4909,11 +4915,6 @@ zd-summary-block {
     font-size: 26px;
     text-transform: uppercase;
 }
-.recent-activity-item-link {
-  font-size: 14px;
-  /*overflow: hidden;*/
-  /*text-overflow: ellipsis;*/
-}
 .article-list {
   list-style-type: disc;
   list-style: disc;
@@ -4921,18 +4922,6 @@ zd-summary-block {
 .recent-activity-item:before {
  content: "\0BB \020";
  }
-.recent-activity-item-link {
-  margin: 6px 0;
-  color: $text_color;
-  display: inline-block;
-  width: 100%;
-}
-@media (min-width: 768px) {
-  .recent-activity-item-parent, .recent-activity-item-link {
-    width: 70%;
-    margin: 0;
-  }
-}
 .warning-banner {
   /* Taken from header above */
   margin: 0 auto;

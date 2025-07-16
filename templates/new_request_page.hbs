@@ -307,11 +307,10 @@
 
     renderNewRequestForm(settings, props, container);
 
-
-  function show() {
-    $("#notSignedForm").css("display", "block");
-    $("#notSignedMsg").css("display", "none");
-  }
+    /*function show() {
+      $("#notSignedForm").css("display", "block");
+      $("#notSignedMsg").css("display", "none");
+    }*/
 
     const DOM_ID = {
       ORG_MSG: "org_msg",
@@ -329,197 +328,195 @@
       ATTACHMENTS_MSG: "attachments_msg"
     }
 
-
-
-      $("#request_description_hint").replaceWith("");
+    //$("#request_description_hint").replaceWith("");
   
-      // Create a MutationObserver instance
-      const observerValue = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
-            //console.log('value changed!');
-            //console.log('Old value:', mutation.oldValue);
-            //console.log('New value:', mutation.target.getAttribute('value'));
-            // Parse the string and extract only the number
-            const match = mutation.target.getAttribute('name').match(/\[(\d+)\]/);
-            const name = match ? match[1] : null;
-            const value = mutation.target.getAttribute('value');
+    // Create a MutationObserver instance
+    const observerValue = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+          //console.log('value changed!');
+          //console.log('Old value:', mutation.oldValue);
+          //console.log('New value:', mutation.target.getAttribute('value'));
+          // Parse the string and extract only the number
+          const match = mutation.target.getAttribute('name').match(/\[(\d+)\]/);
+          const name = match ? match[1] : null;
+          const value = mutation.target.getAttribute('value');
 
-            // Map of custom field IDs to their corresponding DOM_ID and VERSION_LIFECYCLE objects
-            const fieldConfig = {
-              [couchbase.getZdCustomFieldId().SERVER]: {
-                domId: DOM_ID.SERVER_MSG,
-                lifecycle: couchbase.VERSION_LIFECYCLE.SERVER
-              },
-              [couchbase.getZdCustomFieldId().CLIENT]: {
-                domId: DOM_ID.CLIENT_MSG,
-                lifecycle: couchbase.VERSION_LIFECYCLE.CLIENT
-              },
-              [couchbase.getZdCustomFieldId().SYNC_GATEWAY]: {
-                domId: DOM_ID.SYNC_GATEWAY_MSG,
-                lifecycle: couchbase.VERSION_LIFECYCLE.SYNC_GATEWAY
-              },
-              [couchbase.getZdCustomFieldId().LITE]: {
-                domId: DOM_ID.LITE_MSG,
-                lifecycle: couchbase.VERSION_LIFECYCLE.LITE
-              },
-              [couchbase.getZdCustomFieldId().EDGE]: {
-                domId: DOM_ID.EDGE_MSG,
-                lifecycle: couchbase.VERSION_LIFECYCLE.EDGE
-              },
-              [couchbase.getZdCustomFieldId().OPERATOR]: {
-                domId: DOM_ID.OPERATOR_MSG,
-                lifecycle: couchbase.VERSION_LIFECYCLE.OPERATOR
-              }
-            };
-
-            if (name && fieldConfig[name]) {
-              const cfg = fieldConfig[name];
-              couchbase.checkSupportPolicyVersion(
-                "#" + cfg.domId,
-                cfg.lifecycle.END_OF_LIFE,
-                cfg.lifecycle.END_OF_FULL_MAINTENANCE,
-                value
-              );
+          // Map of custom field IDs to their corresponding DOM_ID and VERSION_LIFECYCLE objects
+          const fieldConfig = {
+            [couchbase.getZdCustomFieldId().SERVER]: {
+              domId: DOM_ID.SERVER_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.SERVER
+            },
+            [couchbase.getZdCustomFieldId().CLIENT]: {
+              domId: DOM_ID.CLIENT_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.CLIENT
+            },
+            [couchbase.getZdCustomFieldId().SYNC_GATEWAY]: {
+              domId: DOM_ID.SYNC_GATEWAY_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.SYNC_GATEWAY
+            },
+            [couchbase.getZdCustomFieldId().LITE]: {
+              domId: DOM_ID.LITE_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.LITE
+            },
+            [couchbase.getZdCustomFieldId().EDGE]: {
+              domId: DOM_ID.EDGE_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.EDGE
+            },
+            [couchbase.getZdCustomFieldId().OPERATOR]: {
+              domId: DOM_ID.OPERATOR_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.OPERATOR
             }
+          };
+
+          if (name && fieldConfig[name]) {
+            const cfg = fieldConfig[name];
+            couchbase.checkSupportPolicyVersion(
+              "#" + cfg.domId,
+              cfg.lifecycle.END_OF_LIFE,
+              cfg.lifecycle.END_OF_FULL_MAINTENANCE,
+              value
+            );
           }
         }
-      });
-      
-      // Configure the observer to watch for attribute changes
-      const configValue = Object.freeze({ attributes: true, attributeOldValue: true, attributeFilter: ['value'] });
+      }
+    });
+    
+    // Configure the observer to watch for attribute changes
+    const configValue = Object.freeze({ attributes: true, attributeOldValue: true, attributeFilter: ['value'] });
 
-      // Example using MutationObserver (vanilla JavaScript, but can be used with jQuery)
-      const targetNode = document.body; // Or a more specific container element
-      const config = Object.freeze({ childList: true, subtree: true });
+    // Example using MutationObserver (vanilla JavaScript, but can be used with jQuery)
+    const targetNode = document.body; // Or a more specific container element
+    const config = Object.freeze({ childList: true, subtree: true });
 
-      const observer = new MutationObserver((mutationsList, observer) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === 'childList') {
-            // Cache field selectors to avoid repeated DOM queries
-            const fieldSelectors = {
-              //organization: '[name="request[organization_id]"]',
-              server: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SERVER}]"]`,
-              client: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CLIENT}]"]`,
-              mobile: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SYNC_GATEWAY}]"]`,
-              cblite: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LITE}]"]`,
-              edge: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().EDGE}]"]`,
-              operator: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().OPERATOR}]"]`,
-              impact: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().IMPACT}]"]`,
-              critical: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CRITICAL}]"]`,
-              description: '[name="request[description]"]',
-              market_place: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().MARKET_PLACE}]"]`,
-              logs: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LOGS_AGREEMENT}]"]`,
-              attachments: 'label:contains("Attachments")'
-            };
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          // Cache field selectors to avoid repeated DOM queries
+          const fieldSelectors = {
+            //organization: '[name="request[organization_id]"]',
+            server: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SERVER}]"]`,
+            client: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CLIENT}]"]`,
+            mobile: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SYNC_GATEWAY}]"]`,
+            cblite: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LITE}]"]`,
+            edge: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().EDGE}]"]`,
+            operator: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().OPERATOR}]"]`,
+            impact: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().IMPACT}]"]`,
+            critical: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CRITICAL}]"]`,
+            description: '[name="request[description]"]',
+            market_place: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().MARKET_PLACE}]"]`,
+            logs: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LOGS_AGREEMENT}]"]`,
+            attachments: 'label:contains("Attachments")'
+          };
 
-            // Get field elements using cached selectors
-            const fields = Object.fromEntries(
-              Object.entries(fieldSelectors).map(([key, selector]) => [key, $(selector)])
+          // Get field elements using cached selectors
+          const fields = Object.fromEntries(
+            Object.entries(fieldSelectors).map(([key, selector]) => [key, $(selector)])
+          );
+
+          // Helper function to create message HTML
+          const createMessageHtml = (id, content) => 
+            `<div id="${id}"></div><div class="form-field" style="margin-top:5px"><p>${content}</p></div>`;
+
+          // Helper function to check if field exists and message doesn't
+          const shouldProcessField = (field, messageId) => 
+            field.length > 0 && $(`#${messageId}`).length === 0;
+
+          // Process each field type
+          if (shouldProcessField(fields.server, DOM_ID.SERVER_MSG)) {
+            fields.server.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.SERVER_MSG, 
+                'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+            );
+            observerValue.observe(fields.server[0], configValue);
+          } else if (shouldProcessField(fields.client, DOM_ID.CLIENT_MSG)) {
+            fields.client.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.CLIENT_MSG,
+                'Provide the complete version (major.minor.maintenance) in the details section and send us the <a href="https://support.couchbase.com/hc/en-us/articles/218320083#client_logs" target="_blank" rel="noopener noreferrer">server and server SDK logs</a>.')
+            );
+            observerValue.observe(fields.client[0], configValue);
+          } else if (shouldProcessField(fields.mobile, DOM_ID.SYNC_GATEWAY_MSG)) {
+            fields.mobile.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.SYNC_GATEWAY_MSG,
+                'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
+            );
+            observerValue.observe(fields.mobile[0], configValue);
+          } else if (shouldProcessField(fields.cblite, DOM_ID.LITE_MSG)) {
+            fields.cblite.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.LITE_MSG,
+                'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
+            );
+            observerValue.observe(fields.cblite[0], configValue);
+          } else if (shouldProcessField(fields.edge, DOM_ID.EDGE_MSG)) {
+            fields.edge.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.EDGE_MSG,
+                'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+            );
+            observerValue.observe(fields.edge[0], configValue);
+          } else if (shouldProcessField(fields.operator, DOM_ID.OPERATOR_MSG)) {
+            fields.operator.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.OPERATOR_MSG,
+                'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">server and operator logs</a>.')
+            );
+            observerValue.observe(fields.operator[0], configValue);
+          } else if (shouldProcessField(fields.impact, DOM_ID.IMPACT_MSG)) {
+            fields.impact.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.IMPACT_MSG,
+                'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">priority definitions</a>.')
+            );
+          } else if (shouldProcessField(fields.critical, DOM_ID.CRITICAL_MSG)) {
+            fields.critical.after(
+              createMessageHtml(DOM_ID.CRITICAL_MSG,
+                'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">how to escalate your support ticket</a>.')
             );
 
-            // Helper function to create message HTML
-            const createMessageHtml = (id, content) => 
-              `<div id="${id}"></div><div class="form-field" style="margin-top:5px"><p>${content}</p></div>`;
+            // Configure critical field styling and behavior
+            const criticalField = $(fields.critical);
+            criticalField.css({'max-height': '65px', 'min-height': '65px'})
+                        .attr({'rows': '2', 'wrap': 'hard', 'maxlength': '256'})
+                        .on('keypress', function(event) {
+                          const textarea = $(this);
+                          const numberOfLines = ((textarea.val().match(/\n/g) || []).length + 1);
+                          const maxRows = parseInt(textarea.attr('rows'));
 
-            // Helper function to check if field exists and message doesn't
-            const shouldProcessField = (field, messageId) => 
-              field.length > 0 && $(`#${messageId}`).length === 0;
-
-            // Process each field type
-            if (shouldProcessField(fields.server, DOM_ID.SERVER_MSG)) {
-              fields.server.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.SERVER_MSG, 
-                  'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
+                          if (event.which === 13 && numberOfLines === maxRows) {
+                            return false;
+                          }
+                        });
+          } else if (shouldProcessField(fields.description, DOM_ID.DESCRIPTION_MSG)) {
+            const descriptionParent = fields.description.parent();
+            descriptionParent.children().eq(1).remove();
+            descriptionParent.append(
+              createMessageHtml(DOM_ID.DESCRIPTION_MSG,
+                'Please enter the details of your request. A member of our support staff will respond as soon as possible.')
+            );
+          } else if (fields.market_place.length > 0 && isAnonymous) {
+            fields.market_place.parent().remove();
+          } else if (shouldProcessField(fields.logs, DOM_ID.LOGS_CHECK_MSG)) {
+            fields.logs.next().html(
+              `<div id="${DOM_ID.LOGS_CHECK_MSG}" class="form-field" style="display: inline-block;">
+                <p style="color: rgb(47, 57, 65); font-size: 14px; font-weight: 600;">
+                  I understand and will <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">collect and share the logs with Support</a> shortly after ticket is created.
+                </p>
+              </div>`
+            );
+          } else if (shouldProcessField(fields.attachments, DOM_ID.ATTACHMENTS_MSG)) {
+            fields.attachments.parent()
+              .append(createMessageHtml(DOM_ID.ATTACHMENTS_MSG,
+                'Review instructions for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">Working with the Couchbase Support Team</a> on how to upload larger files.'))
+              .insertAfter("#upload-dropzone");
+          } /*else if (shouldProcessField(fields.organization, DOM_ID.ORG_MSG)) {
+            fields.organization.parent().parent().parent().parent().parent();
+              .append(
+                createMessageHtml(DOM_ID.ORG_MSG, 
+                  'List of entitled organizations you can submit a ticket against')
               );
-              observerValue.observe(fields.server[0], configValue);
-            } else if (shouldProcessField(fields.client, DOM_ID.CLIENT_MSG)) {
-              fields.client.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.CLIENT_MSG,
-                  'Provide the complete version (major.minor.maintenance) in the details section and send us the <a href="https://support.couchbase.com/hc/en-us/articles/218320083#client_logs" target="_blank" rel="noopener noreferrer">server and server SDK logs</a>.')
-              );
-              observerValue.observe(fields.client[0], configValue);
-            } else if (shouldProcessField(fields.mobile, DOM_ID.SYNC_GATEWAY_MSG)) {
-              fields.mobile.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.SYNC_GATEWAY_MSG,
-                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
-              );
-              observerValue.observe(fields.mobile[0], configValue);
-            } else if (shouldProcessField(fields.cblite, DOM_ID.LITE_MSG)) {
-              fields.cblite.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.LITE_MSG,
-                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#mobile_logs" target="_blank" rel="noopener noreferrer">server and mobile logs</a>.')
-              );
-              observerValue.observe(fields.cblite[0], configValue);
-            } else if (shouldProcessField(fields.edge, DOM_ID.EDGE_MSG)) {
-              fields.edge.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.EDGE_MSG,
-                  'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
-              );
-              observerValue.observe(fields.edge[0], configValue);
-            } else if (shouldProcessField(fields.operator, DOM_ID.OPERATOR_MSG)) {
-              fields.operator.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.OPERATOR_MSG,
-                  'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">server and operator logs</a>.')
-              );
-              observerValue.observe(fields.operator[0], configValue);
-            } else if (shouldProcessField(fields.impact, DOM_ID.IMPACT_MSG)) {
-              fields.impact.parent().parent().parent().parent().parent().append(
-                createMessageHtml(DOM_ID.IMPACT_MSG,
-                  'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">priority definitions</a>.')
-              );
-            } else if (shouldProcessField(fields.critical, DOM_ID.CRITICAL_MSG)) {
-              fields.critical.after(
-                createMessageHtml(DOM_ID.CRITICAL_MSG,
-                  'Review our KB article for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">how to escalate your support ticket</a>.')
-              );
-
-              // Configure critical field styling and behavior
-              const criticalField = $(fields.critical);
-              criticalField.css({'max-height': '65px', 'min-height': '65px'})
-                          .attr({'rows': '2', 'wrap': 'hard', 'maxlength': '256'})
-                          .on('keypress', function(event) {
-                            const textarea = $(this);
-                            const numberOfLines = ((textarea.val().match(/\n/g) || []).length + 1);
-                            const maxRows = parseInt(textarea.attr('rows'));
-
-                            if (event.which === 13 && numberOfLines === maxRows) {
-                              return false;
-                            }
-                          });
-            } else if (shouldProcessField(fields.description, DOM_ID.DESCRIPTION_MSG)) {
-              const descriptionParent = fields.description.parent();
-              descriptionParent.children().eq(1).remove();
-              descriptionParent.append(
-                createMessageHtml(DOM_ID.DESCRIPTION_MSG,
-                  'Please enter the details of your request. A member of our support staff will respond as soon as possible.')
-              );
-            } else if (fields.market_place.length > 0 && isAnonymous) {
-              fields.market_place.parent().remove();
-            } else if (shouldProcessField(fields.logs, DOM_ID.LOGS_CHECK_MSG)) {
-              fields.logs.next().html(
-                `<div id="${DOM_ID.LOGS_CHECK_MSG}" class="form-field" style="display: inline-block;">
-                  <p style="color: rgb(47, 57, 65); font-size: 14px; font-weight: 600;">
-                    I understand and will <a href="https://support.couchbase.com/hc/en-us/articles/218320083#server_logs" target="_blank" rel="noopener noreferrer">collect and share the logs with Support</a> shortly after ticket is created.
-                  </p>
-                </div>`
-              );
-            } else if (shouldProcessField(fields.attachments, DOM_ID.ATTACHMENTS_MSG)) {
-              fields.attachments.parent()
-                .append(createMessageHtml(DOM_ID.ATTACHMENTS_MSG,
-                  'Review instructions for <a href="https://support.couchbase.com/hc/en-us/articles/218320083" target="_blank" rel="noopener noreferrer">Working with the Couchbase Support Team</a> on how to upload larger files.'))
-                .insertAfter("#upload-dropzone");
-            } /*else if (shouldProcessField(fields.organization, DOM_ID.ORG_MSG)) {
-              fields.organization.parent().parent().parent().parent().parent();
-  						  .append(
-                  createMessageHtml(DOM_ID.ORG_MSG, 
-                    'List of entitled organizations you can submit a ticket against')
-                );
-            }*/
-  				}
+          }*/
         }
-      });
+      }
+    });
 
-      observer.observe(targetNode, config);
+    observer.observe(targetNode, config);
   }
 </script>
