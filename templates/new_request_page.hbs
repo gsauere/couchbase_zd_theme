@@ -477,13 +477,13 @@
             );
             observerValue.observe(fields.edge[0], configValue);
           } else if (shouldProcessField(fields.analytics_server, DOM_ID.ANALYTICS_SERVER_MSG)) {
-            fields.operator.parent().parent().parent().parent().parent().append(
+            fields.analytics_server.parent().parent().parent().parent().parent().append(
               createMessageHtml(DOM_ID.ANALYTICS_SERVER_MSG,
                 'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#analytics_server_logs" target="_blank" rel="noopener noreferrer">analytics server logs</a>.')
             );
             observerValue.observe(fields.analytics_server[0], configValue);
           } else if (shouldProcessField(fields.analytics_sdk, DOM_ID.ANALYTICS_SDK_MSG)) {
-            fields.operator.parent().parent().parent().parent().parent().append(
+            fields.analytics_sdk.parent().parent().parent().parent().parent().append(
               createMessageHtml(DOM_ID.ANALYTICS_SDK_MSG,
                 'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#analytics_sdk_logs" target="_blank" rel="noopener noreferrer">analytics sdk logs</a>.')
             );
