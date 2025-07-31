@@ -12,6 +12,7 @@ export const IMPACT_DESCRIPTION = "Briefly describe your business impact (max 2 
 export const SDK_OR_CONNECTOR_LABEL = "Is this SDK or Connector related?";
 export const LITE_LABEL = "Is this Couchbase Lite related?";
 export const SYNC_GATEWAY_LABEL = "Are you replicating with Sync Gateway?";
+export const ANALYTICS_SDK_LABEL = "Is this SDK related?";
 
 export const MARKET_PLACE_LABEL = "Is this ticket for a Marketplace account?";
 export const MARKET_PLACE_DESCRIPTION = "Please select this field if you are a marketplace customer";
@@ -101,20 +102,21 @@ export function getFormId(condition = isSandbox()) {
       SERVER: 360001771732,
       MOBILE: 360001799691,
       EDGE: 34622105022875,
+      ANALYTICS: 27677043498011,
       OPERATOR: 360001771952,
       QUESTION: 360001799831,
       SUGGESTION: 360001771972
     };
-  } else {
-    return {
-      SERVER: 360000545232,
-      MOBILE: 1900000174384,
-      EDGE: 34692946527003,
-      OPERATOR: 1260811054329,
-      QUESTION: 1260811052249,
-      SUGGESTION: 1900000171804
-    };
   }
+  return {
+    SERVER: 360000545232,
+    MOBILE: 1900000174384,
+    EDGE: 34692946527003,
+    ANALYTICS: 27677212251163,
+    OPERATOR: 1260811054329,
+    QUESTION: 1260811052249,
+    SUGGESTION: 1900000171804
+  };
 }
 
 export const END_OF_LIFE_TAG = "__end_of_life";
@@ -125,10 +127,12 @@ export const ZD_CUSTOM_FIELD_IDS = {
     CRITICAL: 360044104892,
     SERVER: 360041809492,
     SYNC_GATEWAY: 360041809512,
+    EDGE: 34621365112091,
+    ANALYTICS_SERVER: 38801960973595,
     HAS_SDK: 31131035055771,
     CLIENT: 360041784231,
     LITE: 360041784251,
-    EDGE: 34621365112091,
+    ANALYTICS_SDK: 30613920955547,
     OPERATOR: 360041809732,
     MARKET_PLACE: 8050543819035,
     LOGS_AGREEMENT: 1260822948929
@@ -138,10 +142,12 @@ export const ZD_CUSTOM_FIELD_IDS = {
     CRITICAL: 360045140512,
     SERVER: 20518787,
     SYNC_GATEWAY: 21076534,
+    EDGE: 34620727056155,
+    ANALYTICS_SERVER: 38806440139291,
     HAS_SDK: 31156791679259,
     CLIENT: 21076524,
     LITE: 21115995,
-    EDGE: 34620727056155,
+    ANALYTICS_SDK: 30613310058523,
     OPERATOR: 360030664772,
     MARKET_PLACE: 12734656072219,
     LOGS_AGREEMENT: 1900002551744
@@ -179,6 +185,14 @@ export const VERSION_LIFECYCLE = {
     END_OF_LIFE: ["(1_5_\\d+)", "(2_0_\\d+)", "(2_1_\\d+)", "(2_5_\\d+)", "(2_6_\\d+)", "(2_7_\\d+)"]
   },
   EDGE: {
+    END_OF_FULL_MAINTENANCE: ["(0_0_x)"],
+    END_OF_LIFE: ["(0_0_x)"]
+  },
+  ANALYTICS_SERVER: {
+    END_OF_FULL_MAINTENANCE: ["(0_0_x)"],
+    END_OF_LIFE: ["(0_0_x)"]
+  },
+  ANALYTICS_SDK: {
     END_OF_FULL_MAINTENANCE: ["(0_0_x)"],
     END_OF_LIFE: ["(0_0_x)"]
   },

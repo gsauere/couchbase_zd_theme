@@ -239,6 +239,16 @@
             },
             indices: { eol: [5, 7], client: [10] }
           },
+          [couchbase.getFormId().ANALYTICS]: {
+            fields: {
+              4: { label: couchbase.ANALYTICS_SDK_LABEL },
+              9: {
+                label: couchbase.LOGS_AGREEMENT_LABEL,
+                description: couchbase.LOGS_AGREEMENT_DESCRIPTION
+              }
+            },
+            indices: { client: [5] }
+          },
           [couchbase.getFormId().OPERATOR]: {
             fields: {
               8: {
@@ -319,6 +329,8 @@
       SYNC_GATEWAY_MSG: "sync_gateway_msg",
       LITE_MSG: "lite_msg",
       EDGE_MSG: "edge_msg",
+      ANALYTICS_SERVER_MSG: "analytics_server_msg",
+      ANALYTICS_SDK_MSG: "analytics_sdk_msg",
       OPERATOR_MSG: "operator_msg",
       IMPACT_MSG: "impact_msg",
       CRITICAL_MSG: "critical_msg",
@@ -348,21 +360,29 @@
               domId: DOM_ID.SERVER_MSG,
               lifecycle: couchbase.VERSION_LIFECYCLE.SERVER
             },
-            [couchbase.getZdCustomFieldId().CLIENT]: {
-              domId: DOM_ID.CLIENT_MSG,
-              lifecycle: couchbase.VERSION_LIFECYCLE.CLIENT
-            },
             [couchbase.getZdCustomFieldId().SYNC_GATEWAY]: {
               domId: DOM_ID.SYNC_GATEWAY_MSG,
               lifecycle: couchbase.VERSION_LIFECYCLE.SYNC_GATEWAY
+            },
+            [couchbase.getZdCustomFieldId().EDGE]: {
+              domId: DOM_ID.EDGE_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.EDGE
+            },
+            [couchbase.getZdCustomFieldId().ANALYTICS_SERVER]: {
+              domId: DOM_ID.ANALYTICS_SERVER_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.ANALYTICS_SERVER
+            },
+            [couchbase.getZdCustomFieldId().CLIENT]: {
+              domId: DOM_ID.CLIENT_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.CLIENT
             },
             [couchbase.getZdCustomFieldId().LITE]: {
               domId: DOM_ID.LITE_MSG,
               lifecycle: couchbase.VERSION_LIFECYCLE.LITE
             },
-            [couchbase.getZdCustomFieldId().EDGE]: {
-              domId: DOM_ID.EDGE_MSG,
-              lifecycle: couchbase.VERSION_LIFECYCLE.EDGE
+            [couchbase.getZdCustomFieldId().ANALYTICS_SDK]: {
+              domId: DOM_ID.ANALYTICS_SDK_MSG,
+              lifecycle: couchbase.VERSION_LIFECYCLE.ANALYTICS_SDK
             },
             [couchbase.getZdCustomFieldId().OPERATOR]: {
               domId: DOM_ID.OPERATOR_MSG,
@@ -401,6 +421,8 @@
             mobile: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().SYNC_GATEWAY}]"]`,
             cblite: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().LITE}]"]`,
             edge: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().EDGE}]"]`,
+            analytics_server: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().ANALYTICS_SERVER}]"]`,
+            analytics_sdk: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().ANALYTICS_SDK}]"]`,
             operator: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().OPERATOR}]"]`,
             impact: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().IMPACT}]"]`,
             critical: `[name="request[custom_fields][${couchbase.getZdCustomFieldId().CRITICAL}]"]`,
@@ -454,6 +476,18 @@
                 'Review our <a href="https://www.couchbase.com/support-policy/EOL" target="_blank" rel="noopener noreferrer">End Of Life (EOL) Policy</a>')
             );
             observerValue.observe(fields.edge[0], configValue);
+          } else if (shouldProcessField(fields.analytics_server, DOM_ID.ANALYTICS_SERVER_MSG)) {
+            fields.operator.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.ANALYTICS_SERVER_MSG,
+                'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#analytics_server_logs" target="_blank" rel="noopener noreferrer">analytics server logs</a>.')
+            );
+            observerValue.observe(fields.analytics_server[0], configValue);
+          } else if (shouldProcessField(fields.analytics_sdk, DOM_ID.ANALYTICS_SDK_MSG)) {
+            fields.operator.parent().parent().parent().parent().parent().append(
+              createMessageHtml(DOM_ID.ANALYTICS_SDK_MSG,
+                'Review how to send us <a href="https://support.couchbase.com/hc/en-us/articles/218320083#analytics_sdk_logs" target="_blank" rel="noopener noreferrer">analytics sdk logs</a>.')
+            );
+            observerValue.observe(fields.analytics_sdk[0], configValue);
           } else if (shouldProcessField(fields.operator, DOM_ID.OPERATOR_MSG)) {
             fields.operator.parent().parent().parent().parent().parent().append(
               createMessageHtml(DOM_ID.OPERATOR_MSG,
