@@ -1,3 +1,38 @@
+## [4.8.5](https://github.com/zendesk/copenhagen_theme/compare/v4.8.4...v4.8.5) (2025-07-30)
+
+
+### Bug Fixes
+
+* hide deactivated Fields on the ServiceCatalog Item page ([f7c6d34](https://github.com/zendesk/copenhagen_theme/commit/f7c6d3455c37a172dda6611cbda124fa739d8028))
+
+## [4.8.4](https://github.com/zendesk/copenhagen_theme/compare/v4.8.3...v4.8.4) (2025-07-30)
+
+
+### Bug Fixes
+
+* apply word-break to prevent overflow ([3a21dc8](https://github.com/zendesk/copenhagen_theme/commit/3a21dc8fef4e2d124866302c4a4098735395e2a0))
+
+## [4.8.3](https://github.com/zendesk/copenhagen_theme/compare/v4.8.2...v4.8.3) (2025-07-30)
+
+
+### Bug Fixes
+
+* avoid unnecessary toggle ([f7b3d89](https://github.com/zendesk/copenhagen_theme/commit/f7b3d89f6128a943ef3cc47b71c4d37f1c4ba9d9))
+
+## [4.8.2](https://github.com/zendesk/copenhagen_theme/compare/v4.8.1...v4.8.2) (2025-07-29)
+
+
+### Bug Fixes
+
+* fixed missing translation for multi-level dropdown back option ([5ba271b](https://github.com/zendesk/copenhagen_theme/commit/5ba271bb4b8ce74777390f916507c1b685400312))
+
+## [4.8.1](https://github.com/zendesk/copenhagen_theme/compare/v4.8.0...v4.8.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* allow html formatting to display as text ([e2486ab](https://github.com/zendesk/copenhagen_theme/commit/e2486ab992aa72c0c2e9287aab2995a33fe29fd5))
+
 # [4.8.0](https://github.com/zendesk/copenhagen_theme/compare/v4.7.0...v4.8.0) (2025-07-15)
 
 
