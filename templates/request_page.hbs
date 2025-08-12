@@ -372,6 +372,18 @@
         return (ENABLE_ACTION_SECTION && status !== "solved" && (ent.includes("gold") || ent.includes("platinum") || isManager));
       });
 
+      // Convert Unix timestamp (seconds) to hours ago based on the parameter passed
+      const getHoursAgo = Object.freeze((unixTimestamp) => {
+        if (typeof unixTimestamp !== "number" && typeof unixTimestamp !== "string") return null;
+        const ts = Number(unixTimestamp);
+        if (isNaN(ts) || ts <= 0) return null;
+        const now = Date.now();
+        const timestampMillis = ts < 1e12 ? ts * 1000 : ts; // handle both seconds and ms
+        const diffMillis = now - timestampMillis;
+        if (diffMillis < 0) return 0;
+        return Math.floor(diffMillis / (1000 * 60 * 60));
+      });
+
       $('#escalate_form').on('submit', function(e) {
         e.preventDefault();                           
         const business_impact_id = Object.freeze($('#escalate_reason')); 
@@ -446,6 +458,35 @@
             }
           };
         })();
+
+        // Process Last Escalation field
+        const lastEscalation = Object.freeze(processRequestDetail("Last Escalation", ($next, obj) => {
+          const value = Number($.trim($next.text().toLowerCase()));
+          const hoursAgo = getHoursAgo(value);
+
+          if (isNaN(hoursAgo)) {
+            $next.add(obj).remove();
+            return null;
+          }
+ 
+          if (hoursAgo < 24) {
+            $("#customer_action_section").html(
+              `<b style='color:blue'>
+                This ticket was escalated less than 24 hours ago, and the Support Team is already engaged.<br>
+                Please update the ticket with any additional details, or call our
+                <a href="https://support.couchbase.com/hc/en-us/articles/218320083#escalation" target="_blank" rel="noopener noreferrer">Hotline</a> for any other urgent matters.
+              </b>`
+            );
+          }
+
+          $next.text(
+            hoursAgo < 96
+              ? `${hoursAgo} hours ago`
+              : `${Math.floor(hoursAgo / 24)} days ago`
+          );
+
+          return value;
+        }));
 
         // Process Last Escalated field
         const lastEscalated = Object.freeze(processRequestDetail("Last Escalated", ($next, obj) => {
