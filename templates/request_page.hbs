@@ -464,7 +464,7 @@
           const value = Number($.trim($next.text().toLowerCase()));
           const hoursAgo = getHoursAgo(value);
 
-          if (isNaN(hoursAgo)) {
+          if (hoursAgo === null) {
             $next.add(obj).remove();
             return null;
           }
@@ -481,7 +481,7 @@
 
           $next.text(
             hoursAgo < 96
-              ? `${hoursAgo} hours ago`
+              ? `${hoursAgo} hour(s) ago`
               : `${Math.floor(hoursAgo / 24)} days ago`
           );
 
