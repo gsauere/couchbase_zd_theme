@@ -445,95 +445,65 @@
       // This will add valid information to the Attachment field and description
       $('div#upload-dropzone').after("<div class='form-field'><p>Maximum attachment size is 50MB. Please, review instructions for <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083\" target=\"_blank\" rel=\"noopener noreferrer\">Working with the Couchbase Support Team</a> on how to upload larger files.</p></div>");
 
-        // Process Escalated field
-        const escalated = (() => {
-          const value = processRequestDetail("Escalated", ($next, obj) => {
-            const esc = $.trim($next.text().toLowerCase());
-            $next.text(esc === "—" ? "No" : "Yes");
-            return esc === "—" ? "No" : "Yes";
-          });
-          return {
-            get value() {
-              return value;
-            }
-          };
-        })();
+      // Process Last Escalation field
+      const lastEscalation = Object.freeze(processRequestDetail("Last Escalation", ($next, obj) => {
+        const value = Number($.trim($next.text().toLowerCase()));
+        const hoursAgo = getHoursAgo(value);
 
-        // Process Last Escalation field
-        const lastEscalation = Object.freeze(processRequestDetail("Last Escalation", ($next, obj) => {
-          const value = Number($.trim($next.text().toLowerCase()));
-          const hoursAgo = getHoursAgo(value);
-
-          if (hoursAgo === null) {
-            $next.add(obj).remove();
-            return null;
-          }
- 
-          if (hoursAgo < 24) {
-            $("#customer_action_section").html(
-              `<b style='color:blue'>
-                This ticket was escalated less than 24 hours ago, and the Support Team is already engaged.<br>
-                Please update the ticket with any additional details, or call our
-                <a href="https://support.couchbase.com/hc/en-us/articles/218320083#escalation" target="_blank" rel="noopener noreferrer">Hotline</a> for any other urgent matters.
-              </b>`
-            );
-          }
-
-          $next.text(
-            hoursAgo < 96
-              ? `${hoursAgo} hour(s) ago`
-              : `${Math.floor(hoursAgo / 24)} days ago`
-          );
-
-          return value;
-        }));
-
-        // Process Last Escalated field
-        const lastEscalated = Object.freeze(processRequestDetail("Last Escalated", ($next, obj) => {
-          const lastEscalatedStr = $.trim($next.text().toLowerCase());
-          try {
-            const lastEscalated = new Date(Date.parse(lastEscalatedStr)).toJSON().slice(0, 10);
-            const today = new Date().toJSON().slice(0, 10);
-            if (today === lastEscalated) {
-              $("#customer_action_section").html("<b style='color:blue'>This ticket has already been escalated today! Support Team was notified and is engaged.<br>Please update the ticket if you have more details to share or call our <a href=\"https://support.couchbase.com/hc/en-us/articles/218320083#escalation\" target=\"_blank\" rel=\"noopener noreferrer\">Hotline</a> for anything else urgent.</b>");
-            }
-            return lastEscalated;
-          } catch {
-            // Swallow parsing errors
-            return null;
-          }
-        }));
-
-        // Process Status field
-        const status = Object.freeze(processRequestDetail("Status", ($next, obj) => {
-          return $.trim($next.text().toLowerCase());
-        }));
-
-        // Process Entitlement field
-        const ent = Object.freeze(processRequestDetail("Entitlement", ($next, obj) => {
-          const entitlement = $.trim($next.text().toLowerCase());
-          $next.remove();
-          $(obj).remove();
-          return entitlement;
-        }));
-
-        // Process Priority field
-        const priority = Object.freeze(processRequestDetail("Priority", ($next, obj) => {
-          return $.trim($next.text().toLowerCase());
-        }));
-        //console.log(ent + " - " + priority)
-
-        $("#call_request_action").remove();
-        if (isEscalatable(status, ent, isManager)) {
-    			$("#customer_action_section").show();
-          /*if (priority == "p1") { //|| priority == "p2"
-  					 //$("#call_request_action").show();
-  				} else {
-             $("#call_request_action").hide();
-          }*/
-  			} else {
-    		  $("#customer_action_section").hide();
+        if (hoursAgo === null) {
+          $next.add(obj).remove();
+          return null;
         }
+
+        if (hoursAgo < 24) {
+          $("#customer_action_section").html(
+            `<b style='color:blue'>
+              This ticket was escalated less than 24 hours ago, and the Support Team is already engaged.<br>
+              Please update the ticket with any additional details, or call our
+              <a href="https://support.couchbase.com/hc/en-us/articles/218320083#escalation" target="_blank" rel="noopener noreferrer">Hotline</a> for any other urgent matters.
+            </b>`
+          );
+        }
+
+        $next.text(
+          hoursAgo < 96
+            ? `${hoursAgo} hour(s) ago`
+            : `${Math.floor(hoursAgo / 24)} days ago`
+        );
+
+        return value;
+      }));
+
+      // Process Status field
+      const status = Object.freeze(processRequestDetail("Status", ($next, obj) => {
+        return $.trim($next.text().toLowerCase());
+      }));
+
+      // Process Entitlement field
+      const ent = Object.freeze(processRequestDetail("Entitlement", ($next, obj) => {
+        const entitlement = $.trim($next.text().toLowerCase());
+        $next.remove();
+        $(obj).remove();
+        return entitlement;
+      }));
+
+      // Process Priority field
+      const priority = Object.freeze(processRequestDetail("Priority", ($next, obj) => {
+        return $.trim($next.text().toLowerCase());
+      }));
+      //console.log(ent + " - " + priority)
+
+      $("#call_request_action").remove();
+      if (isEscalatable(status, ent, isManager)) {
+        $("#customer_action_section").show();
+        /*if (priority == "p1") { //|| priority == "p2"
+            //$("#call_request_action").show();
+        } else {
+            $("#call_request_action").hide();
+        }*/
+      } else {
+        $("#customer_action_section").hide();
+      }
     });     
   });
 </script>
