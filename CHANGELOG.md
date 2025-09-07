@@ -1,3 +1,24 @@
+## [4.9.1](https://github.com/zendesk/copenhagen_theme/compare/v4.9.0...v4.9.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* fix: set error to null when it no longer exists in updateFields ([bcfc701](https://github.com/zendesk/copenhagen_theme/commit/bcfc7019847f4c2efa4cb946981ca1871230e57c))
+
+# [4.9.0](https://github.com/zendesk/copenhagen_theme/compare/v4.8.6...v4.9.0) (2025-09-01)
+
+
+### Bug Fixes
+
+* address eslint errors ([113ba32](https://github.com/zendesk/copenhagen_theme/commit/113ba32778d6a13f25ebdb6c0e2d4f2b0e774f82))
+
+
+### Features
+
+* add link to useNotify ([0609170](https://github.com/zendesk/copenhagen_theme/commit/06091703020f56c67cd47b6ca6116421718fe3eb))
+* add refresh notification in case of 422 race condition scenario ([47669f4](https://github.com/zendesk/copenhagen_theme/commit/47669f43931e75dbecf1ffa47cd19a77a8132a35))
+* add refresh page translations ([8f4f140](https://github.com/zendesk/copenhagen_theme/commit/8f4f140a19a1a0990c6c0c6c59403ea17efbdad9))
+
 ## [4.8.6](https://github.com/zendesk/copenhagen_theme/compare/v4.8.5...v4.8.6) (2025-08-13)
 
 
