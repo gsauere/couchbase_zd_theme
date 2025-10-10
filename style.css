@@ -1820,6 +1820,7 @@ ul {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .article-body blockquote {
   border-left: 1px solid #ddd;
@@ -2296,6 +2297,7 @@ ul {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .comment-body blockquote {
   border-left: 1px solid #ddd;
@@ -2863,6 +2865,7 @@ ul {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .post-body blockquote {
   border-left: 1px solid #ddd;
@@ -4879,6 +4882,7 @@ zd-summary-block {
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
+  direction: ltr;
 }
 .service-catalog-description blockquote {
   border-left: 1px solid #ddd;

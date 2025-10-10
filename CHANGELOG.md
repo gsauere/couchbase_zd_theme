@@ -1,3 +1,31 @@
+## [4.11.1](https://github.com/zendesk/copenhagen_theme/compare/v4.11.0...v4.11.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* add missing screenshot ([cea21cf](https://github.com/zendesk/copenhagen_theme/commit/cea21cf29a3ed7103344a02d968bad166cdda5e9))
+
+# [4.11.0](https://github.com/zendesk/copenhagen_theme/compare/v4.10.1...v4.11.0) (2025-10-08)
+
+
+### Features
+
+* add global notification system ([3033578](https://github.com/zendesk/copenhagen_theme/commit/30335784d9bc0aaedd84de1931b6908eccf2c7e8))
+
+## [4.10.1](https://github.com/zendesk/copenhagen_theme/compare/v4.10.0...v4.10.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* include shared baseLocale translations in ApprovalRequest loader ([a7c5d3d](https://github.com/zendesk/copenhagen_theme/commit/a7c5d3d42ccc6816a20c46d09f62147e0ed2dbf6))
+
+# [4.10.0](https://github.com/zendesk/copenhagen_theme/compare/v4.9.1...v4.10.0) (2025-09-24)
+
+
+### Features
+
+* modify CODEOWNERS for service catalog ownership ([8910dc3](https://github.com/zendesk/copenhagen_theme/commit/8910dc358e5ba33fb779ac47672efe1de8a7e2ad))
+
 ## [4.9.1](https://github.com/zendesk/copenhagen_theme/compare/v4.9.0...v4.9.1) (2025-09-05)
 
 
